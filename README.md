@@ -1,0 +1,2 @@
+# NERA
+NERA Event Manager
