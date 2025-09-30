@@ -24,5 +24,7 @@ namespace NERA_Logic.DTOs
         public int MaxPeople { get; set; }
         [Required(ErrorMessage = "Event Description is required.")]
         public string Description { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Event Creator is required.")]
+        public string EventCreator { get; set; } = string.Empty;
     }
 }

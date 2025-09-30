@@ -22,7 +22,8 @@ namespace NERA_Logic.Services
                 Description = eventdto.Description,
                 Cost = eventdto.Cost,
                 MaxPeople = eventdto.MaxPeople,
-                Location = eventdto.Location
+                Location = eventdto.Location,
+                EventCreator = eventdto.EventCreator
             };
             return evenement;
 

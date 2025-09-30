@@ -8,5 +8,6 @@
         public double Cost { get; set; }
         public int MaxPeople { get; set; }
         public string Description { get; set; } = string.Empty;
+        public string EventCreator { get; set; } = string.Empty;
     }
 }
