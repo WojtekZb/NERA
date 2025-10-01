@@ -1,0 +1,128 @@
+﻿@page
+@model NERA_Presentation.Pages.Index1Model
+@{
+    ViewData["Title"] = "NERA - EVENT CREATER";
+}
+
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create Event</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Shoelace -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js"></script>
+    <!-- Vaadin Date Picker -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@@vaadin/date-picker@24.3.7/vaadin-date-picker.min.js"></script>
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="icon" href="assets/" />
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="inner">
+            <a class="brand" asp-page="/Index" aria-label="CGI NERA">
+                <img class="logo" src="assets/logo.svg" alt="Logo" />
+                <span class="name">CGI NEXT <span class="accent">Event Manager</span></span>
+            </a>
+            <div class="header-actions">
+                <sl-button size="small" pill>Login</sl-button>
+                <a asp-page="/createevent" style="text-decoration:none">
+                    <sl-button size="small" pill class="btn-gradient">Create Event</sl-button>
+                </a>
+                <sl-button size="small" pill>Event Registration</sl-button>
+                <sl-button size="small" pill>Check-in</sl-button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Create Event</h1>
+        <div>
+            <div class="accent-bar"></div>
+            <form>
+                <div>
+                    <label for="name">Event Name</label><br>
+                    <input id="name" name="name" type="text" required>
+                </div>
+                <div>
+                    <label for="date">Date</label><br>
+                    <vaadin-date-picker id="date" name="date" required></vaadin-date-picker>
+                </div>
+                <div>
+                    <label for="time">Time</label><br>
+                    <input id="time" name="time" type="time">
+                </div>
+                <div>
+                    <label for="location">Location</label><br>
+                    <input id="location" name="location" type="text">
+                </div>
+                <div>
+                    <label for="category">Category</label><br>
+                    <select id="category" name="category">
+                        <option value="">Select</option>
+                        <option value="tech">Technology</option>
+                        <option value="health">Health</option>
+                        <option value="sustainability">Sustainability</option>
+                        <option value="business">Business</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="capacity">Capacity</label><br>
+                    <input id="capacity" name="capacity" type="number" min="0">
+                </div>
+                <div>
+                    <label for="status">Status</label><br>
+                    <select id="status" name="status">
+                        <option value="draft">Draft</option>
+                        <option value="open">Open for Registration</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="description">Description</label><br>
+                    <textarea id="description" name="description" rows="5"></textarea>
+                </div>
+                <div>
+                    <button type="submit">Save</button>
+                    <a href="index.html">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script>
+        // Get events from localStorage (CREATE EVENT FUNCTION)
+        function getEvents() {
+            const stored = localStorage.getItem('events');
+            if (stored) return JSON.parse(stored);
+            return [
+                { title: 'Tech Innovation Conference', date: 'Dec 5, 2026', location: 'Amsterdam', city: 'Amsterdam', status: 'Open for Registration' },
+                { title: 'Global Health Summit', date: 'Jan 15, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Open for Registration' },
+                { title: 'Sustainability Forum', date: 'Mar 10, 2026', location: 'Other Location', city: 'Other Location', status: 'Open for Registration' },
+                { title: 'AI in Finance', date: 'Apr 22, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Closed' }
+            ];
+        }
+
+        function saveEvent(event) {
+            const events = getEvents();
+            events.push(event);
+            localStorage.setItem('events', JSON.stringify(events));
+        }
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const event = {
+                title: document.getElementById('name').value,
+                date: document.getElementById('date').value,
+                location: document.getElementById('location').value,
+                city: document.getElementById('location').value,
+                status: document.getElementById('status').selectedOptions[0].text
+            };
+            saveEvent(event);
+            window.location.href = '/Index'; 
+        });
+    </script>
+</body>
+</html>
