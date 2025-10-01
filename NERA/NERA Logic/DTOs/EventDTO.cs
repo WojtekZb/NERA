@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NERA_Logic.DTOs
+namespace Logic.DTOs
 {
     public class EventDTO
     {
