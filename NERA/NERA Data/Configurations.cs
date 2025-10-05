@@ -30,7 +30,7 @@ public class UserConfig : IEntityTypeConfiguration<User>
     {
         e.HasKey(x => x.Id);
         e.Property(x => x.Name).IsRequired().HasMaxLength(50);
-        e.Property(x => x.Email).IsUnique();
+        e.HasIndex(x => x.Email).IsUnique();
         e.Property(x => x.Password).IsRequired().HasMaxLength(50);
         e.Property(x => x.Photo).HasMaxLength(100);
         e.Property(x => x.Type).IsRequired().HasMaxLength(20);
@@ -43,11 +43,11 @@ public class RegistrationConfig : IEntityTypeConfiguration<Registration>
     {
         e.Property(x => x.UserId).IsRequired();
         e.HasOne(x => x.User)
-            .WithMany(u => u.Registrations)
+            .WithMany(u => u.Registration)
             .HasForeignKey(x => x.UserId);
         e.Property(x => x.EventId).IsRequired();
         e.HasOne(x => x.Event)
-            .WithMany(ev => ev.Registrations)
+            .WithMany(ev => ev.Registration)
             .HasForeignKey(x => x.EventId);
         e.Property(x => x.Status).IsRequired().HasMaxLength(20);
         e.Property(x => x.Time).IsRequired();

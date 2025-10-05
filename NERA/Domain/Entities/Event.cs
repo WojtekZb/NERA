@@ -9,5 +9,7 @@
         public double Cost { get; set; }
         public int Capacity { get; set; }
         public string Description { get; set; } = string.Empty;
+
+        public ICollection<Registration> Registration { get; set; } = new List<Registration>();
     }
 }
