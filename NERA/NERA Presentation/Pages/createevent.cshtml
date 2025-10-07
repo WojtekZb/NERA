@@ -1,0 +1,154 @@
+﻿@page
+@model NERA_Presentation.Pages.Index1Model
+@{
+    ViewData["Title"] = "NERA - EVENT CREATER";
+}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create Event</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Shoelace -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js"></script>
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="icon" href="assets/favicon.svg" />
+</head>
+<body class="create-page">
+    <!-- Header -->
+    <header class="site-header">
+        <div class="inner">
+            <a class="brand" asp-page="/Index" aria-label="CGI NERA">
+                <img class="logo" src="assets/logo.svg" alt="Logo" />
+                <span class="name">CGI NEXT <span class="accent"></span></span>
+            </a>
+            <div class="header-actions">
+                <a asp-page="/createevent" style="text-decoration:none">
+                    <sl-button size="small" pill class="btn-gradient">Create Event</sl-button>
+                </a>
+                <sl-button size="small" pill>Event Registration</sl-button>
+                <sl-button size="small" pill>Check-in</sl-button>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <h1 class="page-title">Create Event</h1>
+        <sl-card class="panel form-card form-shell large-centered-form larger-bg">
+            <div class="accent-bar"></div>
+            <form id="eventForm" class="form-grid" novalidate>
+                <sl-input id="title" name="title" label="Event Title" placeholder="Enter the title" required class="full"></sl-input>
+
+                <sl-textarea id="description" name="description" label="Description" placeholder="Describe the event" rows="5" required class="full"></sl-textarea>
+
+                <div class="form-row">
+                    <sl-input id="datetime" name="datetime" label="Date & Time" type="datetime-local" required class="half"></sl-input>
+                    <sl-select id="locationRef" name="locationRef" label="Location (list)" placeholder="Select a venue" hoist class="half">
+                        <sl-option value="">— Select —</sl-option>
+                        <sl-option value="Amsterdam">Amsterdam</sl-option>
+                        <sl-option value="Eindhoven">Eindhoven</sl-option>
+                        <sl-option value="Online">Online</sl-option>
+                        <sl-option value="other">Other…</sl-option>
+                    </sl-select>
+                </div>
+
+                <sl-input id="locationText" name="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:none"></sl-input>
+
+                <div class="form-row">
+                    <sl-input id="capacity" name="capacity" label="Max Registrations (Capacity)" type="number" min="0" class="half"></sl-input>
+                    <sl-input id="cost" name="cost" label="Cost (€)" type="number" min="0" step="0.01" class="half"></sl-input>
+                </div>
+                <div class="form-actions full">
+                    <sl-button type="primary" class="btn-gradient" submit>Save</sl-button>
+                    <a href="index.html" style="text-decoration:none"><sl-button class="btn-outline">Cancel</sl-button></a>
+                </div>
+            </form>
+        </sl-card>
+    </main>
+
+    <script>
+        const locationRef = document.getElementById('locationRef');
+        const locationText = document.getElementById('locationText');
+        const form = document.getElementById('eventForm');
+
+        // Toggle free-text location when selecting "Other…"
+        function toggleLocationText(){
+          const useText = locationRef.value === 'other';
+          locationText.style.display = useText ? '' : 'none';
+          locationText.toggleAttribute('required', useText);
+          if(useText) locationText.focus();
+        }
+        locationRef.addEventListener('sl-change', toggleLocationText);
+
+        // Basic submit handler (no backend)
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const location = locationRef.value === 'other' ? (locationText.value || '') : locationRef.value;
+          const payload = {
+            title: document.getElementById('title').value.trim(),
+            description: document.getElementById('description').value.trim(),
+            datetime: document.getElementById('datetime').value,
+            location,
+            cost: document.getElementById('cost').value,
+            capacity: document.getElementById('capacity').value
+          };
+          if(!payload.title || !payload.description || !payload.datetime || !payload.location){
+            form.reportValidity?.();
+            return;
+          }
+          console.log('Form ready:', payload);
+        });
+
+        toggleLocationText();
+    </script>
+
+    <style>
+    /* Center the form and increase its size */
+    .large-centered-form {
+        max-width: 600px !important;
+        min-width: 350px;
+        margin: 48px auto !important;
+        padding: 40px 36px !important;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-grid sl-input,
+    .form-grid sl-textarea,
+    .form-grid sl-select {
+        font-size: 1.15rem;
+    }
+    .form-row {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 0;
+    }
+    .form-row .half {
+        flex: 1 1 0;
+    }
+    .form-grid .full {
+        grid-column: 1 / -1;
+    }
+    .form-actions {
+        justify-content: center;
+    }
+    .larger-bg {
+        max-width: 900px !important;
+        min-width: 400px;
+        min-height: 520px;
+        margin: 48px auto !important;
+        padding: 56px 48px !important;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    </style>
+
+</body>
+</html>
+
+
