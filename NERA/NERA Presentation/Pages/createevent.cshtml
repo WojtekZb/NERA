@@ -35,12 +35,12 @@
         </div>
     </header>
     <form method="post">
-    <input asp-for="EventDto.Title" />
-    <textarea asp-for="EventDto.Description"></textarea>
-    <input asp-for="EventDto.Date" type="datetime-local" />
-    <input asp-for="EventDto.Location" />
-    <input asp-for="EventDto.Capacity" type="number" />
-    <input asp-for="EventDto.Cost" type="number" step="0.01" />
+    <input asp-for="Event.Title" />
+    <textarea asp-for="Event.Description"></textarea>
+    <input asp-for="Event.Date" type="datetime-local" />
+    <input asp-for="Event.Location" />
+    <input asp-for="Event.Capacity" type="number" />
+    <input asp-for="Event.Cost" type="number" step="0.01" />
     <button type="submit">Create Event</button>
     </form>
 

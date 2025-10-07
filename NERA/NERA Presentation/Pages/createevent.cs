@@ -15,22 +15,13 @@ namespace NERA_Presentation.Pages
         }
 
         [BindProperty]
-        public Event EventDto { get; set; }
+        public Event Event { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid) return Page();
-
-            try
-            {
-                var createdEvent = await _service.CreateEventAsync(EventDto);
-                return RedirectToPage("Details", new { id = createdEvent.Id });
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", $"Error: {ex.Message}");
-                return Page();
-            }
+            await _service.CreateEventAsync(Event);
+            return RedirectToPage("Index");
         }
+
     }
 }

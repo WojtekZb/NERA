@@ -3,6 +3,7 @@ namespace Domain.Entities
 {
     public class Registration
     {
+        public int RegistrationId { get; set; }
         public int UserId { get; set; }
         public required User User { get; set; }
         public int EventId { get; set; }

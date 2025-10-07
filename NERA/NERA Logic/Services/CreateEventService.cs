@@ -16,6 +16,7 @@ namespace Logic.Services
         {
             var evenement = new Event
             {
+                Id = ev.Id,
                 Title = ev.Title,
                 Date = ev.Date,
                 Description = ev.Description,
