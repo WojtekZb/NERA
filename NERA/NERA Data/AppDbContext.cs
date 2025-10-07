@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data
 {
@@ -11,15 +7,15 @@ namespace Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<Event> Events => Set<Event>();
-        public DbSet<User> Users => Set<User>();
-        public DbSet<Registration> Registrations => Set<Registration>();
+        // Define DbSet properties for your entities
+        public DbSet<Event> Events { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Registration> Registrations { get; set; }
 
-
-        protected override void OnModelCreating(ModelBuilder b)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            b.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+            // Apply configurations from the same assembly
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
-
     }
 }
