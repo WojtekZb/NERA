@@ -21,6 +21,7 @@ namespace Data.Repositories
         {
             _context.Events.Add(evenement);
             await _context.SaveChangesAsync();
+            Console.WriteLine("Saving event to DB: " + evenement.Title);
             return evenement;
         }
     }

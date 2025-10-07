@@ -12,17 +12,19 @@ namespace Logic.Services
             _repo = repo;
         }
 
-        public async Task<Event> CreateEventAsync(Event eventdto)
+        public async Task<Event> CreateEventAsync(Event ev)
         {
             var evenement = new Event
             {
-                Title = eventdto.Title,
-                Date = eventdto.Date,
-                Description = eventdto.Description,
-                Cost = eventdto.Cost,
-                Capacity = eventdto.Capacity,
-                Location = eventdto.Location
+                Title = ev.Title,
+                Date = ev.Date,
+                Description = ev.Description,
+                Cost = ev.Cost,
+                Capacity = ev.Capacity,
+                Location = ev.Location
             };
+
+            Console.WriteLine("CreateEventService called");
 
             return await _repo.SaveAsync(evenement);
         }

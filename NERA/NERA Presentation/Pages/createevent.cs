@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace NERA_Presentation.Pages
 {
-    // Presentation/Pages/Events/Create.cshtml.cs
     public class Index1Model : PageModel
     {
         private readonly CreateEventService _service;
@@ -22,8 +21,16 @@ namespace NERA_Presentation.Pages
         {
             if (!ModelState.IsValid) return Page();
 
-            var createdEvent = await _service.CreateEventAsync(EventDto);
-            return RedirectToPage("Details", new { id = createdEvent.Id });
+            try
+            {
+                var createdEvent = await _service.CreateEventAsync(EventDto);
+                return RedirectToPage("Details", new { id = createdEvent.Id });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Error: {ex.Message}");
+                return Page();
+            }
         }
     }
 }

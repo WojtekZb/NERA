@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/Index1"
 @model NERA_Presentation.Pages.Index1Model
 @{
     ViewData["Title"] = "NERA - EVENT CREATER";
@@ -34,6 +34,16 @@
             </div>
         </div>
     </header>
+    <form method="post">
+    <input asp-for="EventDto.Title" />
+    <textarea asp-for="EventDto.Description"></textarea>
+    <input asp-for="EventDto.Date" type="datetime-local" />
+    <input asp-for="EventDto.Location" />
+    <input asp-for="EventDto.Capacity" type="number" />
+    <input asp-for="EventDto.Cost" type="number" step="0.01" />
+    <button type="submit">Create Event</button>
+    </form>
+
     <main class="container">
         <h1 class="page-title">Create Event</h1>
         <sl-card class="panel form-card form-shell large-centered-form larger-bg">
@@ -83,25 +93,38 @@
         locationRef.addEventListener('sl-change', toggleLocationText);
 
         // Basic submit handler (no backend)
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
           e.preventDefault();
-          const location = locationRef.value === 'other' ? (locationText.value || '') : locationRef.value;
+
+          const location = locationRef.value === 'other' ? locationText.value : locationRef.value;
           const payload = {
             title: document.getElementById('title').value.trim(),
             description: document.getElementById('description').value.trim(),
-            datetime: document.getElementById('datetime').value,
+            date: document.getElementById('datetime').value,
             location,
-            cost: document.getElementById('cost').value,
-            capacity: document.getElementById('capacity').value
+            cost: parseFloat(document.getElementById('cost').value),
+            capacity: parseInt(document.getElementById('capacity').value)
           };
-          if(!payload.title || !payload.description || !payload.datetime || !payload.location){
-            form.reportValidity?.();
-            return;
-          }
-          console.log('Form ready:', payload);
-        });
 
-        toggleLocationText();
+          try {
+            fetch("/Index1", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+
+
+            const result = await response.json();
+            if (response.ok && result.success) {
+              window.location.href = `/Events/Details?id=${result.id}`;
+            } else {
+              alert(result.message || 'Failed to save event');
+            }
+          } catch (err) {
+            console.error('Error:', err);
+            alert('Something went wrong while saving the event.');
+          }
+        });
     </script>
 
     <style>
