@@ -1,13 +1,14 @@
 /*
   CGI NEXT Event Manager - Global Styles
-  Languages used: Static HTML + Shoelace(testing) + Vaadin Date Picker (not yet)
+  Language: English
+  Technologies: Static HTML + Shoelace + Vaadin Date Picker (not yet)
 */
 
 :root {
     --brand-1: #5236ab;
     --brand-2: #e41937;
-    --brand-1-bright: #6b55d6; /* lighter for badges */
-    --brand-2-bright: #ff4b5f; /* lighter for badges */
+    --brand-1-bright: #6b55d6;
+    --brand-2-bright: #ff4b5f;
     --bg: #ffffff;
     --text: #111111;
     --muted: #6b7280;
@@ -16,13 +17,13 @@
     --shadow: 0 8px 24px rgba(17,17,17,.08);
 }
 
-/* Reset-ish */
+/* Reset */
 * {
-    box-sizing: border-box
+    box-sizing: border-box;
 }
 
 html, body {
-    height: 100%
+    height: 100%;
 }
 
 body {
@@ -33,99 +34,93 @@ body {
     line-height: 1.65;
 }
 
-    /* Subtle page background decoration */
-    body::before {
-        content: "";
-        position: fixed;
-        inset: -20% -10% auto -10%;
-        height: 46vh;
-        pointer-events: none;
-        z-index: -1;
-        background: radial-gradient(60% 60% at 10% 10%, rgba(82,54,171,.08), transparent 60%), radial-gradient(50% 50% at 90% 0%, rgba(228,25,55,.08), transparent 60%);
-        filter: blur(0.2px);
-    }
+body::before {
+    content: "";
+    position: fixed;
+    inset: -20% -10% auto -10%;
+    height: 46vh;
+    pointer-events: none;
+    z-index: -1;
+    background: radial-gradient(60% 60% at 10% 10%, rgba(82,54,171,.08), transparent 60%), radial-gradient(50% 50% at 90% 0%, rgba(228,25,55,.08), transparent 60%);
+    filter: blur(0.2px);
+}
 
-/* Layout */
 .container {
     width: 100%;
     max-width: 1120px;
     margin: 0 auto;
-    padding: 28px
+    padding: 28px;
 }
 
-/* Sticky Header */
 .site-header {
     position: sticky;
     top: 0;
     z-index: 50;
     background: #fff;
-    box-shadow: 0 1px 0 rgba(17,17,17,.06)
+    box-shadow: 0 1px 0 rgba(17,17,17,.06);
 }
 
-    .site-header::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, var(--brand-1), var(--brand-2), transparent)
-    }
+.site-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--brand-1), var(--brand-2), transparent);
+}
 
-    .site-header .inner {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 14px 24px
-    }
+.site-header .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 24px;
+}
 
 .brand {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: 700
+    font-weight: 700;
 }
 
-    .brand .logo {
-        width: 22px;
-        height: 22px
-    }
+.brand .logo {
+    width: 22px;
+    height: 22px;
+}
 
-    .brand .name {
-        font-size: 15px
-    }
+.brand .name {
+    font-size: 15px;
+}
 
 .header-actions {
     display: flex;
-    gap: 8px
+    gap: 8px;
 }
 
-/* Accent elements */
 .accent {
     background: var(--gradient);
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent
+    color: transparent;
 }
 
-/* Buttons: gradient helper via ::part(base) */
 sl-button.btn-gradient::part(base) {
     background: var(--gradient);
     color: #fff;
     border: none;
 }
 
-    sl-button.btn-gradient::part(base):hover {
-        filter: brightness(1.05);
-        transform: translateY(-1px)
-    }
+sl-button.btn-gradient::part(base):hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
 
-    sl-button.btn-gradient::part(base):active {
-        transform: translateY(0)
-    }
+sl-button.btn-gradient::part(base):active {
+    transform: translateY(0);
+}
 
-/* Square, bordered buttons (default for header) */
 .header-actions sl-button:not(.btn-gradient)::part(base) {
     background: #fff;
     color: var(--text);
@@ -134,37 +129,36 @@ sl-button.btn-gradient::part(base) {
     box-shadow: none;
 }
 
-    .header-actions sl-button:not(.btn-gradient)::part(base):hover {
-        background: #f9fafb;
-        border-color: #d1d5db
-    }
+.header-actions sl-button:not(.btn-gradient)::part(base):hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
 
-/* Page sections */
 .page-title {
     font-size: 26px;
     font-weight: 800;
     letter-spacing: -0.01em;
-    margin: 20px 0 18px
+    margin: 20px 0 18px;
 }
 
 .section {
-    margin-block: 16px 24px
+    margin-block: 16px 24px;
 }
 
 .controls {
     display: grid;
     gap: 12px;
     grid-template-columns: 1fr;
-    align-items: end
+    align-items: end;
 }
 
-    .controls .control--search {
-        grid-column: 1 / -1
-    }
+.controls .control--search {
+    grid-column: 1 / -1;
+}
 
-    .controls .control--actions {
-        justify-self: end
-    }
+.controls .control--actions {
+    justify-self: end;
+}
 
 .results-bar {
     display: flex;
@@ -172,27 +166,26 @@ sl-button.btn-gradient::part(base) {
     gap: 10px;
     color: var(--muted);
     font-size: 13px;
-    margin-top: 6px
+    margin-top: 6px;
 }
 
-    .results-bar sl-badge::part(base) {
-        font-weight: 700
-    }
+results-bar sl-badge::part(base) {
+    font-weight: 700;
+}
 
 sl-card.panel {
     border-radius: var(--radius);
-    box-shadow: var(--shadow)
+    box-shadow: var(--shadow);
 }
 
-    sl-card.panel::part(base) {
-        border-radius: var(--radius)
-    }
+sl-card.panel::part(base) {
+    border-radius: var(--radius);
+}
 
-    sl-card.panel .controls {
-        padding-top: 4px
-    }
+sl-card.panel .controls {
+    padding-top: 4px;
+}
 
-/* Controls (filters) with square corners */
 .panel .controls sl-input::part(form-control-input),
 .panel .controls sl-select::part(form-control-input),
 .panel .controls sl-textarea::part(form-control-input) {
@@ -207,50 +200,48 @@ sl-card.panel {
     border-radius: 0;
 }
 
-/* Make select dropdown items larger to avoid clipping */
 sl-menu-item::part(base) {
     border-radius: 8px;
     padding: 10px 12px;
     font-size: 15px;
 }
 
-/* Cards grid */
 .events-grid {
     display: grid;
     gap: 20px;
-    grid-template-columns: 1fr
+    grid-template-columns: 1fr;
 }
 
 sl-card.event-card {
     border-radius: var(--radius);
     box-shadow: none;
-    overflow: hidden
+    overflow: hidden;
 }
 
-    sl-card.event-card::part(base) {
-        border: 1px solid #e5e7eb;
-        transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
-        padding: 18px 18px 16px;
-    }
+sl-card.event-card::part(base) {
+    border: 1px solid #e5e7eb;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    padding: 18px 18px 16px;
+}
 
-    sl-card.event-card:hover::part(base) {
-        border-color: #cbd5e1;
-        box-shadow: var(--shadow);
-        transform: translateY(-2px);
-    }
+sl-card.event-card:hover::part(base) {
+    border-color: #cbd5e1;
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
 
 .event-card .accent-bar {
     height: 4px;
     background: var(--gradient);
     margin: -0.75rem -0.75rem 12px;
     border-top-left-radius: var(--radius);
-    border-top-right-radius: var(--radius)
+    border-top-right-radius: var(--radius);
 }
 
 .event-card h2 {
     margin: 0 0 6px;
     font-size: 20px;
-    letter-spacing: -0.01em
+    letter-spacing: -0.01em;
 }
 
 .event-header {
@@ -258,7 +249,7 @@ sl-card.event-card {
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 6px
+    margin-bottom: 6px;
 }
 
 .event-meta {
@@ -266,35 +257,34 @@ sl-card.event-card {
     font-size: 14px;
     display: grid;
     gap: 8px;
-    margin: 8px 0 14px
+    margin: 8px 0 14px;
 }
 
 .event-line {
     display: flex;
     align-items: center;
-    gap: 8px
+    gap: 8px;
 }
 
-    .event-line sl-icon {
-        color: #9aa0a6;
-        font-size: 16px
-    }
+.event-line sl-icon {
+    color: #9aa0a6;
+    font-size: 16px;
+}
 
 .event-actions {
     display: flex;
     align-items: center;
-    justify-content: flex-start
+    justify-content: flex-start;
 }
 
-    .event-actions sl-button::part(base) {
-        width: 100%;
-        height: 48px;
-        font-weight: 700;
-        font-size: 15px;
-        padding: 0 20px;
-    }
+.event-actions sl-button::part(base) {
+    width: 100%;
+    height: 48px;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 0 20px;
+}
 
-/* Register button: gradient border that fills on hover */
 sl-button.btn-register::part(base) {
     position: relative;
     color: var(--brand-1);
@@ -328,29 +318,26 @@ sl-button.btn-register::part(base):hover {
 }
 
 sl-button.btn-register::part(base):active {
-    transform: translateY(0)
+    transform: translateY(0);
 }
 
 sl-button.btn-register::part(prefix) {
-    margin-right: 8px
+    margin-right: 8px;
 }
 
-/* Optional gentle pulse to draw attention */
 .pulse {
     animation: pulseGlow 2.2s ease-in-out infinite;
 }
 
 @keyframes pulseGlow {
     0%,100% {
-        box-shadow: 0 6px 14px rgba(82,54,171,.12)
+        box-shadow: 0 6px 14px rgba(82,54,171,.12);
     }
-
     50% {
-        box-shadow: 0 10px 24px rgba(228,25,55,.20)
+        box-shadow: 0 10px 24px rgba(228,25,55,.20);
     }
 }
 
-/* Details button: monochrome gradient variant */
 sl-button.btn-details::part(base) {
     position: relative;
     color: #111;
@@ -368,16 +355,16 @@ sl-button.btn-details::part(base) {
     gap: 8px;
 }
 
-    sl-button.btn-details::part(base):hover {
-        color: #fff;
-        background-image: linear-gradient(135deg,#111111,#6b7280), linear-gradient(135deg,#111111,#6b7280);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 24px rgba(17,17,17,.25);
-    }
+sl-button.btn-details::part(base):hover {
+    color: #fff;
+    background-image: linear-gradient(135deg,#111111,#6b7280), linear-gradient(135deg,#111111,#6b7280);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(17,17,17,.25);
+}
 
-    sl-button.btn-details::part(base):active {
-        transform: translateY(0)
-    }
+sl-button.btn-details::part(base):active {
+    transform: translateY(0);
+}
 
 sl-button.btn-details::part(label) {
     flex: 1;
@@ -387,95 +374,75 @@ sl-button.btn-details::part(label) {
     text-align: center;
 }
 
-/* Form */
-.form-shell {
-    max-width: 760px;
-    margin: 26px auto
+/* --- FORM STYLES --- */
+
+/* Center and enlarge the form card */
+.large-centered-form.larger-bg {
+    max-width: 900px !important;
+    min-width: 400px;
+    min-height: 520px;
+    margin: 48px auto !important;
+    padding: 56px 48px !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .form-grid {
-    display: grid;
-    gap: 14px
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.form-grid sl-input,
+.form-grid sl-textarea,
+.form-grid sl-select {
+    width: 100%;
+    min-width: 0;
+    display: block;
+}
+
+.form-row {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 0;
+    width: 100%;
+}
+.form-row > sl-input,
+.form-row > sl-select {
+    flex: 1 1 0;
+    min-width: 0;
 }
 
 .form-actions {
     display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 6px
+    justify-content: center;
+    gap: 18px;
+    margin-top: 10px;
 }
 
-.form-grid .full {
-    grid-column: 1 / -1
-}
-
-/* Accent bar for generic cards (used on form card) */
-.form-card .accent-bar {
-    height: 4px;
-    background: var(--gradient);
-    margin: -0.75rem -0.75rem 12px;
-    border-top-left-radius: var(--radius);
-    border-top-right-radius: var(--radius)
-}
-
-/* Inputs / selects square + bordered */
-sl-input::part(base), sl-textarea::part(base), sl-select::part(base) {
-    border-radius: var(--radius);
-}
-
-sl-input::part(form-control-input), sl-textarea::part(form-control-input), sl-select::part(form-control-input) {
-    border: 1px solid #e5e7eb;
-    border-radius: var(--radius);
-    background: #fff;
-}
-
-    sl-input::part(form-control-input):hover, sl-textarea::part(form-control-input):hover, sl-select::part(form-control-input):hover {
-        border-color: #d1d5db
+/* Responsive for form */
+@media (max-width: 900px) {
+    .large-centered-form.larger-bg {
+        max-width: 98vw !important;
+        padding: 32px 8vw !important;
     }
-
-/* Select dropdown panel and items */
-sl-select::part(panel) {
-    border: 1px solid #e5e7eb;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-}
-
-sl-menu-item::part(base) {
-    border-radius: 8px
-}
-
-    sl-menu-item::part(base):hover {
-        background: #f3f4f6
+    .form-row {
+        flex-direction: column;
+        gap: 18px;
     }
-
-/* Vaadin date picker theming (rounded square + border) */
-vaadin-date-picker {
-    --vaadin-input-field-border-radius: 10px;
-    --vaadin-input-field-border-width: 1px;
-    --vaadin-input-field-border-color: #e5e7eb;
-    --lumo-border-radius-m: 10px;
 }
 
-/* Better focus ring */
-sl-button::part(base), sl-input::part(form-control-input), sl-textarea::part(form-control-input), sl-select::part(form-control-input) {
-    transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease;
-}
-
-sl-input:focus-within::part(form-control-input), sl-textarea:focus-within::part(form-control-input), sl-select:focus-within::part(form-control-input) {
-    border-color: #c4b5fd;
-    box-shadow: 0 0 0 3px rgba(82,54,171,.15);
-}
-
-/* Utilities */
 .muted {
-    color: var(--muted)
+    color: var(--muted);
 }
 
 .spacer-24 {
-    height: 24px
+    height: 24px;
 }
 
-/* Badges accent via gradient for important statuses */
 sl-badge.gradient::part(base) {
     background: linear-gradient(135deg,var(--brand-1-bright),var(--brand-2-bright));
     color: #fff;
@@ -488,31 +455,138 @@ sl-badge.gradient::part(base) {
     box-shadow: 0 4px 12px rgba(82,54,171,.18);
 }
 
-/* Responsive */
 @media (min-width:600px) {
-    .controls {
-        grid-template-columns: 1fr 220px
+    .controls {                 
+        grid-template-columns: 1fr 220px;
     }
-
     .events-grid {
-        grid-template-columns: 1fr 1fr
+        grid-template-columns: 1fr 1fr;
     }
 }
 
 @media (min-width:900px) {
     .controls {
-        grid-template-columns: 1.4fr 0.8fr 0.8fr 0.6fr
+        grid-template-columns: 1.4fr 0.8fr 0.8fr 0.6fr;
     }
-
-        .controls .control--search {
-            grid-column: auto
-        }
-
+    .controls .control--search {
+        grid-column: auto;
+    }
     .events-grid {
-        grid-template-columns: 1fr 1fr 1fr
+        grid-template-columns: 1fr 1fr 1fr;
     }
-
     .form-grid {
-        grid-template-columns: repeat(2, 1fr)
+        flex-direction: column;
+        gap: 28px;
     }
+}
+
+/* Accent bar for form card */
+.form-card .accent-bar {
+    height: 4px;
+    background: var(--gradient);
+    margin: -0.75rem -0.75rem 24px;
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+}
+
+/* Form title */
+.create-page .page-title {
+    color: var(--brand-1);
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+/* --- Shoelace Form Visual Fixes --- */
+
+/* Make Shoelace form controls fill the width and align vertically */
+.form-grid sl-input,
+.form-grid sl-textarea,
+.form-grid sl-select {
+    width: 100%;
+    min-width: 0;
+    display: block;
+}
+
+.form-row {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 0;
+    width: 100%;
+}
+.form-row > sl-input,
+.form-row > sl-select {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 10px;
+}
+
+/* Shoelace label color using ::part(label) */
+.form-grid sl-input::part(label),
+.form-grid sl-textarea::part(label),
+.form-grid sl-select::part(label) {
+    color: var(--brand-2) !important;
+    font-weight: 600;
+    font-size: 1.08rem;
+}
+
+/* Shoelace input background and border - update for light gray border and no border radius */
+.form-grid sl-input::part(form-control-input),
+.form-grid sl-textarea::part(form-control-input),
+.form-grid sl-select::part(form-control-input) {
+    background: #fff;
+    border: 1.5px solid #e5e7eb !important; /* light gray */
+    border-radius: 0 !important;
+    padding: 14px 18px !important;
+}
+
+/* Save/Cancel buttons */
+.form-actions sl-button.btn-gradient::part(base) {
+    background: var(--gradient);
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    box-shadow: 0 2px 8px rgba(82,54,171,.10);
+}
+.form-actions sl-button.btn-gradient::part(base):hover {
+    filter: brightness(1.08);
+    box-shadow: 0 4px 16px rgba(82,54,171,.18);
+}
+.form-actions sl-button.btn-outline::part(base) {
+    color: var(--brand-1);
+    border: 2px solid var(--brand-1);
+    background: #fff;
+    font-weight: 600;
+}
+.form-actions sl-button.btn-outline::part(base):hover {
+    background: var(--brand-1-bright);
+    color: #fff;
+    border-color: var(--brand-1-bright);
+}
+
+/* Make Shoelace form controls stack vertically on small screens */
+@media (max-width: 900px) {
+    .form-row {
+        flex-direction: column;
+        gap: 18px;
+    }
+}
+
+/* Remove extra margin from Shoelace controls */
+.form-grid sl-input,
+.form-grid sl-textarea,
+.form-grid sl-select {
+    margin-bottom: 0 !important;
+}
+
+/* Fix Shoelace button vertical alignment */
+.form-actions sl-button {
+    align-self: center;
 }

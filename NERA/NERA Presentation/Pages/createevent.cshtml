@@ -4,7 +4,7 @@
     ViewData["Title"] = "NERA - EVENT CREATER";
 }
 
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,21 +14,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- Shoelace -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js"></script>
-    <!-- Vaadin Date Picker -->
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@@vaadin/date-picker@24.3.7/vaadin-date-picker.min.js"></script>
     <link rel="stylesheet" href="~/css/style.css" />
-    <link rel="icon" href="assets/" />
+    <link rel="icon" href="assets/favicon.svg" />
 </head>
-<body>
+<body class="create-page">
     <!-- Header -->
     <header class="site-header">
         <div class="inner">
             <a class="brand" asp-page="/Index" aria-label="CGI NERA">
                 <img class="logo" src="assets/logo.svg" alt="Logo" />
-                <span class="name">CGI NEXT <span class="accent">Event Manager</span></span>
+                <span class="name">CGI NEXT <span class="accent"></span></span>
             </a>
             <div class="header-actions">
-                <sl-button size="small" pill>Login</sl-button>
                 <a asp-page="/createevent" style="text-decoration:none">
                     <sl-button size="small" pill class="btn-gradient">Create Event</sl-button>
                 </a>
@@ -37,92 +34,121 @@
             </div>
         </div>
     </header>
-
     <main class="container">
         <h1 class="page-title">Create Event</h1>
-        <div>
+        <sl-card class="panel form-card form-shell large-centered-form larger-bg">
             <div class="accent-bar"></div>
-            <form>
-                <div>
-                    <label for="name">Event Name</label><br>
-                    <input id="name" name="name" type="text" required>
+            <form id="eventForm" class="form-grid" novalidate>
+                <sl-input id="title" name="title" label="Event Title" placeholder="Enter the title" required class="full"></sl-input>
+
+                <sl-textarea id="description" name="description" label="Description" placeholder="Describe the event" rows="5" required class="full"></sl-textarea>
+
+                <div class="form-row">
+                    <sl-input id="datetime" name="datetime" label="Date & Time" type="datetime-local" required class="half"></sl-input>
+                    <sl-select id="locationRef" name="locationRef" label="Location (list)" placeholder="Select a venue" hoist class="half">
+                        <sl-option value="">— Select —</sl-option>
+                        <sl-option value="Amsterdam">Amsterdam</sl-option>
+                        <sl-option value="Eindhoven">Eindhoven</sl-option>
+                        <sl-option value="Online">Online</sl-option>
+                        <sl-option value="other">Other…</sl-option>
+                    </sl-select>
                 </div>
-                <div>
-                    <label for="date">Date</label><br>
-                    <vaadin-date-picker id="date" name="date" required></vaadin-date-picker>
+
+                <sl-input id="locationText" name="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:none"></sl-input>
+
+                <div class="form-row">
+                    <sl-input id="capacity" name="capacity" label="Max Registrations (Capacity)" type="number" min="0" class="half"></sl-input>
+                    <sl-input id="cost" name="cost" label="Cost (€)" type="number" min="0" step="0.01" class="half"></sl-input>
                 </div>
-                <div>
-                    <label for="time">Time</label><br>
-                    <input id="time" name="time" type="time">
-                </div>
-                <div>
-                    <label for="location">Location</label><br>
-                    <input id="location" name="location" type="text">
-                </div>
-                <div>
-                    <label for="category">Category</label><br>
-                    <select id="category" name="category">
-                        <option value="">Select</option>
-                        <option value="tech">Technology</option>
-                        <option value="health">Health</option>
-                        <option value="sustainability">Sustainability</option>
-                        <option value="business">Business</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="capacity">Capacity</label><br>
-                    <input id="capacity" name="capacity" type="number" min="0">
-                </div>
-                <div>
-                    <label for="status">Status</label><br>
-                    <select id="status" name="status">
-                        <option value="draft">Draft</option>
-                        <option value="open">Open for Registration</option>
-                        <option value="closed">Closed</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="description">Description</label><br>
-                    <textarea id="description" name="description" rows="5"></textarea>
-                </div>
-                <div>
-                    <button type="submit">Save</button>
-                    <a href="index.html">Cancel</a>
+                <div class="form-actions full">
+                    <sl-button type="primary" class="btn-gradient" submit>Save</sl-button>
+                    <a href="index.html" style="text-decoration:none"><sl-button class="btn-outline">Cancel</sl-button></a>
                 </div>
             </form>
-        </div>
+        </sl-card>
     </main>
+
     <script>
-        // Get events from localStorage (CREATE EVENT FUNCTION)
-        function getEvents() {
-            const stored = localStorage.getItem('events');
-            if (stored) return JSON.parse(stored);
-            return [
-                { title: 'Tech Innovation Conference', date: 'Dec 5, 2026', location: 'Amsterdam', city: 'Amsterdam', status: 'Open for Registration' },
-                { title: 'Global Health Summit', date: 'Jan 15, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Open for Registration' },
-                { title: 'Sustainability Forum', date: 'Mar 10, 2026', location: 'Other Location', city: 'Other Location', status: 'Open for Registration' },
-                { title: 'AI in Finance', date: 'Apr 22, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Closed' }
-            ];
-        }
+        const locationRef = document.getElementById('locationRef');
+        const locationText = document.getElementById('locationText');
+        const form = document.getElementById('eventForm');
 
-        function saveEvent(event) {
-            const events = getEvents();
-            events.push(event);
-            localStorage.setItem('events', JSON.stringify(events));
+        // Toggle free-text location when selecting "Other…"
+        function toggleLocationText(){
+          const useText = locationRef.value === 'other';
+          locationText.style.display = useText ? '' : 'none';
+          locationText.toggleAttribute('required', useText);
+          if(useText) locationText.focus();
         }
+        locationRef.addEventListener('sl-change', toggleLocationText);
 
-        document.querySelector('form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const event = {
-                title: document.getElementById('name').value,
-                date: document.getElementById('date').value,
-                location: document.getElementById('location').value,
-                city: document.getElementById('location').value,
-                status: document.getElementById('status').selectedOptions[0].text
-            };
-            saveEvent(event);
-            window.location.href = '/Index'; 
+        // Basic submit handler (no backend)
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const location = locationRef.value === 'other' ? (locationText.value || '') : locationRef.value;
+          const payload = {
+            title: document.getElementById('title').value.trim(),
+            description: document.getElementById('description').value.trim(),
+            datetime: document.getElementById('datetime').value,
+            location,
+            cost: document.getElementById('cost').value,
+            capacity: document.getElementById('capacity').value
+          };
+          if(!payload.title || !payload.description || !payload.datetime || !payload.location){
+            form.reportValidity?.();
+            return;
+          }
+          console.log('Form ready:', payload);
         });
+
+        toggleLocationText();
     </script>
+
+    <style>
+    /* Center the form and increase its size */
+    .large-centered-form {
+        max-width: 600px !important;
+        min-width: 350px;
+        margin: 48px auto !important;
+        padding: 40px 36px !important;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-grid sl-input,
+    .form-grid sl-textarea,
+    .form-grid sl-select {
+        font-size: 1.15rem;
+    }
+    .form-row {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 0;
+    }
+    .form-row .half {
+        flex: 1 1 0;
+    }
+    .form-grid .full {
+        grid-column: 1 / -1;
+    }
+    .form-actions {
+        justify-content: center;
+    }
+    .larger-bg {
+        max-width: 900px !important;
+        min-width: 400px;
+        min-height: 520px;
+        margin: 48px auto !important;
+        padding: 56px 48px !important;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    </style>
+
 </body>
 </html>
+
+
