@@ -1,10 +1,142 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+   ViewData["Title"] = "NERA";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Shoelace CDN -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js"></script>
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="icon" href="assets/" />
+</head>
+<body>
+    <!-- Header: brand at left, quick actions at right -->
+    <header class="site-header">
+        <div class="inner">
+            <a class="brand" asp-page="/Index" aria-label="CGI NERA">
+                <img class="logo" src="assets/logo.svg" alt="Logo" />
+                <span class="name">CGI NERA <span class="accent"></span></span>
+            </a>
+            <div class="header-actions">
+                <sl-button size="small" pill>Login</sl-button>
+                <a asp-page="/createevent" style="text-decoration:none">
+                    <sl-button size="small" pill class="btn-gradient">Create Event</sl-button>
+                </a>
+                <sl-button size="small" pill>Event Registration</sl-button>
+                <sl-button size="small" pill>Check-in</sl-button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Upcoming Events</h1>
+
+        <!-- Filters Panel: search, status and city selectors -->
+        <sl-card class="panel section">
+            <div class="controls">
+                <!-- Free-text search over the event title -->
+                <sl-input id="search" placeholder="Search events…" clearable></sl-input>
+                <!-- Status filter: All/Open/Closed -->
+                <sl-select id="statusFilter" placeholder="Status">
+                    <sl-option value="all" selected>All</sl-option>
+                    <sl-option value="open">Open for Registration</sl-option>
+                    <sl-option value="closed">Closed</sl-option>
+                </sl-select>
+                <!-- City filter (client-side only) -->
+                <sl-select id="cityFilter" placeholder="City">
+                    <sl-option value="all" selected>All Cities</sl-option>
+                    <sl-option value="Amsterdam">Amsterdam</sl-option>
+                    <sl-option value="Eindhoven">Eindhoven</sl-option>
+                    <sl-option value="Other Location">Other Location</sl-option>
+                </sl-select>
+            </div>
+        </sl-card>
+
+        <!-- Events Grid: responsive 1/2/3-column layout -->
+        <section id="events" class="events-grid"></section>
+    </main>
+
+    <script>
+        // Get events from localStorage 
+        function getEvents() {
+            const stored = localStorage.getItem('events');
+            if (stored) return JSON.parse(stored);
+            return [
+                { title: 'Tech Innovation Conference', date: 'Dec 5, 2026', location: 'Amsterdam', city: 'Amsterdam', status: 'Open for Registration' },
+                { title: 'Global Health Summit', date: 'Jan 15, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Open for Registration' },
+                { title: 'Sustainability Forum', date: 'Mar 10, 2026', location: 'Other Location', city: 'Other Location', status: 'Open for Registration' },
+                { title: 'AI in Finance', date: 'Apr 22, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Closed' }
+            ];
+        }
+
+        const eventsRoot = document.getElementById('events');
+        const search = document.getElementById('search');
+        const statusFilter = document.getElementById('statusFilter');
+        const cityFilter = document.getElementById('cityFilter');
+        statusFilter.addEventListener('sl-after-hide', ()=>{});
+        if(!statusFilter.value) statusFilter.value = 'all';
+        if(!cityFilter.value) cityFilter.value = 'all';
+
+        // Render helper: creates one Shoelace <sl-card> per event
+        function render(list){
+          eventsRoot.innerHTML = '';
+          list.forEach(ev => {
+            const card = document.createElement('sl-card');
+            card.className = 'event-card';
+            const isOpen = ev.status && ev.status.toLowerCase().includes('open');
+            card.innerHTML = `
+              <div class="accent-bar"></div>
+              <h2>${ev.title}</h2>
+              <div class="event-meta">
+                <div><strong>Date:</strong> ${ev.date}</div>
+                <div><strong>Location:</strong> ${ev.location}</div>
+                <div><strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}</div>
+              </div>
+              <div class="event-actions">
+                <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'}>${isOpen ? 'Register' : 'Details'}</sl-button>
+              </div>
+            `;
+            eventsRoot.appendChild(card);
+          })
+        }
+
+        // Applies client-side filters based on search text, status and city
+        function applyFilters(){
+          const events = getEvents();
+          const term = String(search.value ?? '').trim().toLowerCase();
+          const status = statusFilter.value || 'all';
+          const city = cityFilter.value || 'all';
+          if(term === '' && status === 'all' && city === 'all'){
+            render(events);
+            return;
+          }
+          const filtered = events.filter(e => {
+            const matchesTerm = term === '' || e.title.toLowerCase().includes(term);
+            const matchesStatus = status === 'all' || (status === 'open' ? e.status.toLowerCase().includes('open') : e.status.toLowerCase() === 'closed');
+            const matchesCity = city === 'all' || e.city === city;
+            return matchesTerm && matchesStatus && matchesCity;
+          });
+          render(filtered);
+        }
+
+        // Listen to Shoelace events for live filtering
+        [statusFilter, cityFilter].forEach(el => el.addEventListener('sl-change', applyFilters));
+        search.addEventListener('sl-input', applyFilters);
+        search.addEventListener('sl-clear', applyFilters);
+        search.addEventListener('sl-change', applyFilters);
+
+        // Ensure initial render after components are upgraded
+        window.customElements.whenDefined('sl-select').then(applyFilters);
+
+        // Initial render
+        render(getEvents());
+    </script>
+</body>
+</html>

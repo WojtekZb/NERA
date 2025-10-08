@@ -1,10 +1,5 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Repositories
 {
@@ -21,6 +16,7 @@ namespace Data.Repositories
         {
             _context.Events.Add(evenement);
             await _context.SaveChangesAsync();
+            Console.WriteLine("Saving event to DB: " + evenement.Title);
             return evenement;
         }
     }

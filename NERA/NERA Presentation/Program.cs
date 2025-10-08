@@ -13,11 +13,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
 
-// Register domain interfaces and their implementations
 builder.Services.AddScoped<ICreateEventRepo, CreateEventRepo>();
-
-// Register application services
 builder.Services.AddScoped<CreateEventService>();
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 

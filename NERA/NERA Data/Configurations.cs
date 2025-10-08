@@ -14,7 +14,6 @@ public class EventConfig : IEntityTypeConfiguration<Event>
 {
     public void Configure(EntityTypeBuilder<Event> e)
     {
-        e.HasKey(x => x.Id);
         e.Property(x => x.Title).IsRequired().HasMaxLength(200);
         e.Property(x => x.Date).IsRequired();
         e.Property(x => x.Location).HasMaxLength(200);
@@ -41,6 +40,7 @@ public class RegistrationConfig : IEntityTypeConfiguration<Registration>
 {
     public void Configure(EntityTypeBuilder<Registration> e)
     {
+        e.HasKey(x => x.RegistrationId);
         e.Property(x => x.UserId).IsRequired();
         e.HasOne(x => x.User)
             .WithMany(u => u.Registration)
