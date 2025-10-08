@@ -105,26 +105,6 @@
             cost: parseFloat(document.getElementById('cost').value),
             capacity: parseInt(document.getElementById('capacity').value)
           };
-
-          try {
-            fetch("/Index1", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload)
-            });
-
-
-            const result = await response.json();
-            if (response.ok && result.success) {
-              window.location.href = `/Events/Details?id=${result.id}`;
-            } else {
-              alert(result.message || 'Failed to save event');
-            }
-          } catch (err) {
-            console.error('Error:', err);
-            alert('Something went wrong while saving the event.');
-          }
-        });
     </script>
 
     <style>
