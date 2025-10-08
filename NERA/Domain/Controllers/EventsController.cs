@@ -1,17 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices;
+using System.Data;
+using Domain.Entities;
 
 
-namespace YourProjectName.Controllers
+namespace System.Domain.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class EventsController : ControllerBase
     {
-        private readonly YourDbContext _context;
+        private readonly DbContext _context;
 
-        public EventsController(YourDbContext context)
+        public EventsController(DbContext context)
         {
             _context = context;
         }
@@ -19,7 +21,7 @@ namespace YourProjectName.Controllers
         [HttpGet]
         public async Task<IActionResult> GetEvents()
         {
-            var events = await _context.Events.ToListAsync();
+            var events = await _context.Set<Event>().ToListAsync();
             return Ok(events);
         }
     }
