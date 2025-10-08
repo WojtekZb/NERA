@@ -1,19 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices;
-using System.Data;
+using Data;
 using Domain.Entities;
 
 
-namespace System.Domain.Controllers
+namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class EventsController : ControllerBase
     {
-        private readonly DbContext _context;
+        private readonly AppDbContext _context;
 
-        public EventsController(DbContext context)
+        public EventsController(AppDbContext context)
         {
             _context = context;
         }

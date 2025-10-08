@@ -111,8 +111,8 @@
         }
 
         // Applies client-side filters based on search text, status and city
-        function applyFilters(){
-          const events = getEvents();
+        async function applyFilters(){
+          const events = await getEvents();
           const term = String(search.value ?? '').trim().toLowerCase();
           const status = statusFilter.value || 'all';
           const city = cityFilter.value || 'all';
@@ -140,11 +140,11 @@
 
         // Initial render
 
-        async function init() {
-            const events = await getEvents();
+
+        getEvents().then(events => {
             render(events);
-        }
-        init();
+        });
+
 
     </script>
 </body>
