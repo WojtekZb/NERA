@@ -34,28 +34,18 @@
             </div>
         </div>
     </header>
-    <form method="post">
-    <input asp-for="Event.Title" />
-    <textarea asp-for="Event.Description"></textarea>
-    <input asp-for="Event.Date" type="datetime-local" />
-    <input asp-for="Event.Location" />
-    <input asp-for="Event.Capacity" type="number" />
-    <input asp-for="Event.Cost" type="number" step="0.01" />
-    <button type="submit">Create Event</button>
-    </form>
-
     <main class="container">
         <h1 class="page-title">Create Event</h1>
         <sl-card class="panel form-card form-shell large-centered-form larger-bg">
             <div class="accent-bar"></div>
-            <form id="eventForm" class="form-grid" novalidate>
-                <sl-input id="title" name="title" label="Event Title" placeholder="Enter the title" required class="full"></sl-input>
+            <form id="eventForm" class="form-grid" method="post" novalidate>
+                <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full"></sl-input>
 
-                <sl-textarea id="description" name="description" label="Description" placeholder="Describe the event" rows="5" required class="full"></sl-textarea>
+                <sl-textarea id="description" name="Event.Description" label="Description" placeholder="Describe the event" rows="5" required class="full"></sl-textarea>
 
                 <div class="form-row">
-                    <sl-input id="datetime" name="datetime" label="Date & Time" type="datetime-local" required class="half"></sl-input>
-                    <sl-select id="locationRef" name="locationRef" label="Location (list)" placeholder="Select a venue" hoist class="half">
+                    <sl-input id="datetime" name="Event.Date" label="Date & Time" type="datetime-local" required class="half"></sl-input>
+                    <sl-select id="locationRef" name="Event.Location" label="Location (list)" placeholder="Select a venue" hoist class="half">
                         <sl-option value="">— Select —</sl-option>
                         <sl-option value="Amsterdam">Amsterdam</sl-option>
                         <sl-option value="Eindhoven">Eindhoven</sl-option>
@@ -64,14 +54,14 @@
                     </sl-select>
                 </div>
 
-                <sl-input id="locationText" name="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:none"></sl-input>
+                <sl-input id="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:none"></sl-input>
 
                 <div class="form-row">
-                    <sl-input id="capacity" name="capacity" label="Max Registrations (Capacity)" type="number" min="0" class="half"></sl-input>
-                    <sl-input id="cost" name="cost" label="Cost (€)" type="number" min="0" step="0.01" class="half"></sl-input>
+                    <sl-input id="capacity" name="Event.Capacity" label="Max Registrations (Capacity)" type="number" min="0" class="half"></sl-input>
+                    <sl-input id="cost" name="Event.Cost" label="Cost (€)" type="number" min="0" step="0.01" class="half"></sl-input>
                 </div>
                 <div class="form-actions full">
-                    <sl-button type="primary" class="btn-gradient" submit>Save</sl-button>
+                    <sl-button type="submit" class="btn-gradient">Save</sl-button>
                     <a href="index.html" style="text-decoration:none"><sl-button class="btn-outline">Cancel</sl-button></a>
                 </div>
             </form>
@@ -105,26 +95,6 @@
             cost: parseFloat(document.getElementById('cost').value),
             capacity: parseInt(document.getElementById('capacity').value)
           };
-
-          try {
-            fetch("/Index1", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload)
-            });
-
-
-            const result = await response.json();
-            if (response.ok && result.success) {
-              window.location.href = `/Events/Details?id=${result.id}`;
-            } else {
-              alert(result.message || 'Failed to save event');
-            }
-          } catch (err) {
-            console.error('Error:', err);
-            alert('Something went wrong while saving the event.');
-          }
-        });
     </script>
 
     <style>

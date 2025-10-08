@@ -24,9 +24,6 @@ namespace Logic.Services
                 Capacity = ev.Capacity,
                 Location = ev.Location
             };
-
-            Console.WriteLine("CreateEventService called");
-
             return await _repo.SaveAsync(evenement);
         }
     }
