@@ -4,36 +4,7 @@
     ViewData["Title"] = "NERA - EVENT CREATER";
 }
 
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Create Event</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Shoelace -->
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js"></script>
-    <link rel="stylesheet" href="~/css/style.css" />
-    <link rel="icon" href="assets/favicon.svg" />
-</head>
-<body class="create-page">
-    <!-- Header -->
-    <header class="site-header">
-        <div class="inner">
-            <a class="brand" asp-page="/Index" aria-label="CGI NERA">
-                <img class="logo" src="assets/logo.svg" alt="Logo" />
-                <span class="name">CGI NEXT <span class="accent"></span></span>
-            </a>
-            <div class="header-actions">
-                <a asp-page="/createevent" style="text-decoration:none">
-                    <sl-button size="small" pill class="btn-gradient">Create Event</sl-button>
-                </a>
-                <sl-button size="small" pill>Event Registration</sl-button>
-                <sl-button size="small" pill>Check-in</sl-button>
-            </div>
-        </div>
-    </header>
+<div class="create-page">
     <main class="container">
         <h1 class="page-title">Create Event</h1>
         <sl-card class="panel form-card form-shell large-centered-form larger-bg">
@@ -140,8 +111,6 @@
         align-items: center;
     }
     </style>
-
-</body>
-</html>
+</div>
 
 
