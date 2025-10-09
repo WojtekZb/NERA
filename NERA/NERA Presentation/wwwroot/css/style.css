@@ -74,20 +74,21 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    padding: 14px 24px;
+    gap: 4px;
+    padding: 6px 14px; /* tighter header to reduce white space */
 }
 
 .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     font-weight: 700;
 }
 
 .brand .logo {
-    width: 22px;
-    height: 22px;
+    display: block;  /* remove baseline gap */
+    width: 150px;   /* safe width so it doesn't overgrow */
+    height: auto;
 }
 
 .brand .name {
@@ -97,6 +98,7 @@ body::before {
 .header-actions {
     display: flex;
     gap: 8px;
+    align-items: center; /* vertically center buttons and avatar */
 }
 
 .accent {
@@ -110,15 +112,62 @@ sl-button.btn-gradient::part(base) {
     background: var(--gradient);
     color: #fff;
     border: none;
+    height: 36px;
+    border-radius: 9999px !important;
+    padding: 0 16px;
+    font-weight: 700;
+    box-shadow: 0 6px 14px rgba(82,54,171,.18);
+    transition: filter .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+/* Center the label inside header buttons */
+sl-button.btn-gradient::part(label),
+sl-button.btn-ghost::part(label) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 sl-button.btn-gradient::part(base):hover {
-    filter: brightness(1.05);
-    transform: translateY(-1px);
+    filter: brightness(1.06);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(82,54,171,.28);
 }
 
 sl-button.btn-gradient::part(base):active {
     transform: translateY(0);
+    filter: brightness(1.02);
+}
+
+/* Gradient outline ghost buttons */
+sl-button.btn-ghost::part(base) {
+    position: relative;
+    color: var(--brand-1);
+    border: 2px solid transparent;
+    border-radius: 9999px !important;
+    background-image: linear-gradient(#fff,#fff), var(--gradient);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    height: 36px;
+    padding: 0 16px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(17,17,17,.06);
+    transition: color .18s ease, transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+sl-button.btn-ghost::part(base):hover {
+    color: #fff;
+    background-image: var(--gradient), var(--gradient);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(82,54,171,.18);
+}
+sl-button.btn-ghost::part(base):active {
+    transform: translateY(0);
+}
+
+/* Focus rings (keyboard) */
+sl-button.btn-gradient::part(base):focus-visible,
+sl-button.btn-ghost::part(base):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(82,54,171,.15), 0 0 0 6px rgba(228,25,55,.12);
 }
 
 .header-actions sl-button:not(.btn-gradient)::part(base) {
@@ -132,6 +181,16 @@ sl-button.btn-gradient::part(base):active {
 .header-actions sl-button:not(.btn-gradient)::part(base):hover {
     background: #f9fafb;
     border-color: #d1d5db;
+}
+
+/* Ensure avatar matches button height and centers properly */
+sl-avatar::part(base) {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+.header-actions sl-avatar {
+    align-self: center;
 }
 
 .page-title {
