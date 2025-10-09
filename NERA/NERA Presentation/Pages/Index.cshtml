@@ -31,19 +31,22 @@
     <!-- Events Grid: responsive 1/2/3-column layout -->
     <section id="events" class="events-grid"></section>
 </main>
+    <script>
+        // Get events from Database
 
-<script>
-        // Get events from localStorage 
-        function getEvents() {
-            const stored = localStorage.getItem('events');
-            if (stored) return JSON.parse(stored);
-            return [
-                { title: 'Tech Innovation Conference', date: 'Dec 5, 2026', location: 'Amsterdam', city: 'Amsterdam', status: 'Open for Registration' },
-                { title: 'Global Health Summit', date: 'Jan 15, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Open for Registration' },
-                { title: 'Sustainability Forum', date: 'Mar 10, 2026', location: 'Other Location', city: 'Other Location', status: 'Open for Registration' },
-                { title: 'AI in Finance', date: 'Apr 22, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Closed' }
-            ];
+        async function getEvents() {
+            try {
+                const response = await fetch('/api/events');
+                if (!response.ok) throw new Error('Failed to fetch events');
+                const events = await response.json();
+                return events;
+            } catch (error) {
+                console.error('Error fetching events:', error);
+                return [];
+            }
+
         }
+
 
         const eventsRoot = document.getElementById('events');
         const search = document.getElementById('search');
@@ -77,8 +80,8 @@
         }
 
         // Applies client-side filters based on search text, status and city
-        function applyFilters(){
-          const events = getEvents();
+        async function applyFilters(){
+          const events = await getEvents();
           const term = String(search.value ?? '').trim().toLowerCase();
           const status = statusFilter.value || 'all';
           const city = cityFilter.value || 'all';
@@ -105,5 +108,11 @@
         window.customElements.whenDefined('sl-select').then(applyFilters);
 
         // Initial render
-        render(getEvents());
+
+
+        getEvents().then(events => {
+            render(events);
+        });
+
+
     </script>
