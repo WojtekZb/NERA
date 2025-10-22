@@ -18,11 +18,13 @@ namespace Logic.Services
             {
                 Id = ev.Id,
                 Title = ev.Title,
-                Date = ev.Date,
+                StartDate = ev.StartDate,
+                EndDate = ev.EndDate,
                 Description = ev.Description,
                 Cost = ev.Cost,
                 Capacity = ev.Capacity,
-                Location = ev.Location
+                Location = ev.Location,
+                Status = ev.Status
             };
             return await _repo.SaveAsync(evenement);
         }
