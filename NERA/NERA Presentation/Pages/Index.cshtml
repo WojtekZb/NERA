@@ -25,12 +25,26 @@
                 <sl-option value="Eindhoven">Eindhoven</sl-option>
                 <sl-option value="Other Location">Other Location</sl-option>
             </sl-select>
+            <sl-button id="myCalendarBtn" variant="primary" class="btn-calendar">
+                <sl-icon slot="prefix" name="calendar"></sl-icon>
+                My Calendar
+            </sl-button>
         </div>
     </sl-card>
 
     <!-- Events Grid: responsive 1/2/3-column layout -->
     <section id="events" class="events-grid"></section>
 </main>
+
+<!-- Calendar Modal -->
+<sl-dialog id="calendarModal" label="My Calendar" class="calendar-modal">
+    <div id="calendarContent">
+        <!-- Calendar will be populated dynamically -->
+    </div>
+    <div slot="footer" class="modal-footer">
+        <sl-button id="closeCalendar" variant="default">Close</sl-button>
+    </div>
+</sl-dialog>
 
 <!-- Event Details Modal -->
 <sl-dialog id="eventModal" label="Event Details" class="event-details-modal">
@@ -182,6 +196,71 @@
             eventModal.hide();
         });
 
+        // Calendar functionality
+        const calendarModal = document.getElementById('calendarModal');
+        const calendarContent = document.getElementById('calendarContent');
+        const myCalendarBtn = document.getElementById('myCalendarBtn');
+        const closeCalendar = document.getElementById('closeCalendar');
+
+        // Show calendar modal
+        myCalendarBtn.addEventListener('click', () => {
+            showCalendar();
+        });
+
+        // Close calendar modal
+        closeCalendar.addEventListener('click', () => {
+            calendarModal.hide();
+        });
+
+        // Generate calendar
+        function showCalendar() {
+            const events = getEvents();
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth();
+            const currentYear = currentDate.getFullYear();
+            
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+            
+            let calendarHTML = `
+                <div class="calendar-header">
+                    <h3>${monthNames[currentMonth]} ${currentYear}</h3>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+            `;
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                calendarHTML += `
+                    <div class="calendar-day">
+                        <span class="day-number">${day}</span>
+                    </div>
+                `;
+            }
+            
+            calendarHTML += '</div>';
+            
+            calendarContent.innerHTML = calendarHTML;
+            calendarModal.show();
+        }
+
 
         // Initial render
         render(getEvents());
@@ -285,5 +364,111 @@
 
         sl-dialog sl-badge {
             margin-left: 0.5rem;
+        }
+
+        /* Status filter dropdown styling */
+        sl-select::part(display-input) {
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+        }
+
+        sl-select::part(menu) {
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        sl-option {
+            background-color: white;
+            color: #374151;
+            padding: 0.5rem 0.75rem;
+        }
+
+        sl-option:hover {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
+        sl-option[selected] {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        sl-option[selected]:hover {
+            background-color: #2563eb;
+        }
+
+        /* Calendar Modal Styling */
+        .calendar-modal {
+            --width: 600px;
+            --height: auto;
+        }
+
+        .calendar-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .calendar-header h3 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: #e5e7eb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .calendar-day-header {
+            background-color: #f3f4f6;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .calendar-day {
+            background-color: white;
+            padding: 0.75rem;
+            min-height: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .calendar-day:hover {
+            background-color: #f9fafb;
+        }
+
+        .calendar-day.empty {
+            background-color: #f9fafb;
+            cursor: default;
+        }
+
+        .day-number {
+            font-weight: 600;
+            color: #374151;
+        }
+
+
+        .btn-calendar {
+            margin-left: auto;
         }
     </style>
