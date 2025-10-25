@@ -32,6 +32,17 @@
     <section id="events" class="events-grid"></section>
 </main>
 
+<!-- Event Details Modal -->
+<sl-dialog id="eventModal" label="Event Details" class="event-details-modal">
+    <div id="modalContent">
+        <!-- Content will be populated dynamically -->
+    </div>
+    <div slot="footer" class="modal-footer">
+        <sl-button id="registerBtn" variant="primary" class="btn-gradient">Register</sl-button>
+        <sl-button id="closeModal" variant="default">Close</sl-button>
+    </div>
+</sl-dialog>
+
 <script>
         // Get events from localStorage 
         function getEvents() {
@@ -69,9 +80,16 @@
                 <div><strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}</div>
               </div>
               <div class="event-actions">
-                <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'}>${isOpen ? 'Register' : 'Details'}</sl-button>
+                <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'} data-event-id="${ev.title}">${isOpen ? 'Register' : 'Details'}</sl-button>
+                <sl-icon name="trash" class="trash-icon" data-event-id="${ev.title}"></sl-icon>
               </div>
             `;
+            
+            // Add click handlers to the buttons
+            const registerButton = card.querySelector('.btn-register, .btn-details');
+            
+            registerButton.addEventListener('click', () => showEventDetails(ev));
+            
             eventsRoot.appendChild(card);
           })
         }
@@ -104,6 +122,168 @@
         // Ensure initial render after components are upgraded
         window.customElements.whenDefined('sl-select').then(applyFilters);
 
+        // Modal functionality
+        const eventModal = document.getElementById('eventModal');
+        const modalContent = document.getElementById('modalContent');
+        const registerBtn = document.getElementById('registerBtn');
+        const closeModal = document.getElementById('closeModal');
+        let currentEvent = null;
+
+        // Show event details in modal
+        function showEventDetails(event) {
+            currentEvent = event;
+            const isOpen = event.status && event.status.toLowerCase().includes('open');
+            
+            modalContent.innerHTML = `
+                <div class="event-details">
+                    <h2>${event.title}</h2>
+                    <div class="event-info">
+                        <div class="info-row">
+                            <strong>Date:</strong> ${event.date}
+                        </div>
+                        <div class="info-row">
+                            <strong>Location:</strong> ${event.location}
+                        </div>
+                        <div class="info-row">
+                            <strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}
+                        </div>
+                        <div class="info-row">
+                            <strong>Description:</strong> 
+                            <p>Join us for an exciting event featuring industry leaders and innovative discussions. This event promises to deliver valuable insights and networking opportunities.</p>
+                        </div>
+                        <div class="info-row">
+                            <strong>Cost:</strong> €${event.cost || ' N/A'}
+                        </div>
+                        <div class="info-row">
+                            <strong>Capacity:</strong> ${event.capacity || 'Unlimited'} participants
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Show/hide register button based on status
+            registerBtn.style.display = isOpen ? 'block' : 'none';
+            registerBtn.textContent = isOpen ? 'Register Now' : 'Registration Closed';
+            registerBtn.disabled = !isOpen;
+            
+            eventModal.show();
+        }
+
+        // Register button handler
+        registerBtn.addEventListener('click', () => {
+            if (currentEvent) {
+                alert(`Registration for "${currentEvent.title}" is not yet implemented. This would redirect to a registration form.`);
+                eventModal.hide();
+            }
+        });
+
+        // Close modal handler
+        closeModal.addEventListener('click', () => {
+            eventModal.hide();
+        });
+
+
         // Initial render
         render(getEvents());
     </script>
+
+    <style>
+        .event-details-modal {
+            --width: 600px;
+            --height: auto;
+        }
+
+        /* Modal backdrop styling */
+        sl-dialog::part(overlay) {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Modal panel styling */
+        sl-dialog::part(panel) {
+            background-color: white;
+            border-radius: 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+        }
+
+        .event-details h2 {
+            color: #1f2937;
+            margin: 0 0 1.5rem 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .event-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background-color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-row strong {
+            color: #374151;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .info-row p {
+            margin: 0.5rem 0 0 0;
+            color: #4b5563;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .event-card {
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .trash-icon {
+            color: #9ca3af;
+            font-size: 1.25rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            opacity: 0.6;
+        }
+
+        /* Ensure text is visible in modal */
+        sl-dialog {
+            color: #1f2937;
+        }
+
+        sl-dialog sl-badge {
+            margin-left: 0.5rem;
+        }
+    </style>
