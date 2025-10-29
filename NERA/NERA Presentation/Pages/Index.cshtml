@@ -34,9 +34,44 @@
 
     <!-- Events Grid: responsive 1/2/3-column layout -->
     <section id="events" class="events-grid"></section>
+    @foreach (var ev in Model.Events)
+    {
+        var isOpen = ev.Status.ToString().ToLower().Contains("open");
+        <sl-card class="event-card" data-id="@ev.Id"
+                 data-title="@ev.Title"
+                 data-date="@ev.StartDate.ToString("yyyy-MM-dd")"
+                 data-location="@ev.Location"
+                 data-status="@ev.Status"
+                 data-cost="@ev.Cost"
+                 data-capacity="@ev.Capacity"
+                 data-description="@ev.Description">
+            <div class="accent-bar"></div>
+            <h2>@ev.Title</h2>
+            <div class="event-meta">
+                <div><strong>Date:</strong> @ev.StartDate.ToString("yyyy-MM-dd")</div>
+                <div><strong>Location:</strong> @ev.Location</div>
+                <div>
+                    <strong>Status:</strong>
+                    @if (isOpen)
+                    {
+                        <sl-badge class="gradient">Open for Registration</sl-badge>
+                    }
+                    else
+                    {
+                        <sl-badge variant="neutral">Closed</sl-badge>
+                    }
+                </div>
+            </div>
+            <div class="event-actions">
+                <sl-button pill class="btn-details">Details</sl-button>
+                <a href="/createevent?id=@ev.Id" title="Edit event"><sl-button pill class="btn-edit">Edit</sl-button></a>
+            </div>
+        </sl-card>
+    }
+    </section>
 </main>
-    <script>
-        // Get events from Database
+    
+        @* // Get events from Database
 
         async function getEvents() {
             try {
@@ -47,7 +82,7 @@
             } catch (error) {
                 console.error('Error fetching events:', error);
                 return [];
-            }
+            } *@
 
 <!-- Calendar Modal -->
 <sl-dialog id="calendarModal" label="My Calendar" class="calendar-modal">
@@ -70,20 +105,9 @@
     </div>
 </sl-dialog>
 
+
+
 <script>
-        // Get events from localStorage 
-        function getEvents() {
-            const stored = localStorage.getItem('events');
-            if (stored) return JSON.parse(stored);
-            return [
-                { title: 'Tech Innovation Conference', date: 'Dec 5, 2026', location: 'Amsterdam', city: 'Amsterdam', status: 'Open for Registration' },
-                { title: 'Global Health Summit', date: 'Jan 15, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Open for Registration' },
-                { title: 'Sustainability Forum', date: 'Mar 10, 2026', location: 'Other Location', city: 'Other Location', status: 'Open for Registration' },
-                { title: 'AI in Finance', date: 'Apr 22, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Closed' }
-            ];
-        }
-
-
         const eventsRoot = document.getElementById('events');
         const search = document.getElementById('search');
         const statusFilter = document.getElementById('statusFilter');
