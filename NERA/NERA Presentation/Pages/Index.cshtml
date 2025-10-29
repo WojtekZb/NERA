@@ -73,6 +73,9 @@
               </div>
               <div class="event-actions">
                 <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'}>${isOpen ? 'Register' : 'Details'}</sl-button>
+                    <a href="/createevent?id=${ev.id}" title="Edit event">
+              <sl-button pill class="btn-edit">Edit</sl-button>
+            </a>
               </div>
             `;
             eventsRoot.appendChild(card);
