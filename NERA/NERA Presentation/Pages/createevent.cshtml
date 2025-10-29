@@ -10,21 +10,23 @@
         <sl-card class="panel form-card form-shell large-centered-form larger-bg">
             <div class="accent-bar"></div>
             <form id="eventForm" class="form-grid" method="post" novalidate>
-                <!--Hidden binding inputs (these are what asp.net model binder reads)-->
+                <!-- Hidden binding inputs (these are what asp.net model binder reads) -->
                 <input asp-for="Event.Id" type="hidden" id="hiddenId" />
                 <input asp-for="Event.Title" type="hidden" id="hiddenTitle" />
                 <input asp-for="Event.Description" type="hidden" id="hiddenDescription" />
                 <input asp-for="Event.StartDate" type="hidden" id="hiddenStartDate" />
+                <input asp-for="Event.EndDate" type="hidden" id="hiddenEndDate" />
                 <input asp-for="Event.Location" type="hidden" id="hiddenLocation" />
                 <input asp-for="Event.Cost" type="hidden" id="hiddenCost" />
                 <input asp-for="Event.Capacity" type="hidden" id="hiddenCapacity" />
-                <!--shoelace controls (visual UI) -keep value attributes to prefill UI-->
-                <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full"></sl-input>
 
-                <sl-textarea id="description" label="Description" rows="5" required class="full">@Model.Event.Description</sl-textarea>
+                <!-- shoelace controls (visual UI) - keep value attributes to prefill UI -->
+                <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full" value="@Model.Event.Title"></sl-input>
+
+                <sl-textarea id="description" name="Event.Description" label="Description" rows="5" required class="full">@Model.Event.Description</sl-textarea>
 
                 <div class="form-row">
-                    <sl-input id="date" name="Event.Date" label="Date" type="date" required class="half"></sl-input>
+                    <sl-input id="date" name="Event.Date" label="Date" type="date" required class="half" value="@(Model.Event.StartDate == default ? "" : Model.Event.StartDate.ToString("yyyy-MM-dd"))"></sl-input>
                     <sl-select id="locationRef" name="Event.Location" label="Location (list)" placeholder="Select a venue" hoist class="half">
                         <sl-option value="">— Select —</sl-option>
                         <sl-option value="Amsterdam" @(Model.Event.Location == "Amsterdam" ? "selected" : "")>Amsterdam</sl-option>
@@ -35,11 +37,11 @@
                 </div>
 
                 <div class="form-row">
-                    <sl-input id="startTime" name="Event.StartTime" label="Start Time" type="time" required class="half"></sl-input>
-                    <sl-input id="endTime" name="Event.EndTime" label="End Time" type="time" required class="half"></sl-input>
+                    <sl-input id="startTime" name="Event.StartTime" label="Start Time" type="time" required class="half" value="@(Model.Event.StartDate == default ? "" : Model.Event.StartDate.ToString("HH:mm"))"></sl-input>
+                    <sl-input id="endTime" name="Event.EndTime" label="End Time" type="time" required class="half" value="@(Model.Event.EndDate == default ? "" : Model.Event.EndDate.ToString("HH:mm"))"></sl-input>
                 </div>
 
-                <sl-input id="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:none"></sl-input>
+                <sl-input id="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:@(string.IsNullOrEmpty(Model.Event.Location) || Model.Event.Location == "Amsterdam" || Model.Event.Location == "Eindhoven" || Model.Event.Location == "Online" ? "none" : "");" value="@(Model.Event.Location)"></sl-input>
 
                 <div class="form-row">
                     <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "" : Model.Event.Capacity.ToString())" class="half"></sl-input>
@@ -64,16 +66,21 @@
         const locationText = document.getElementById('locationText');
         const title = document.getElementById('title');
         const description = document.getElementById('description');
-        const datetime = document.getElementById('datetime');
+        const date = document.getElementById('date');
+        const startTime = document.getElementById('startTime');
+        const endTime = document.getElementById('endTime');
         const capacity = document.getElementById('capacity');
         const cost = document.getElementById('cost');
+
         // Elements
         const form = document.getElementById('eventForm');
+
         // hidden inputs for model binding
         const hiddenId = document.getElementById('hiddenId');
         const hiddenTitle = document.getElementById('hiddenTitle');
         const hiddenDescription = document.getElementById('hiddenDescription');
         const hiddenStartDate = document.getElementById('hiddenStartDate');
+        const hiddenEndDate = document.getElementById('hiddenEndDate');
         const hiddenLocation = document.getElementById('hiddenLocation');
         const hiddenCost = document.getElementById('hiddenCost');
         const hiddenCapacity = document.getElementById('hiddenCapacity');
@@ -87,34 +94,78 @@
         }
         locationRef.addEventListener('sl-change', toggleLocationText);
 
-        // copy values from visual controls into hidden inputs before submit
-        function syncToHidden(){
-            hiddenTitle.value = title.value || '';
-            hiddenDescription.value = description.value || '';
-            // Ensure datetime uses the HTML5-local format (server expects ISO)
-            hiddenStartDate.value = datetime.value || '';
-            hiddenLocation.value = (locationRef.value === 'other' ? locationText.value : locationRef.value) || '';
-            hiddenCost.value = cost.value || '';
-            hiddenCapacity.value = capacity.value || '';
+        // Build ISO datetimes for hidden fields from date + time controls
+        function buildIso(dateVal, timeVal) {
+            if (!dateVal) return '';
+            if (!timeVal) return dateVal; // date only
+            // ensure both parts present and return combined local datetime
+            return `${dateVal}T${timeVal}`;
         }
 
-        // Basic submit handler (no backend)
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
+        // copy values from visual controls into hidden inputs before submit
+        function syncToHidden(){
+            hiddenTitle.value = title?.value || '';
+            hiddenDescription.value = description?.value || '';
+            hiddenStartDate.value = buildIso(date?.value, startTime?.value) || '';
+            hiddenEndDate.value = buildIso(date?.value, endTime?.value) || '';
+            hiddenLocation.value = (locationRef?.value === 'other' ? locationText?.value : locationRef?.value) || '';
+            hiddenCost.value = cost?.value || '';
+            hiddenCapacity.value = capacity?.value || '';
+        }
 
-          const location = locationRef.value === 'other' ? locationText.value : locationRef.value;
-          const payload = {
-            title: document.getElementById('title').value.trim(),
-            description: document.getElementById('description').value.trim(),
-            date: document.getElementById('date').value,
-            startTime: document.getElementById('startTime').value,
-            endTime: document.getElementById('endTime').value,
-            location,
-            cost: parseFloat(document.getElementById('cost').value),
-            capacity: parseInt(document.getElementById('capacity').value)
-          };
+        // populate visual controls from server-rendered hidden inputs (initial load)
+        function syncFromHidden(){
+            try {
+                if (hiddenTitle && hiddenTitle.value) title.value = hiddenTitle.value;
+                if (hiddenDescription && hiddenDescription.value) description.value = hiddenDescription.value;
 
-          console.log('Event payload', payload);
+                if (hiddenStartDate && hiddenStartDate.value) {
+                    // split to date + time if possible
+                    const parts = hiddenStartDate.value.split('T');
+                    if (parts.length === 2) {
+                        date.value = parts[0];
+                        startTime.value = parts[1].slice(0,5);
+                    } else {
+                        date.value = hiddenStartDate.value;
+                    }
+                }
+
+                if (hiddenEndDate && hiddenEndDate.value) {
+                    const parts = hiddenEndDate.value.split('T');
+                    if (parts.length === 2) {
+                        endTime.value = parts[1].slice(0,5);
+                    }
+                }
+
+                const loc = hiddenLocation?.value || '';
+                const known = ['Amsterdam','Eindhoven','Online',''];
+                if (known.includes(loc)) {
+                    locationRef.value = loc;
+                } else if (loc) {
+                    locationRef.value = 'other';
+                    locationText.value = loc;
+                    toggleLocationText();
+                }
+
+                if (hiddenCost && hiddenCost.value) cost.value = hiddenCost.value;
+                if (hiddenCapacity && hiddenCapacity.value) capacity.value = hiddenCapacity.value;
+            } catch (err) {
+                console.error('syncFromHidden error', err);
+            }
+        }
+
+        // Ensure initial sync after components are upgraded
+        window.addEventListener('DOMContentLoaded', () => {
+            // Ensure hidden inputs are populated by server (asp-for) then copy into visual controls
+            syncFromHidden();
+            // keep hidden inputs updated in case user doesn't change anything
+            syncToHidden();
+        });
+
+        // Ensure sync right before submit and allow normal POST
+        form.addEventListener('submit', (e) => {
+            syncToHidden();
+            // do not call e.preventDefault(); allow ASP.NET to receive POST
         });
 
         // Clear button handler to reset Shoelace fields
