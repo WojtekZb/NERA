@@ -25,6 +25,10 @@
                 <sl-option value="Eindhoven">Eindhoven</sl-option>
                 <sl-option value="Other Location">Other Location</sl-option>
             </sl-select>
+            <sl-button id="myCalendarBtn" variant="primary" class="btn-calendar">
+                <sl-icon slot="prefix" name="calendar"></sl-icon>
+                My Calendar
+            </sl-button>
         </div>
     </sl-card>
 
@@ -45,6 +49,38 @@
                 return [];
             }
 
+<!-- Calendar Modal -->
+<sl-dialog id="calendarModal" label="My Calendar" class="calendar-modal">
+    <div id="calendarContent">
+        <!-- Calendar will be populated dynamically -->
+    </div>
+    <div slot="footer" class="modal-footer">
+        <sl-button id="closeCalendar" variant="default">Close</sl-button>
+    </div>
+</sl-dialog>
+
+<!-- Event Details Modal -->
+<sl-dialog id="eventModal" label="Event Details" class="event-details-modal">
+    <div id="modalContent">
+        <!-- Content will be populated dynamically -->
+    </div>
+    <div slot="footer" class="modal-footer">
+        <sl-button id="registerBtn" variant="primary" class="btn-gradient">Register</sl-button>
+        <sl-button id="closeModal" variant="default">Close</sl-button>
+    </div>
+</sl-dialog>
+
+<script>
+        // Get events from localStorage 
+        function getEvents() {
+            const stored = localStorage.getItem('events');
+            if (stored) return JSON.parse(stored);
+            return [
+                { title: 'Tech Innovation Conference', date: 'Dec 5, 2026', location: 'Amsterdam', city: 'Amsterdam', status: 'Open for Registration' },
+                { title: 'Global Health Summit', date: 'Jan 15, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Open for Registration' },
+                { title: 'Sustainability Forum', date: 'Mar 10, 2026', location: 'Other Location', city: 'Other Location', status: 'Open for Registration' },
+                { title: 'AI in Finance', date: 'Apr 22, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Closed' }
+            ];
         }
 
 
@@ -72,12 +108,17 @@
                 <div><strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}</div>
               </div>
               <div class="event-actions">
-                <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'}>${isOpen ? 'Register' : 'Details'}</sl-button>
-                    <a href="/createevent?id=${ev.id}" title="Edit event">
-              <sl-button pill class="btn-edit">Edit</sl-button>
-            </a>
+                <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'} data-event-id="${ev.title}">${isOpen ? 'Register' : 'Details'}</sl-button>
               </div>
             `;
+
+                   // <sl-icon name="trash" class="trash-icon" data-event-id="${ev.title}"></sl-icon>
+            
+            // Add click handlers to the buttons
+            const registerButton = card.querySelector('.btn-register, .btn-details');
+            
+            registerButton.addEventListener('click', () => showEventDetails(ev));
+            
             eventsRoot.appendChild(card);
           })
         }
@@ -110,6 +151,132 @@
         // Ensure initial render after components are upgraded
         window.customElements.whenDefined('sl-select').then(applyFilters);
 
+        // Modal functionality
+        const eventModal = document.getElementById('eventModal');
+        const modalContent = document.getElementById('modalContent');
+        const registerBtn = document.getElementById('registerBtn');
+        const closeModal = document.getElementById('closeModal');
+        let currentEvent = null;
+
+        // Show event details in modal
+        function showEventDetails(event) {
+            currentEvent = event;
+            const isOpen = event.status && event.status.toLowerCase().includes('open');
+            
+            modalContent.innerHTML = `
+                <div class="event-details">
+                    <h2>${event.title}</h2>
+                    <div class="event-info">
+                        <div class="info-row">
+                            <strong>Date:</strong> ${event.date}
+                        </div>
+                        <div class="info-row">
+                            <strong>Location:</strong> ${event.location}
+                        </div>
+                        <div class="info-row">
+                            <strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}
+                        </div>
+                        <div class="info-row">
+                            <strong>Description:</strong> 
+                            <p>Join us for an exciting event featuring industry leaders and innovative discussions. This event promises to deliver valuable insights and networking opportunities.</p>
+                        </div>
+                        <div class="info-row">
+                            <strong>Cost:</strong> €${event.cost || ' N/A'}
+                        </div>
+                        <div class="info-row">
+                            <strong>Capacity:</strong> ${event.capacity || 'Unlimited'} participants
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Show/hide register button based on status
+            registerBtn.style.display = isOpen ? 'block' : 'none';
+            registerBtn.textContent = isOpen ? 'Register Now' : 'Registration Closed';
+            registerBtn.disabled = !isOpen;
+            
+            eventModal.show();
+        }
+
+        // Register button handler
+        registerBtn.addEventListener('click', () => {
+            if (currentEvent) {
+                alert(`Registration for "${currentEvent.title}" is not yet implemented. This would redirect to a registration form.`);
+                eventModal.hide();
+            }
+        });
+
+        // Close modal handler
+        closeModal.addEventListener('click', () => {
+            eventModal.hide();
+        });
+
+        // Calendar functionality
+        const calendarModal = document.getElementById('calendarModal');
+        const calendarContent = document.getElementById('calendarContent');
+        const myCalendarBtn = document.getElementById('myCalendarBtn');
+        const closeCalendar = document.getElementById('closeCalendar');
+
+        // Show calendar modal
+        myCalendarBtn.addEventListener('click', () => {
+            showCalendar();
+        });
+
+        // Close calendar modal
+        closeCalendar.addEventListener('click', () => {
+            calendarModal.hide();
+        });
+
+        // Generate calendar
+        function showCalendar() {
+            const events = getEvents();
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth();
+            const currentYear = currentDate.getFullYear();
+            
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+            
+            let calendarHTML = `
+                <div class="calendar-header">
+                    <h3>${monthNames[currentMonth]} ${currentYear}</h3>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+            `;
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                calendarHTML += `
+                    <div class="calendar-day">
+                        <span class="day-number">${day}</span>
+                    </div>
+                `;
+            }
+            
+            calendarHTML += '</div>';
+            
+            calendarContent.innerHTML = calendarHTML;
+            calendarModal.show();
+        }
+
+
         // Initial render
 
 
@@ -119,3 +286,210 @@
 
 
     </script>
+
+    <style>
+        .event-details-modal {
+            --width: 600px;
+            --height: auto;
+        }
+
+        /* Modal backdrop styling */
+        sl-dialog::part(overlay) {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Modal panel styling */
+        sl-dialog::part(panel) {
+            background-color: white;
+            border-radius: 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid #e5e7eb;
+            padding: 1.5rem;
+        }
+
+        .event-details h2 {
+            color: #1f2937;
+            margin: 0 0 1.5rem 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .event-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background-color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-row strong {
+            color: #374151;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .info-row p {
+            margin: 0.5rem 0 0 0;
+            color: #4b5563;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .event-card {
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .trash-icon {
+            color: #9ca3af;
+            font-size: 1.25rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            opacity: 0.6;
+        }
+
+        /* Ensure text is visible in modal */
+        sl-dialog {
+            color: #1f2937;
+        }
+
+        sl-dialog sl-badge {
+            margin-left: 0.5rem;
+        }
+
+        /* Status filter dropdown styling */
+        sl-select::part(display-input) {
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+        }
+
+        sl-select::part(menu) {
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        sl-option {
+            background-color: white;
+            color: #374151;
+            padding: 0.5rem 0.75rem;
+        }
+
+        sl-option:hover {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
+        sl-option[selected] {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        sl-option[selected]:hover {
+            background-color: #2563eb;
+        }
+
+        /* Calendar Modal Styling */
+        .calendar-modal {
+            --width: 600px;
+            --height: auto;
+        }
+
+        .calendar-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .calendar-header h3 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: #e5e7eb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .calendar-day-header {
+            background-color: #f3f4f6;
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .calendar-day {
+            background-color: white;
+            padding: 0.75rem;
+            min-height: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .calendar-day:hover {
+            background-color: #f9fafb;
+        }
+
+        .calendar-day.empty {
+            background-color: #f9fafb;
+            cursor: default;
+        }
+
+        .day-number {
+            font-weight: 600;
+            color: #374151;
+        }
+
+
+        .btn-calendar {
+            margin-left: auto;
+        }
+    </style>

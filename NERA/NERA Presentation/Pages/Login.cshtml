@@ -1,0 +1,61 @@
+@page
+@model NERA_Presentation.Pages.LoginModel
+@{
+    ViewData["Title"] = "Login - NERA";
+}
+
+<div class="create-page">
+    <main class="container">
+        <h1 class="page-title">Login</h1>
+        <sl-card class="panel form-card form-shell large-centered-form larger-bg">
+            <div class="accent-bar"></div>
+            <form id="loginForm" class="form-grid" method="post" novalidate>
+                <sl-input id="email" name="Email" type="email" label="Email" placeholder="Enter your email" required autofocus></sl-input>
+
+                <sl-input id="password" name="Password" type="password" label="Password" placeholder="Enter your password" required password-toggle></sl-input>
+
+                <div class="form-actions full">
+                    <sl-button type="submit" class="btn-gradient">
+                        Login
+                    </sl-button>
+                    <a href="/Index" style="text-decoration:none">
+                        <sl-button type="button" class="btn-outline">Cancel</sl-button>
+                    </a>
+                </div>
+
+            </form>
+        </sl-card>
+    </main>
+
+    <style>
+    .large-centered-form {
+        max-width: 550px !important;
+        min-width: 350px;
+        margin: 48px auto !important;
+        padding: 40px 36px !important;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .larger-bg {
+        max-width: 550px !important;
+        min-width: 400px;
+        min-height: 450px;
+        margin: 48px auto !important;
+        padding: 56px 48px !important;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-grid .full {
+        grid-column: 1 / -1;
+    }
+    .form-actions {
+        justify-content: center;
+        width: 100%;
+    }
+    </style>
+</div>
+

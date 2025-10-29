@@ -24,8 +24,8 @@
                 <sl-textarea id="description" label="Description" rows="5" required class="full">@Model.Event.Description</sl-textarea>
 
                 <div class="form-row">
-                    <sl-input id="datetime" label="Start Date & Time" type="datetime-local" value="@(Model.Event.StartDate == default ? "" : Model.Event.StartDate.ToString("yyyy-MM-ddTHH:mm"))" required class="half"></sl-input>
-                    <sl-select id="locationRef" label="Location (list)" hoist class="half">
+                    <sl-input id="date" name="Event.Date" label="Date" type="date" required class="half"></sl-input>
+                    <sl-select id="locationRef" name="Event.Location" label="Location (list)" placeholder="Select a venue" hoist class="half">
                         <sl-option value="">— Select —</sl-option>
                         <sl-option value="Amsterdam" @(Model.Event.Location == "Amsterdam" ? "selected" : "")>Amsterdam</sl-option>
                         <sl-option value="Eindhoven" @(Model.Event.Location == "Eindhoven" ? "selected" : "")>Eindhoven</sl-option>
@@ -34,7 +34,12 @@
                     </sl-select>
                 </div>
 
-                <sl-input id="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:@(string.IsNullOrEmpty(Model.Event.Location) || Model.Event.Location == "Amsterdam" || Model.Event.Location == "Eindhoven" || Model.Event.Location == "Online" ? "none" : "");">@(Model.Event.Location)</sl-input>
+                <div class="form-row">
+                    <sl-input id="startTime" name="Event.StartTime" label="Start Time" type="time" required class="half"></sl-input>
+                    <sl-input id="endTime" name="Event.EndTime" label="End Time" type="time" required class="half"></sl-input>
+                </div>
+
+                <sl-input id="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:none"></sl-input>
 
                 <div class="form-row">
                     <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "" : Model.Event.Capacity.ToString())" class="half"></sl-input>
@@ -42,6 +47,10 @@
                 </div>
 
                 <div class="form-actions full">
+                    <sl-button id="clearBtn" type="button" class="btn-ghost" style="margin-right:8px">
+                        <sl-icon slot="prefix" name="trash"></sl-icon>
+                        Clear
+                    </sl-button>
                     <sl-button type="submit" class="btn-gradient">Save</sl-button>
                     <a asp-page="Index" style="text-decoration:none"><sl-button class="btn-outline">Cancel</sl-button></a>
                 </div>
@@ -97,11 +106,26 @@
           const payload = {
             title: document.getElementById('title').value.trim(),
             description: document.getElementById('description').value.trim(),
-            date: document.getElementById('datetime').value,
+            date: document.getElementById('date').value,
+            startTime: document.getElementById('startTime').value,
+            endTime: document.getElementById('endTime').value,
             location,
             cost: parseFloat(document.getElementById('cost').value),
             capacity: parseInt(document.getElementById('capacity').value)
           };
+
+          console.log('Event payload', payload);
+        });
+
+        // Clear button handler to reset Shoelace fields
+        document.getElementById('clearBtn').addEventListener('click', () => {
+          form.reset();
+          document.querySelectorAll('sl-input, sl-textarea, sl-select').forEach(el => {
+            el.value = '';
+          });
+          toggleLocationText();
+          document.getElementById('title').focus();
+        });
     </script>
 
     <style>
