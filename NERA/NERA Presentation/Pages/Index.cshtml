@@ -95,9 +95,10 @@
               </div>
               <div class="event-actions">
                 <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'} data-event-id="${ev.title}">${isOpen ? 'Register' : 'Details'}</sl-button>
-                <sl-icon name="trash" class="trash-icon" data-event-id="${ev.title}"></sl-icon>
               </div>
             `;
+
+                   // <sl-icon name="trash" class="trash-icon" data-event-id="${ev.title}"></sl-icon>
             
             // Add click handlers to the buttons
             const registerButton = card.querySelector('.btn-register, .btn-details');
