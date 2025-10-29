@@ -3,16 +3,20 @@ using Domain.Interfaces;
 
 namespace Logic.Services
 {
-    public class CreateEventService
+    public class UpdateEventService
     {
         private readonly ICreateEventRepo _repo;
 
-        public CreateEventService(ICreateEventRepo repo)
+        public UpdateEventService(ICreateEventRepo repo)
         {
             _repo = repo;
         }
-
-        public async Task<Event> CreateEventAsync(Event ev)
+        public async Task<Event?> GetByIdAsync(int id)
+        {
+            // Assuming the repository has a method to get an event by ID
+            return await _repo.GetByIdAsync(id);
+        }
+        public async Task<bool> UpdateEventAsync(Event ev)
         {
             var evenement = new Event
             {
@@ -26,7 +30,11 @@ namespace Logic.Services
                 Location = ev.Location,
                 Status = ev.Status
             };
-            return await _repo.SaveAsync(evenement);
+            await _repo.UpdateEventAsync(evenement);
+            return true;
         }
+
     }
 }
+
+

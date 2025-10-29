@@ -15,11 +15,15 @@ public class EventConfig : IEntityTypeConfiguration<Event>
     public void Configure(EntityTypeBuilder<Event> e)
     {
         e.Property(x => x.Title).IsRequired().HasMaxLength(200);
-        e.Property(x => x.Date).IsRequired();
+        e.Property(x => x.StartDate).IsRequired();
+        e.Property(x => x.EndDate).IsRequired();
         e.Property(x => x.Location).HasMaxLength(200);
         e.Property(x => x.Cost).HasDefaultValue(0.00);
         e.Property(x => x.Capacity).HasDefaultValue(1).IsRequired();
         e.Property(x => x.Description).HasMaxLength(2000);
+        e.Property(x => x.Status).IsRequired();
+        e.HasIndex(x => x.StartDate);
+        e.HasIndex(x => x.Status);
     }
 }
 public class UserConfig : IEntityTypeConfiguration<User>

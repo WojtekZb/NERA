@@ -7,14 +7,16 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(); 
+builder.Services.AddControllers();
 
 // Register DbContext
 builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
-
+// Register Repositories and Services
 builder.Services.AddScoped<ICreateEventRepo, CreateEventRepo>();
 builder.Services.AddScoped<CreateEventService>();
+builder.Services.AddScoped<UpdateEventService>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -34,5 +36,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapControllers();
 
 app.Run();
