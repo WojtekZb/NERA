@@ -7,12 +7,6 @@ namespace NERA_Presentation.Pages
 {
     public class IndexModel : PageModel
     {
-        //private readonly ILogger<IndexModel> _logger;
-
-        //public IndexModel(ILogger<IndexModel> logger)
-        //{
-        //    _logger = logger;
-        //}
         private readonly AppDbContext _context;
         public IndexModel(AppDbContext context)
         {
@@ -20,7 +14,8 @@ namespace NERA_Presentation.Pages
         }
         public IList<Event> Events { get; private set; } = new List<Event>();
         public async Task OnGetAsync()
-        {  Events = await _context.Events
+        {
+            Events = await _context.Events
                 .AsNoTracking()
                 .OrderBy(e => e.StartDate)
                 .ToListAsync();

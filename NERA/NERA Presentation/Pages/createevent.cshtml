@@ -19,6 +19,9 @@
                 <input asp-for="Event.Location" type="hidden" id="hiddenLocation" />
                 <input asp-for="Event.Cost" type="hidden" id="hiddenCost" />
                 <input asp-for="Event.Capacity" type="hidden" id="hiddenCapacity" />
+                <input asp-for="Event.Status" type="hidden" id="hiddenStatus" value="0" />
+                <!--shoelace controls (visual UI) -keep value attributes to prefill UI-->
+                <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full"></sl-input>
 
                 <!-- shoelace controls (visual UI) - keep value attributes to prefill UI -->
                 <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full" value="@Model.Event.Title"></sl-input>
@@ -84,6 +87,7 @@
         const hiddenLocation = document.getElementById('hiddenLocation');
         const hiddenCost = document.getElementById('hiddenCost');
         const hiddenCapacity = document.getElementById('hiddenCapacity');
+        const hiddenStatus = document.getElementById('hiddenStatus');
 
         // Toggle free-text location when selecting "Other…"
         function toggleLocationText(){
@@ -104,68 +108,32 @@
 
         // copy values from visual controls into hidden inputs before submit
         function syncToHidden(){
-            hiddenTitle.value = title?.value || '';
-            hiddenDescription.value = description?.value || '';
-            hiddenStartDate.value = buildIso(date?.value, startTime?.value) || '';
-            hiddenEndDate.value = buildIso(date?.value, endTime?.value) || '';
-            hiddenLocation.value = (locationRef?.value === 'other' ? locationText?.value : locationRef?.value) || '';
-            hiddenCost.value = cost?.value || '';
-            hiddenCapacity.value = capacity?.value || '';
-        }
-
-        // populate visual controls from server-rendered hidden inputs (initial load)
-        function syncFromHidden(){
-            try {
-                if (hiddenTitle && hiddenTitle.value) title.value = hiddenTitle.value;
-                if (hiddenDescription && hiddenDescription.value) description.value = hiddenDescription.value;
-
-                if (hiddenStartDate && hiddenStartDate.value) {
-                    // split to date + time if possible
-                    const parts = hiddenStartDate.value.split('T');
-                    if (parts.length === 2) {
-                        date.value = parts[0];
-                        startTime.value = parts[1].slice(0,5);
-                    } else {
-                        date.value = hiddenStartDate.value;
-                    }
-                }
-
-                if (hiddenEndDate && hiddenEndDate.value) {
-                    const parts = hiddenEndDate.value.split('T');
-                    if (parts.length === 2) {
-                        endTime.value = parts[1].slice(0,5);
-                    }
-                }
-
-                const loc = hiddenLocation?.value || '';
-                const known = ['Amsterdam','Eindhoven','Online',''];
-                if (known.includes(loc)) {
-                    locationRef.value = loc;
-                } else if (loc) {
-                    locationRef.value = 'other';
-                    locationText.value = loc;
-                    toggleLocationText();
-                }
-
-                if (hiddenCost && hiddenCost.value) cost.value = hiddenCost.value;
-                if (hiddenCapacity && hiddenCapacity.value) capacity.value = hiddenCapacity.value;
-            } catch (err) {
-                console.error('syncFromHidden error', err);
+            hiddenTitle.value = title.value || '';
+            hiddenDescription.value = description.value || '';
+            // Build ISO datetimes from separate date/time controls
+            if (date.value && startTime.value) {
+                const start = new Date(`${date.value}T${startTime.value}`);
+                hiddenStartDate.value = start.toISOString();
+            } else {
+                hiddenStartDate.value = '';
             }
+            if (date.value && endTime.value) {
+                const end = new Date(`${date.value}T${endTime.value}`);
+                hiddenEndDate.value = end.toISOString();
+            } else {
+                hiddenEndDate.value = '';
+            }
+            hiddenLocation.value = (locationRef.value === 'other' ? locationText.value : locationRef.value) || '';
+            hiddenCost.value = cost.value || '';
+            hiddenCapacity.value = capacity.value || '';
+            // Default new events to Open (enum 0)
+            if (!hiddenStatus.value) hiddenStatus.value = '0';
         }
 
-        // Ensure initial sync after components are upgraded
-        window.addEventListener('DOMContentLoaded', () => {
-            // Ensure hidden inputs are populated by server (asp-for) then copy into visual controls
-            syncFromHidden();
-            // keep hidden inputs updated in case user doesn't change anything
-            syncToHidden();
-        });
-
-        // Ensure sync right before submit and allow normal POST
+        // Submit handler: sync hidden fields and allow normal post to PageModel
         form.addEventListener('submit', (e) => {
-            syncToHidden();
-            // do not call e.preventDefault(); allow ASP.NET to receive POST
+          syncToHidden();
+          // let the browser submit the form to OnPostAsync
         });
 
         // Clear button handler to reset Shoelace fields

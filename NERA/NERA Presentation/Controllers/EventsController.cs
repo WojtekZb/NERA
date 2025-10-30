@@ -25,6 +25,6 @@ namespace Presentation.Controllers
             var events = await _context.Set<Event>().ToListAsync();
             return Ok(events);
         }
-    } 
+    }   
 }
 
