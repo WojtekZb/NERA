@@ -8,6 +8,7 @@ namespace NERA_Presentation.Pages
     public class IndexModel : PageModel
     {
         private readonly AppDbContext _context;
+
         public IndexModel(AppDbContext context)
         {
             _context = context;
@@ -20,6 +21,18 @@ namespace NERA_Presentation.Pages
                 .OrderBy(e => e.StartDate)
                 .ToListAsync();
 
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            var eventToDelete = await _context.Events.FindAsync(id);
+
+            if (eventToDelete != null)
+            {
+                _context.Events.Remove(eventToDelete);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToPage();
         }
     }
 }
