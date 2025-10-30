@@ -15,9 +15,11 @@
                 <input asp-for="Event.Title" type="hidden" id="hiddenTitle" />
                 <input asp-for="Event.Description" type="hidden" id="hiddenDescription" />
                 <input asp-for="Event.StartDate" type="hidden" id="hiddenStartDate" />
+                <input asp-for="Event.EndDate" type="hidden" id="hiddenEndDate" />
                 <input asp-for="Event.Location" type="hidden" id="hiddenLocation" />
                 <input asp-for="Event.Cost" type="hidden" id="hiddenCost" />
                 <input asp-for="Event.Capacity" type="hidden" id="hiddenCapacity" />
+                <input asp-for="Event.Status" type="hidden" id="hiddenStatus" value="0" />
                 <!--shoelace controls (visual UI) -keep value attributes to prefill UI-->
                 <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full"></sl-input>
 
@@ -64,7 +66,9 @@
         const locationText = document.getElementById('locationText');
         const title = document.getElementById('title');
         const description = document.getElementById('description');
-        const datetime = document.getElementById('datetime');
+        const date = document.getElementById('date');
+        const startTime = document.getElementById('startTime');
+        const endTime = document.getElementById('endTime');
         const capacity = document.getElementById('capacity');
         const cost = document.getElementById('cost');
         // Elements
@@ -74,9 +78,11 @@
         const hiddenTitle = document.getElementById('hiddenTitle');
         const hiddenDescription = document.getElementById('hiddenDescription');
         const hiddenStartDate = document.getElementById('hiddenStartDate');
+        const hiddenEndDate = document.getElementById('hiddenEndDate');
         const hiddenLocation = document.getElementById('hiddenLocation');
         const hiddenCost = document.getElementById('hiddenCost');
         const hiddenCapacity = document.getElementById('hiddenCapacity');
+        const hiddenStatus = document.getElementById('hiddenStatus');
 
         // Toggle free-text location when selecting "Other…"
         function toggleLocationText(){
@@ -91,30 +97,30 @@
         function syncToHidden(){
             hiddenTitle.value = title.value || '';
             hiddenDescription.value = description.value || '';
-            // Ensure datetime uses the HTML5-local format (server expects ISO)
-            hiddenStartDate.value = datetime.value || '';
+            // Build ISO datetimes from separate date/time controls
+            if (date.value && startTime.value) {
+                const start = new Date(`${date.value}T${startTime.value}`);
+                hiddenStartDate.value = start.toISOString();
+            } else {
+                hiddenStartDate.value = '';
+            }
+            if (date.value && endTime.value) {
+                const end = new Date(`${date.value}T${endTime.value}`);
+                hiddenEndDate.value = end.toISOString();
+            } else {
+                hiddenEndDate.value = '';
+            }
             hiddenLocation.value = (locationRef.value === 'other' ? locationText.value : locationRef.value) || '';
             hiddenCost.value = cost.value || '';
             hiddenCapacity.value = capacity.value || '';
+            // Default new events to Open (enum 0)
+            if (!hiddenStatus.value) hiddenStatus.value = '0';
         }
 
-        // Basic submit handler (no backend)
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          const location = locationRef.value === 'other' ? locationText.value : locationRef.value;
-          const payload = {
-            title: document.getElementById('title').value.trim(),
-            description: document.getElementById('description').value.trim(),
-            date: document.getElementById('date').value,
-            startTime: document.getElementById('startTime').value,
-            endTime: document.getElementById('endTime').value,
-            location,
-            cost: parseFloat(document.getElementById('cost').value),
-            capacity: parseInt(document.getElementById('capacity').value)
-          };
-
-          console.log('Event payload', payload);
+        // Submit handler: sync hidden fields and allow normal post to PageModel
+        form.addEventListener('submit', (e) => {
+          syncToHidden();
+          // let the browser submit the form to OnPostAsync
         });
 
         // Clear button handler to reset Shoelace fields

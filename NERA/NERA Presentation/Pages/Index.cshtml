@@ -36,18 +36,44 @@
     <section id="events" class="events-grid"></section>
 </main>
     <script>
-        // Get events from Database
-
+        // Get events from Database and map to UI shape
         async function getEvents() {
             try {
                 const response = await fetch('/api/events');
                 if (!response.ok) throw new Error('Failed to fetch events');
                 const events = await response.json();
-                return events;
+                return events.map(e => {
+                    const title = e.title ?? e.Title ?? '';
+                    const start = e.startDate ?? e.StartDate;
+                    const location = e.location ?? e.Location ?? '';
+                    const cost = e.cost ?? e.Cost;
+                    const capacity = e.capacity ?? e.Capacity;
+                    const description = e.description ?? e.Description ?? '';
+                    const rawStatus = e.status ?? e.Status; // may be string or enum numeric
+                    let statusText;
+                    if (typeof rawStatus === 'string') {
+                        statusText = rawStatus;
+                    } else {
+                        // Assuming EventStatus enum: 0 = Open, 1 = Closed
+                        statusText = rawStatus === 0 ? 'Open for Registration' : 'Closed';
+                    }
+                    return {
+                        title,
+                        date: start ? new Date(start).toLocaleDateString() : '',
+                        location,
+                        city: e.city ?? e.City ?? '',
+                        status: statusText,
+                        cost,
+                        capacity,
+                        description
+                    };
+                });
             } catch (error) {
                 console.error('Error fetching events:', error);
                 return [];
             }
+        }
+    </script>
 
 <!-- Calendar Modal -->
 <sl-dialog id="calendarModal" label="My Calendar" class="calendar-modal">
@@ -71,19 +97,6 @@
 </sl-dialog>
 
 <script>
-        // Get events from localStorage 
-        function getEvents() {
-            const stored = localStorage.getItem('events');
-            if (stored) return JSON.parse(stored);
-            return [
-                { title: 'Tech Innovation Conference', date: 'Dec 5, 2026', location: 'Amsterdam', city: 'Amsterdam', status: 'Open for Registration' },
-                { title: 'Global Health Summit', date: 'Jan 15, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Open for Registration' },
-                { title: 'Sustainability Forum', date: 'Mar 10, 2026', location: 'Other Location', city: 'Other Location', status: 'Open for Registration' },
-                { title: 'AI in Finance', date: 'Apr 22, 2026', location: 'Eindhoven', city: 'Eindhoven', status: 'Closed' }
-            ];
-        }
-
-
         const eventsRoot = document.getElementById('events');
         const search = document.getElementById('search');
         const statusFilter = document.getElementById('statusFilter');
@@ -228,8 +241,8 @@
         });
 
         // Generate calendar
-        function showCalendar() {
-            const events = getEvents();
+        async function showCalendar() {
+            const events = await getEvents();
             const currentDate = new Date();
             const currentMonth = currentDate.getMonth();
             const currentYear = currentDate.getFullYear();
