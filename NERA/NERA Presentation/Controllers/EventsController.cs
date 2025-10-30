@@ -7,23 +7,23 @@ using Domain.Entities;
 
 namespace Presentation.Controllers
 {
-    //[ApiController]
-    //[Route("api/[controller]")]
-    //public class EventsController : ControllerBase
-    //{
-    //    private readonly AppDbContext _context;
+    [ApiController]
+    [Route("api/[controller]")]
+    public class EventsController : ControllerBase
+    {
+        private readonly AppDbContext _context;
 
-    //    public EventsController(AppDbContext context)
-    //    {
-    //        _context = context;
-    //    }
+        public EventsController(AppDbContext context)
+        {
+            _context = context;
+        }
 
-    //    [HttpGet]
-    //    public async Task<IActionResult> GetEvents()
-    //    {
-    //        var events = await _context.Set<Event>().ToListAsync();
-    //        return Ok(events);
-    //    }
-    //}       remove this and use the one in the index.cshtml
+        [HttpGet]
+        public async Task<IActionResult> GetEvents()
+        {
+            var events = await _context.Set<Event>().ToListAsync();
+            return Ok(events);
+        }
+    }   
 }
 
