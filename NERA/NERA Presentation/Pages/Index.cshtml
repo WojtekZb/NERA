@@ -91,6 +91,7 @@
         <!-- Content will be populated dynamically -->
     </div>
     <div slot="footer" class="modal-footer">
+        <sl-icon name="trash" class="trash-icon" data-event-id="${ev.title}"></sl-icon>
         <sl-button id="registerBtn" variant="primary" class="btn-gradient">Register</sl-button>
         <sl-button id="closeModal" variant="default">Close</sl-button>
     </div>
@@ -113,7 +114,7 @@
             card.className = 'event-card';
             const isOpen = ev.status && ev.status.toLowerCase().includes('open');
             card.innerHTML = `
-              <div class="accent-bar"></div>
+              <div class="accent-bar"></div>    
               <h2>${ev.title}</h2>
               <div class="event-meta">
                 <div><strong>Date:</strong> ${ev.date}</div>
@@ -122,10 +123,13 @@
               </div>
               <div class="event-actions">
                 <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'} data-event-id="${ev.title}">${isOpen ? 'Register' : 'Details'}</sl-button>
+                <sl-icon name="pencil" class="pencil-icon" data-event-id="${ev.title}"></sl-icon>  
               </div>
             `;
 
-                   // <sl-icon name="trash" class="trash-icon" data-event-id="${ev.title}"></sl-icon>
+    /* <!-- trash name needed to be change --> */ 
+    /* <a href="/createevent?id=ev.Id" title="Edit event"><sl-button pill class="btn-edit">Edit</sl-button></a> */
+                   
             
             // Add click handlers to the buttons
             const registerButton = card.querySelector('.btn-register, .btn-details');
@@ -171,7 +175,7 @@
         const closeModal = document.getElementById('closeModal');
         let currentEvent = null;
 
-        // Show event details in modal
+        // Show event details in modal (pop up page)
         function showEventDetails(event) {
             currentEvent = event;
             const isOpen = event.status && event.status.toLowerCase().includes('open');
@@ -181,7 +185,7 @@
                     <h2>${event.title}</h2>
                     <div class="event-info">
                         <div class="info-row">
-                            <strong>Date:</strong> ${event.date}
+                            <strong>Date:</strong> ${event.date} <strong>Start Time:</strong> ${event.StartDate} <strong>End Time: </strong> ${event.EndDate}
                         </div>
                         <div class="info-row">
                             <strong>Location:</strong> ${event.location}
@@ -389,6 +393,25 @@
             padding: 0.5rem;
             border-radius: 4px;
             opacity: 0.6;
+        }
+
+        .trash-icon:hover {
+            cursor: pointer;
+            color: red;
+        }
+
+        .pencil-icon {
+        color: #9ca3af;
+        font-size: 1.25rem;
+        padding: 0.5rem;
+        border-radius: 4px;
+        opacity: 0.6;
+        cursor: pointer;
+        }
+
+        .pencil-icon:hover {
+            color: red;
+            cursor: pointer;
         }
 
         /* Ensure text is visible in modal */
