@@ -20,8 +20,7 @@
                 <input asp-for="Event.Cost" type="hidden" id="hiddenCost" />
                 <input asp-for="Event.Capacity" type="hidden" id="hiddenCapacity" />
                 <input asp-for="Event.Status" type="hidden" id="hiddenStatus" value="0" />
-                <!--shoelace controls (visual UI) -keep value attributes to prefill UI-->
-                <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full"></sl-input>
+
 
                 <!-- shoelace controls (visual UI) - keep value attributes to prefill UI -->
                 <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full" value="@Model.Event.Title"></sl-input>

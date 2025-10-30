@@ -34,50 +34,29 @@
 
     <!-- Events Grid: responsive 1/2/3-column layout -->
     <section id="events" class="events-grid"></section>
-    @foreach (var ev in Model.Events)
-    {
-        var isOpen = ev.Status.ToString().ToLower().Contains("open");
-        <sl-card class="event-card" data-id="@ev.Id"
-                 data-title="@ev.Title"
-                 data-date="@ev.StartDate.ToString("yyyy-MM-dd")"
-                 data-location="@ev.Location"
-                 data-status="@ev.Status"
-                 data-cost="@ev.Cost"
-                 data-capacity="@ev.Capacity"
-                 data-description="@ev.Description">
-            <div class="accent-bar"></div>
-            <h2>@ev.Title</h2>
-            <div class="event-meta">
-                <div><strong>Date:</strong> @ev.StartDate.ToString("yyyy-MM-dd")</div>
-                <div><strong>Location:</strong> @ev.Location</div>
-                <div>
-                    <strong>Status:</strong>
-                    @if (isOpen)
-                    {
-                        <sl-badge class="gradient">Open for Registration</sl-badge>
-                    }
-                    else
-                    {
-                        <sl-badge variant="neutral">Closed</sl-badge>
-                    }
-                </div>
-            </div>
-            <div class="event-actions">
-                <sl-button pill class="btn-details">Details</sl-button>
-                <a href="/createevent?id=@ev.Id" title="Edit event"><sl-button pill class="btn-edit">Edit</sl-button></a>
-            </div>
-        </sl-card>
-    }
-    </section>
 </main>
     <script>
-        // Get events from Database and map to UI shape
+        // use pagemodel data instead of fetching /api/events
+        // serialized with camelCase to match existing clinet mapping
+        const __serverEvents = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Events.Select(e => new {
+            id = e.Id,
+            title = e.Title,
+            startDate = e.StartDate,
+            endDate = e.EndDate,
+            location = e.Location,
+            city = "", // set to e.City if your Event has a City property
+            status = e.Status.ToString(),
+            cost = e.Cost,
+            capacity = e.Capacity,
+            description = e.Description
+        }),
+ 
+           new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }));
+           // keep then same mapping shape then rest of your client code expects
         async function getEvents() {
             try {
-                const response = await fetch('/api/events');
-                if (!response.ok) throw new Error('Failed to fetch events');
-                const events = await response.json();
-                return events.map(e => {
+                // map server-provided events to the client shape (same logic as before)
+                return __serverEvents.map(e => {
                     const title = e.title ?? e.Title ?? '';
                     const start = e.startDate ?? e.StartDate;
                     const location = e.location ?? e.Location ?? '';
@@ -85,6 +64,7 @@
                     const capacity = e.capacity ?? e.Capacity;
                     const description = e.description ?? e.Description ?? '';
                     const rawStatus = e.status ?? e.Status; // may be string or enum numeric
+
                     let statusText;
                     if (typeof rawStatus === 'string') {
                         statusText = rawStatus;
@@ -93,6 +73,7 @@
                         statusText = rawStatus === 0 ? 'Open for Registration' : 'Closed';
                     }
                     return {
+                        id: e.id,
                         title,
                         date: start ? new Date(start).toLocaleDateString() : '',
                         location,
