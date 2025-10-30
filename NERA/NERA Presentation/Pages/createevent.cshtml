@@ -1,5 +1,5 @@
 ﻿@page "{id:int?}"
-@model NERA_Presentation.Pages.Index1Model
+@model NERA_Presentation.Pages.CreateEventModel
 @{
     ViewData["Title"] = "NERA - EVENT CREATER";
 }
@@ -10,7 +10,7 @@
         <sl-card class="panel form-card form-shell large-centered-form larger-bg">
             <div class="accent-bar"></div>
             <form id="eventForm" class="form-grid" method="post" novalidate>
-                <!--Hidden binding inputs (these are what asp.net model binder reads)-->
+                <!-- Hidden binding inputs (these are what asp.net model binder reads) -->
                 <input asp-for="Event.Id" type="hidden" id="hiddenId" />
                 <input asp-for="Event.Title" type="hidden" id="hiddenTitle" />
                 <input asp-for="Event.Description" type="hidden" id="hiddenDescription" />
@@ -23,10 +23,13 @@
                 <!--shoelace controls (visual UI) -keep value attributes to prefill UI-->
                 <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full"></sl-input>
 
-                <sl-textarea id="description" label="Description" rows="5" required class="full">@Model.Event.Description</sl-textarea>
+                <!-- shoelace controls (visual UI) - keep value attributes to prefill UI -->
+                <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full" value="@Model.Event.Title"></sl-input>
+
+                <sl-textarea id="description" name="Event.Description" label="Description" rows="5" required class="full">@Model.Event.Description</sl-textarea>
 
                 <div class="form-row">
-                    <sl-input id="date" name="Event.Date" label="Date" type="date" required class="half"></sl-input>
+                    <sl-input id="date" name="Event.Date" label="Date" type="date" required class="half" value="@(Model.Event.StartDate == default ? "" : Model.Event.StartDate.ToString("yyyy-MM-dd"))"></sl-input>
                     <sl-select id="locationRef" name="Event.Location" label="Location (list)" placeholder="Select a venue" hoist class="half">
                         <sl-option value="">— Select —</sl-option>
                         <sl-option value="Amsterdam" @(Model.Event.Location == "Amsterdam" ? "selected" : "")>Amsterdam</sl-option>
@@ -37,11 +40,11 @@
                 </div>
 
                 <div class="form-row">
-                    <sl-input id="startTime" name="Event.StartTime" label="Start Time" type="time" required class="half"></sl-input>
-                    <sl-input id="endTime" name="Event.EndTime" label="End Time" type="time" required class="half"></sl-input>
+                    <sl-input id="startTime" name="Event.StartTime" label="Start Time" type="time" required class="half" value="@(Model.Event.StartDate == default ? "" : Model.Event.StartDate.ToString("HH:mm"))"></sl-input>
+                    <sl-input id="endTime" name="Event.EndTime" label="End Time" type="time" required class="half" value="@(Model.Event.EndDate == default ? "" : Model.Event.EndDate.ToString("HH:mm"))"></sl-input>
                 </div>
 
-                <sl-input id="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:none"></sl-input>
+                <sl-input id="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:@(string.IsNullOrEmpty(Model.Event.Location) || Model.Event.Location == "Amsterdam" || Model.Event.Location == "Eindhoven" || Model.Event.Location == "Online" ? "none" : "");" value="@(Model.Event.Location)"></sl-input>
 
                 <div class="form-row">
                     <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "" : Model.Event.Capacity.ToString())" class="half"></sl-input>
@@ -71,8 +74,10 @@
         const endTime = document.getElementById('endTime');
         const capacity = document.getElementById('capacity');
         const cost = document.getElementById('cost');
+
         // Elements
         const form = document.getElementById('eventForm');
+
         // hidden inputs for model binding
         const hiddenId = document.getElementById('hiddenId');
         const hiddenTitle = document.getElementById('hiddenTitle');
@@ -92,6 +97,14 @@
           if(useText) locationText.focus();
         }
         locationRef.addEventListener('sl-change', toggleLocationText);
+
+        // Build ISO datetimes for hidden fields from date + time controls
+        function buildIso(dateVal, timeVal) {
+            if (!dateVal) return '';
+            if (!timeVal) return dateVal; // date only
+            // ensure both parts present and return combined local datetime
+            return `${dateVal}T${timeVal}`;
+        }
 
         // copy values from visual controls into hidden inputs before submit
         function syncToHidden(){
