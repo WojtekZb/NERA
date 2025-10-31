@@ -59,6 +59,7 @@
                 return __serverEvents.map(e => {
                     const title = e.title ?? e.Title ?? '';
                     const start = e.startDate ?? e.StartDate;
+                    const end = e.endDate ?? e.EndDate;
                     const location = e.location ?? e.Location ?? '';
                     const cost = e.cost ?? e.Cost;
                     const capacity = e.capacity ?? e.Capacity;

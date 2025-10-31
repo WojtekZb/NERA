@@ -3,6 +3,12 @@
 @{
     ViewData["Title"] = "NERA - EVENT CREATER";
 }
+@{
+    // Decide what the <sl-select> should show.
+    var loc = Model.Event?.Location;
+    var isKnown = loc == "Amsterdam" || loc == "Eindhoven" || loc == "Online";
+    var selectValue = string.IsNullOrEmpty(loc) ? "" : (isKnown ? loc : "other");
+}
 
 <div class="create-page">
     <main class="container">
@@ -25,16 +31,16 @@
                 <!-- shoelace controls (visual UI) - keep value attributes to prefill UI -->
                 <sl-input id="title" name="Event.Title" label="Event Title" placeholder="Enter the title" required class="full" value="@Model.Event.Title"></sl-input>
 
-                <sl-textarea id="description" name="Event.Description" label="Description" rows="5" required class="full">@Model.Event.Description</sl-textarea>
+                <sl-textarea id="description" name="Event.Description" label="Description" rows="5" required class="full" value="@Model.Event.Description"></sl-textarea>
 
                 <div class="form-row">
                     <sl-input id="date" name="Event.Date" label="Date" type="date" required class="half" value="@(Model.Event.StartDate == default ? "" : Model.Event.StartDate.ToString("yyyy-MM-dd"))"></sl-input>
-                    <sl-select id="locationRef" name="Event.Location" label="Location (list)" placeholder="Select a venue" hoist class="half">
+                    <sl-select id="locationRef" name="Event.Location" label="Location (list)" placeholder="Select a venue" hoist class="half" value="@selectValue">
                         <sl-option value="">— Select —</sl-option>
-                        <sl-option value="Amsterdam" @(Model.Event.Location == "Amsterdam" ? "selected" : "")>Amsterdam</sl-option>
-                        <sl-option value="Eindhoven" @(Model.Event.Location == "Eindhoven" ? "selected" : "")>Eindhoven</sl-option>
-                        <sl-option value="Online" @(Model.Event.Location == "Online" ? "selected" : "")>Online</sl-option>
-                        <sl-option value="other" @(Model.Event.Location != null && (Model.Event.Location != "Amsterdam" && Model.Event.Location != "Eindhoven" && Model.Event.Location != "Online") ? "selected" : "")>Other…</sl-option>
+                        <sl-option value="Amsterdam">Amsterdam</sl-option>
+                        <sl-option value="Eindhoven">Eindhoven</sl-option>
+                        <sl-option value="Online">Online</sl-option>
+                        <sl-option value="other">Other…</sl-option>
                     </sl-select>
                 </div>
 
