@@ -152,8 +152,15 @@
             
             registerButton.addEventListener('click', () => showEventDetails(ev));
             
+            // edit pencil click -> navigate to createevent page in edit mode with event id
+            const editIcon = card.querySelector('.pencil-icon');
+            editIcon.addEventListener('click', (e) => {
+             e.preventDefault();
+               // Reuse the Create Event page in edit mode by passing the id
+                     window.location.href = `/createevent?id=${encodeURIComponent(ev.id)}`; });
+            
             eventsRoot.appendChild(card);
-          })
+          });
         }
 
         // Applies client-side filters based on search text, status and city
@@ -201,17 +208,19 @@
                     <h2>${event.title}</h2>
                     <div class="event-info">
                         <div class="info-row">
-                            <strong>Date:</strong> ${event.date} <strong>Start Time:</strong> ${event.StartDate} <strong>End Time: </strong> ${event.EndDate}
+                            <strong>Date:</strong> ${event.date} 
+                            <strong>Start Time:</strong> ${event.start} 
+                            <strong>End Time: </strong> ${event.end}
                         </div>
                         <div class="info-row">
-                            <strong>Location:</strong> ${event.location}
+                            <strong>Location:</strong> ${event.location || ''}
                         </div>
                         <div class="info-row">
                             <strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}
                         </div>
                         <div class="info-row">
                             <strong>Description:</strong> 
-                            <p>Join us for an exciting event featuring industry leaders and innovative discussions. This event promises to deliver valuable insights and networking opportunities.</p>
+                            <p>${event.description || ''}</p>
                         </div>
                         <div class="info-row">
                             <strong>Cost:</strong> €${event.cost || ' N/A'}
@@ -311,11 +320,10 @@
 
 
         // Initial render
-
-
         getEvents().then(events => {
             render(events);
-        });
+             
+          });
 
 
     </script>

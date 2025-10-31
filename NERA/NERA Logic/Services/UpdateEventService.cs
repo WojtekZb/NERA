@@ -13,27 +13,35 @@ namespace Logic.Services
         }
         public async Task<Event?> GetByIdAsync(int id)
         {
-            // Assuming the repository has a method to get an event by ID
+            // retrieve event by ID from repository
             return await _repo.GetByIdAsync(id);
         }
         public async Task<bool> UpdateEventAsync(Event ev)
         {
-            var evenement = new Event
+            try
             {
-                Id = ev.Id,
-                Title = ev.Title,
-                StartDate = ev.StartDate,
-                EndDate = ev.EndDate,
-                Description = ev.Description,
-                Cost = ev.Cost,
-                Capacity = ev.Capacity,
-                Location = ev.Location,
-                Status = ev.Status
-            };
-            await _repo.UpdateEventAsync(evenement);
-            return true;
-        }
+                var evenement = new Event
+                {
+                    Id = ev.Id,
+                    Title = ev.Title,
+                    StartDate = ev.StartDate,
+                    EndDate = ev.EndDate,
+                    Description = ev.Description,
+                    Cost = ev.Cost,
+                    Capacity = ev.Capacity,
+                    Location = ev.Location,
+                    Status = ev.Status
+                };
+                await _repo.UpdateEventAsync(evenement);
+                return true;
+            }
+            catch (KeyNotFoundException)
+            {
+                //the event was not found in the database
+                return false;
+            }
 
+        }
     }
 }
 
