@@ -18,7 +18,7 @@ namespace Domain.Entities
         [Required]
         public double Cost { get; set; }
         [Required]
-        public int Capacity { get; set; }
+        public int? Capacity { get; set; }
         [Required]
         public string Description { get; set; } = string.Empty;
         [Required]

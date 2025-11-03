@@ -53,7 +53,7 @@
 
                 <div class="form-row">
                     <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "" : Model.Event.Capacity.ToString())" class="half"></sl-input>
-                    <sl-input id="cost" label="Cost (€)" type="number" min="0" step="0.01" value="@(Model.Event.Cost == 0 ? "" : Model.Event.Cost.ToString("F2"))" class="half"></sl-input>
+                    <sl-input id="cost" label="Cost (€)" type="number" min="0" step="0.01" value="@(Model.Event.Cost == 0 ? "0" : Model.Event.Cost.ToString("F2"))" class="half"></sl-input>
                 </div>
 
                 <div class="form-actions full">

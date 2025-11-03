@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitEvents2 : Migration
+    public partial class InitEvents : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,7 +22,7 @@ namespace Data.Migrations
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Cost = table.Column<double>(type: "float", nullable: false, defaultValue: 0.0),
-                    Capacity = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Capacity = table.Column<int>(type: "int", nullable: true, defaultValue: 0),
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
