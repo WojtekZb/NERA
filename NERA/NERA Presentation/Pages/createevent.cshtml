@@ -52,7 +52,7 @@
                 <sl-input id="locationText" label="Adress" placeholder="e.g. Convention Center" class="full" style="display:@(string.IsNullOrEmpty(Model.Event.Location) || Model.Event.Location == "Amsterdam" || Model.Event.Location == "Eindhoven" || Model.Event.Location == "Online" ? "none" : "");" value="@(Model.Event.Location)"></sl-input>
 
                 <div class="form-row">
-                    <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "" : Model.Event.Capacity.ToString())" class="half"></sl-input>
+                    <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "0" : Model.Event.Capacity.ToString())" class="half"></sl-input>
                     <sl-input id="cost" label="Cost (€)" type="number" min="0" step="0.01" value="@(Model.Event.Cost == 0 ? "0" : Model.Event.Cost.ToString("F2"))" class="half"></sl-input>
                 </div>
 
