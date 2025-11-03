@@ -108,7 +108,15 @@
         <!-- Content will be populated dynamically -->
     </div>
     <div slot="footer" class="modal-footer">
-        <sl-icon name="trash" class="trash-icon" data-event-id="${ev.title}"></sl-icon>
+        <!-- Trash Icon (form posts to the page handler). Hidden input 'id' set from JS when modal opens -->
+        <form id="deleteForm" method="post" asp-page-handler="Delete">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" id="deleteId" value="" />
+            <button type="submit" class=" trash-button" title="Delete event">
+                <sl-icon name="trash" class="trash-icon"></sl-icon>
+            </button>
+        </form>
+
         <sl-button id="registerBtn" variant="primary" class="btn-gradient">Register</sl-button>
         <sl-button id="closeModal" variant="default">Close</sl-button>
     </div>
@@ -139,15 +147,15 @@
                 <div><strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}</div>
               </div>
               <div class="event-actions">
-                <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'} data-event-id="${ev.title}">${isOpen ? 'Register' : 'Details'}</sl-button>
-                <sl-icon name="pencil" class="pencil-icon" data-event-id="${ev.title}"></sl-icon>  
+                <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'} data-event-id="${ev.id}">${isOpen ? 'Register' : 'Details'}</sl-button>
+                <sl-icon name="pencil" class="pencil-icon" data-event-id="${ev.id}"></sl-icon>  
               </div>
             `;
 
     /* <!-- trash name needed to be change --> */ 
     /* <a href="/createevent?id=ev.Id" title="Edit event"><sl-button pill class="btn-edit">Edit</sl-button></a> */
                    
-            
+
             // Add click handlers to the buttons
             const registerButton = card.querySelector('.btn-register, .btn-details');
             
@@ -197,6 +205,7 @@
         const modalContent = document.getElementById('modalContent');
         const registerBtn = document.getElementById('registerBtn');
         const closeModal = document.getElementById('closeModal');
+        const deleteIdInput = document.getElementById('deleteId');
         let currentEvent = null;
 
         // Show event details in modal (pop up page)
@@ -232,6 +241,11 @@
                     </div>
                 </div>
             `;
+
+            // Set the hidden delete id so the Razor Page handler receives it
+            if (deleteIdInput) {
+                deleteIdInput.value = event.id ?? event.Id ?? '';
+            }
             
             // Show/hide register button based on status
             registerBtn.style.display = isOpen ? 'block' : 'none';
