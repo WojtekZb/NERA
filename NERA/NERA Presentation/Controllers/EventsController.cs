@@ -18,12 +18,13 @@ namespace Presentation.Controllers
             _context = context;
         }
 
+        
         [HttpGet]
         public async Task<IActionResult> GetEvents()
         {
             var events = await _context.Set<Event>().ToListAsync();
             return Ok(events);
         }
-    }
+    }   
 }
 
