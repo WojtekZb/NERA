@@ -35,7 +35,7 @@
 
                 <div class="form-row">
                     <sl-input id="date" name="Event.Date" label="Date" type="date" required class="half" value="@(Model.Event.StartDate == default ? "" : Model.Event.StartDate.ToString("yyyy-MM-dd"))"></sl-input>
-                    <sl-select id="locationRef" name="Event.Location" label="Location (list)" placeholder="Select a venue" hoist class="half" value="@selectValue">
+                    <sl-select id="locationRef" name="Event.Location" label="Closest CGI office (list)" placeholder="Select a venue" hoist class="half" value="@selectValue">
                         <sl-option value="">— Select —</sl-option>
                         <sl-option value="Amsterdam">Amsterdam</sl-option>
                         <sl-option value="Eindhoven">Eindhoven</sl-option>
@@ -49,7 +49,7 @@
                     <sl-input id="endTime" name="Event.EndTime" label="End Time" type="time" required class="half" value="@(Model.Event.EndDate == default ? "" : Model.Event.EndDate.ToString("HH:mm"))"></sl-input>
                 </div>
 
-                <sl-input id="locationText" label="Location (text)" placeholder="e.g. Convention Center" class="full" style="display:@(string.IsNullOrEmpty(Model.Event.Location) || Model.Event.Location == "Amsterdam" || Model.Event.Location == "Eindhoven" || Model.Event.Location == "Online" ? "none" : "");" value="@(Model.Event.Location)"></sl-input>
+                <sl-input id="locationText" label="Adress" placeholder="e.g. Convention Center" class="full" style="display:@(string.IsNullOrEmpty(Model.Event.Location) || Model.Event.Location == "Amsterdam" || Model.Event.Location == "Eindhoven" || Model.Event.Location == "Online" ? "none" : "");" value="@(Model.Event.Location)"></sl-input>
 
                 <div class="form-row">
                     <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "" : Model.Event.Capacity.ToString())" class="half"></sl-input>
