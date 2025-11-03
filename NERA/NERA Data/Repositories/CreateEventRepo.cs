@@ -24,7 +24,7 @@ namespace Data.Repositories
         {
             //Load the trackes entity
             var existing = await _context.Events.FindAsync(evenement.Id);
-            if(existing != null)
+            if(existing == null)
             {
                 throw new KeyNotFoundException($"Event with Id{evenement.Id} not found");
             }
@@ -47,6 +47,15 @@ namespace Data.Repositories
             return await _context.Events
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e=> e.Id == id);
+        }
+
+        public async Task<Event> SaveChangeAsync(Event evenement)
+        {
+            // For detached entities: attach and mark modified
+            _context.Attach(evenement);
+            _context.Entry(evenement).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return evenement;
         }
     }
 }

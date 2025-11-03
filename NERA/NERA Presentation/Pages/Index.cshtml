@@ -34,58 +34,38 @@
 
     <!-- Events Grid: responsive 1/2/3-column layout -->
     <section id="events" class="events-grid"></section>
-    @foreach (var ev in Model.Events)
-    {
-        var isOpen = ev.Status.ToString().ToLower().Contains("open");
-        <sl-card class="event-card" data-id="@ev.Id"
-                 data-title="@ev.Title"
-                 data-date="@ev.StartDate.ToString("yyyy-MM-dd")"
-                 data-location="@ev.Location"
-                 data-status="@ev.Status"
-                 data-cost="@ev.Cost"
-                 data-capacity="@ev.Capacity"
-                 data-description="@ev.Description">
-            <div class="accent-bar"></div>
-            <h2>@ev.Title</h2>
-            <div class="event-meta">
-                <div><strong>Date:</strong> @ev.StartDate.ToString("yyyy-MM-dd")</div>
-                <div><strong>Location:</strong> @ev.Location</div>
-                <div>
-                    <strong>Status:</strong>
-                    @if (isOpen)
-                    {
-                        <sl-badge class="gradient">Open for Registration</sl-badge>
-                    }
-                    else
-                    {
-                        <sl-badge variant="neutral">Closed</sl-badge>
-                    }
-                </div>
-            </div>
-            <div class="event-actions">
-                <sl-button pill class="btn-details">Details</sl-button>
-                <a href="/createevent?id=@ev.Id" title="Edit event"><sl-button pill class="btn-edit">Edit</sl-button></a>
-            </div>
-        </sl-card>
-    }
-    </section>
 </main>
     <script>
-        // Get events from Database and map to UI shape
+        // use pagemodel data instead of fetching /api/events
+        // serialized with camelCase to match existing clinet mapping
+        const __serverEvents = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Events.Select(e => new {
+            id = e.Id,
+            title = e.Title,
+            startDate = e.StartDate,
+            endDate = e.EndDate,
+            location = e.Location,
+            city = "", // set to e.City if your Event has a City property
+            status = e.Status.ToString(),
+            cost = e.Cost,
+            capacity = e.Capacity,
+            description = e.Description
+        }),
+ 
+           new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }));
+           // keep then same mapping shape then rest of your client code expects
         async function getEvents() {
             try {
-                const response = await fetch('/api/events');
-                if (!response.ok) throw new Error('Failed to fetch events');
-                const events = await response.json();
-                return events.map(e => {
-                    const id = e.id ?? e.Id ?? '';
+                // map server-provided events to the client shape (same logic as before)
+                return __serverEvents.map(e => {
                     const title = e.title ?? e.Title ?? '';
                     const start = e.startDate ?? e.StartDate;
+                    const end = e.endDate ?? e.EndDate;
                     const location = e.location ?? e.Location ?? '';
                     const cost = e.cost ?? e.Cost;
                     const capacity = e.capacity ?? e.Capacity;
                     const description = e.description ?? e.Description ?? '';
                     const rawStatus = e.status ?? e.Status; // may be string or enum numeric
+
                     let statusText;
                     if (typeof rawStatus === 'string') {
                         statusText = rawStatus;
@@ -94,7 +74,7 @@
                         statusText = rawStatus === 0 ? 'Open for Registration' : 'Closed';
                     }
                     return {
-                        id, 
+                        id: e.id,
                         title,
                         date: start ? new Date(start).toLocaleDateString() : '',
                         location,
@@ -181,8 +161,15 @@
             
             registerButton.addEventListener('click', () => showEventDetails(ev));
             
+            // edit pencil click -> navigate to createevent page in edit mode with event id
+            const editIcon = card.querySelector('.pencil-icon');
+            editIcon.addEventListener('click', (e) => {
+             e.preventDefault();
+               // Reuse the Create Event page in edit mode by passing the id
+                     window.location.href = `/createevent?id=${encodeURIComponent(ev.id)}`; });
+            
             eventsRoot.appendChild(card);
-          })
+          });
         }
 
         // Applies client-side filters based on search text, status and city
@@ -231,17 +218,19 @@
                     <h2>${event.title}</h2>
                     <div class="event-info">
                         <div class="info-row">
-                            <strong>Date:</strong> ${event.date} <strong>Start Time:</strong> ${event.StartDate} <strong>End Time: </strong> ${event.EndDate}
+                            <strong>Date:</strong> ${event.date} 
+                            <strong>Start Time:</strong> ${event.start} 
+                            <strong>End Time: </strong> ${event.end}
                         </div>
                         <div class="info-row">
-                            <strong>Location:</strong> ${event.location}
+                            <strong>Location:</strong> ${event.location || ''}
                         </div>
                         <div class="info-row">
                             <strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}
                         </div>
                         <div class="info-row">
                             <strong>Description:</strong> 
-                            <p>Join us for an exciting event featuring industry leaders and innovative discussions. This event promises to deliver valuable insights and networking opportunities.</p>
+                            <p>${event.description || ''}</p>
                         </div>
                         <div class="info-row">
                             <strong>Cost:</strong> €${event.cost || ' N/A'}
@@ -346,11 +335,10 @@
 
 
         // Initial render
-
-
         getEvents().then(events => {
             render(events);
-        });
+             
+          });
 
 
     </script>
