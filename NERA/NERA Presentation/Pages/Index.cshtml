@@ -73,12 +73,20 @@
                         // Assuming EventStatus enum: 0 = Open, 1 = Closed
                         statusText = rawStatus === 0 ? 'Open for Registration' : 'Closed';
                     }
+                    // Map location to city for filtering
+                    let city = '';
+                    if (location === 'Amsterdam' || location === 'Eindhoven' || location === 'Online') {
+                        city = location;
+                    } else if (location && location.trim() !== '') {
+                        city = 'Other Location';
+                    }
+                    
                     return {
                         id: e.id,
                         title,
                         date: start ? new Date(start).toLocaleDateString() : '',
                         location,
-                        city: e.city ?? e.City ?? '',
+                        city: city,
                         status: statusText,
                         cost,
                         capacity,
@@ -566,5 +574,38 @@
 
         .btn-calendar {
             margin-left: auto;
+        }
+        
+        /* Improved My Calendar button styling */
+        sl-button.btn-calendar::part(base) {
+            background: var(--gradient);
+            color: #fff;
+            border: none;
+            height: 36px;
+            border-radius: 9999px !important;
+            padding: 0 20px;
+            font-weight: 700;
+            box-shadow: 0 6px 14px rgba(82,54,171,.18);
+            transition: filter .18s ease, transform .18s ease, box-shadow .18s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        sl-button.btn-calendar::part(base):hover {
+            filter: brightness(1.06);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(82,54,171,.28);
+        }
+        
+        sl-button.btn-calendar::part(base):active {
+            transform: translateY(0);
+            filter: brightness(1.02);
+        }
+        
+        sl-button.btn-calendar::part(label) {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
