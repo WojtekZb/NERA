@@ -34,6 +34,41 @@
 
     <!-- Events Grid: responsive 1/2/3-column layout -->
     <section id="events" class="events-grid"></section>
+    @foreach (var ev in Model.Events)
+    {
+        var isOpen = ev.Status.ToString().ToLower().Contains("open");
+        <sl-card class="event-card" data-id="@ev.Id"
+                 data-title="@ev.Title"
+                 data-date="@ev.StartDate.ToString("yyyy-MM-dd")"
+                 data-location="@ev.Location"
+                 data-status="@ev.Status"
+                 data-cost="@ev.Cost"
+                 data-capacity="@ev.Capacity"
+                 data-description="@ev.Description">
+            <div class="accent-bar"></div>
+            <h2>@ev.Title</h2>
+            <div class="event-meta">
+                <div><strong>Date:</strong> @ev.StartDate.ToString("yyyy-MM-dd")</div>
+                <div><strong>Location:</strong> @ev.Location</div>
+                <div>
+                    <strong>Status:</strong>
+                    @if (isOpen)
+                    {
+                        <sl-badge class="gradient">Open for Registration</sl-badge>
+                    }
+                    else
+                    {
+                        <sl-badge variant="neutral">Closed</sl-badge>
+                    }
+                </div>
+            </div>
+            <div class="event-actions">
+                <sl-button pill class="btn-details">Details</sl-button>
+                <a href="/createevent?id=@ev.Id" title="Edit event"><sl-button pill class="btn-edit">Edit</sl-button></a>
+            </div>
+        </sl-card>
+    }
+    </section>
 </main>
     <script>
         // Get events from Database and map to UI shape

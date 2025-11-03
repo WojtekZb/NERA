@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace NERA_Presentation.Pages
 {
-    public class Index1Model : PageModel
+    public class CreateEventModel : PageModel
     {
         private readonly CreateEventService _service;
         private readonly UpdateEventService _updateService;
 
 
-        public Index1Model(CreateEventService service, UpdateEventService updateEventService)
+        public CreateEventModel(CreateEventService service, UpdateEventService updateEventService)
         {
             _service = service;
             _updateService = updateEventService;

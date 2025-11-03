@@ -18,6 +18,7 @@ namespace Presentation.Controllers
             _context = context;
         }
 
+        
         [HttpGet]
         public async Task<IActionResult> GetEvents()
         {
