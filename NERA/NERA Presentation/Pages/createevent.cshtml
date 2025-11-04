@@ -22,7 +22,8 @@
                 <input asp-for="Event.Description" type="hidden" id="hiddenDescription" />
                 <input asp-for="Event.StartDate" type="hidden" id="hiddenStartDate" />
                 <input asp-for="Event.EndDate" type="hidden" id="hiddenEndDate" />
-                <input asp-for="Event.CGI" type="hidden" id="hiddenLocation" />
+                <input asp-for="Event.CGI" type="hidden" id="hiddenCGI" />
+                <input asp-for="Event.Adress" type="hidden" id="hiddenAdress" />
                 <input asp-for="Event.Cost" type="hidden" id="hiddenCost" />
                 <input asp-for="Event.Capacity" type="hidden" id="hiddenCapacity" />
                 <input asp-for="Event.Status" type="hidden" id="hiddenStatus" value="0" />
@@ -35,12 +36,11 @@
 
                 <div class="form-row">
                     <sl-input id="date" name="Event.Date" label="Date" type="date" required class="half" value="@(Model.Event.StartDate == default ? "" : Model.Event.StartDate.ToString("yyyy-MM-dd"))"></sl-input>
-                    <sl-select id="locationRef" name="Event.Location" label="Closest CGI office (list)" placeholder="Select a venue" hoist class="half" value="@selectValue">
+                    <sl-select id="CGIRef" name="Event.CGI" label="Closest CGI office (list)" placeholder="Select a venue" hoist class="half" value="@selectValue">
                         <sl-option value="">— Select —</sl-option>
                         <sl-option value="Amsterdam">Amsterdam</sl-option>
                         <sl-option value="Eindhoven">Eindhoven</sl-option>
                         <sl-option value="Online">Online</sl-option>
-                        <sl-option value="other">Other…</sl-option>
                     </sl-select>
                 </div>
 
@@ -49,8 +49,7 @@
                     <sl-input id="endTime" name="Event.EndTime" label="End Time" type="time" required class="half" value="@(Model.Event.EndDate == default ? "" : Model.Event.EndDate.ToString("HH:mm"))"></sl-input>
                 </div>
 
-                <sl-input id="locationText" label="Adress" placeholder="e.g. Convention Center" class="full" style="display:@(string.IsNullOrEmpty(Model.Event.CGI) || Model.Event.CGI == "Amsterdam" || Model.Event.CGI == "Eindhoven" || Model.Event.CGI == "Online" ? "none" : "");" value="@(Model.Event.CGI)"></sl-input>
-
+                <sl-input id="AdressText" name="Event.Adress" label="Adress" placeholder="e.g. Convention Center" class="full" value="@(Model.Event.Adress)"></sl-input>
                 <div class="form-row">
                     <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "0" : Model.Event.Capacity.ToString())" class="half"></sl-input>
                     <sl-input id="cost" label="Cost (€)" type="number" min="0" step="0.01" value="@(Model.Event.Cost == 0 ? "0" : Model.Event.Cost.ToString("F2"))" class="half"></sl-input>
@@ -70,8 +69,8 @@
 
     <script>
         // visual controls
-        const locationRef = document.getElementById('locationRef');
-        const locationText = document.getElementById('locationText');
+        const CGIRef = document.getElementById('CGIRef');
+        const AdressText = document.getElementById('AdressText');
         const title = document.getElementById('title');
         const description = document.getElementById('description');
         const date = document.getElementById('date');
@@ -89,19 +88,12 @@
         const hiddenDescription = document.getElementById('hiddenDescription');
         const hiddenStartDate = document.getElementById('hiddenStartDate');
         const hiddenEndDate = document.getElementById('hiddenEndDate');
-        const hiddenLocation = document.getElementById('hiddenLocation');
+        const hiddenCGI = document.getElementById('hiddenCGI');
+        const hiddenAdress = document.getElementById('hiddenAdress');
         const hiddenCost = document.getElementById('hiddenCost');
         const hiddenCapacity = document.getElementById('hiddenCapacity');
         const hiddenStatus = document.getElementById('hiddenStatus');
 
-        // Toggle free-text location when selecting "Other…"
-        function toggleLocationText(){
-          const useText = locationRef.value === 'other';
-          locationText.style.display = useText ? '' : 'none';
-          locationText.toggleAttribute('required', useText);
-          if(useText) locationText.focus();
-        }
-        locationRef.addEventListener('sl-change', toggleLocationText);
 
         // Build ISO datetimes for hidden fields from date + time controls
         function buildIso(dateVal, timeVal) {
@@ -128,7 +120,8 @@
             } else {
                 hiddenEndDate.value = '';
             }
-            hiddenLocation.value = (locationRef.value === 'other' ? locationText.value : locationRef.value) || '';
+            hiddenCGI.value = CGIRef.value || '';
+            hiddenAdress.value = AdressText.value || '';
             hiddenCost.value = cost.value || '';
             hiddenCapacity.value = capacity.value || '';
             // Default new events to Open (enum 0)

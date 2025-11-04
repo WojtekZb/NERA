@@ -14,8 +14,8 @@
             <sl-input id="search" placeholder="Search events…" clearable></sl-input>
             <!-- Status filter: All/Open/Closed -->
             <sl-select id="statusFilter" placeholder="Status">
-                <sl-option value="all" >All</sl-option>
                 <sl-option value="open" selected>Open for Registration</sl-option>
+                <sl-option value="all" >All</sl-option>
                 <sl-option value="closed">Closed</sl-option>
             </sl-select>
             <!-- City filter (client-side only) -->
@@ -44,7 +44,7 @@
             startDate = e.StartDate,
             endDate = e.EndDate,
             location = e.CGI,
-            city = "", // set to e.City if your Event has a City property
+            adress = e.Adress,
             status = e.Status.ToString(),
             cost = e.Cost,
             capacity = e.Capacity,
@@ -60,7 +60,8 @@
                     const title = e.title ?? e.Title ?? '';
                     const start = e.startDate ?? e.StartDate;
                     const end = e.endDate ?? e.EndDate;
-                    const location = e.location ?? e.Location ?? '';
+                    const CGI = e.CGI ?? e.CGI ?? '';
+                    const adress = e.adress ?? e.adress ?? '';
                     const cost = e.cost ?? e.Cost;
                     const capacity = e.capacity ?? e.Capacity;
                     const description = e.description ?? e.Description ?? '';
@@ -75,9 +76,9 @@
                     }
                     // Map location to city for filtering
                     let city = '';
-                    if (location === 'Amsterdam' || location === 'Eindhoven' || location === 'Online') {
-                        city = location;
-                    } else if (location && location.trim() !== '') {
+                    if (CGI === 'Amsterdam' || CGI === 'Eindhoven' || CGI === 'Online') {
+                        city = CGI;
+                    } else if (CGI && CGI.trim() !== '') {
                         city = 'Other Location';
                     }
                     
@@ -85,7 +86,7 @@
                         id: e.id,
                         title,
                         date: start ? new Date(start).toLocaleDateString() : '',
-                        location,
+                        CGI,
                         city: city,
                         status: statusText,
                         cost,
@@ -151,7 +152,8 @@
               <h2>${ev.title}</h2>
               <div class="event-meta">
                 <div><strong>Date:</strong> ${ev.date}</div>
-                <div><strong>Location:</strong> ${ev.location}</div>
+                <div><strong>CGI office:</strong> ${ev.CGI}</div>
+                <div><strong>Adress:</strong> ${ev.adress}</div>
                 <div><strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}</div>
               </div>
               <div class="event-actions">
@@ -231,7 +233,10 @@
                             <strong>End Time: </strong> ${event.end}
                         </div>
                         <div class="info-row">
-                            <strong>Location:</strong> ${event.location || ''}
+                            <strong>CGI office:</strong> ${event.CGI || ''}
+                        </div>
+                        <div class="info-row">
+                            <strong>Adress:</strong> ${event.adress || ''}
                         </div>
                         <div class="info-row">
                             <strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}
