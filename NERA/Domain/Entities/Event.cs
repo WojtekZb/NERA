@@ -14,7 +14,9 @@ namespace Domain.Entities
         [Required]
         public DateTime EndDate { get; set; }
         [Required]
-        public string Location { get; set; } = string.Empty;
+        public string CGI { get; set; } = string.Empty;
+        [Required]
+        public string Adress { get; set; } = string.Empty;
         [Required]
         public double Cost { get; set; }
         [Required]

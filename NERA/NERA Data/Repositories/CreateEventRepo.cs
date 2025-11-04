@@ -32,7 +32,7 @@ namespace Data.Repositories
             existing.Title = evenement.Title;
             existing.StartDate = evenement.StartDate;
             existing.EndDate = evenement.EndDate;
-            existing.Location = evenement.Location;
+            existing.CGI = evenement.CGI;
             existing.Cost = evenement.Cost;
             existing.Capacity = evenement.Capacity;
             existing.Description = evenement.Description;

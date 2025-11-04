@@ -1,12 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Configurations;
 
@@ -17,7 +11,8 @@ public class EventConfig : IEntityTypeConfiguration<Event>
         e.Property(x => x.Title).IsRequired().HasMaxLength(200);
         e.Property(x => x.StartDate).IsRequired();
         e.Property(x => x.EndDate).IsRequired();
-        e.Property(x => x.Location).HasMaxLength(200);
+        e.Property(x => x.CGI).HasMaxLength(200);
+        e.Property(x => x.Adress).HasMaxLength(200);
         e.Property(x => x.Cost).HasDefaultValue(0.00);
         e.Property(x => x.Capacity).HasDefaultValue(0).IsRequired(false);
         e.Property(x => x.Description).HasMaxLength(2000);

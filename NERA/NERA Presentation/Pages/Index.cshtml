@@ -14,8 +14,8 @@
             <sl-input id="search" placeholder="Search events…" clearable></sl-input>
             <!-- Status filter: All/Open/Closed -->
             <sl-select id="statusFilter" placeholder="Status">
-                <sl-option value="all" selected>All</sl-option>
-                <sl-option value="open">Open for Registration</sl-option>
+                <sl-option value="all" >All</sl-option>
+                <sl-option value="open" selected>Open for Registration</sl-option>
                 <sl-option value="closed">Closed</sl-option>
             </sl-select>
             <!-- City filter (client-side only) -->
@@ -43,7 +43,7 @@
             title = e.Title,
             startDate = e.StartDate,
             endDate = e.EndDate,
-            location = e.Location,
+            location = e.CGI,
             city = "", // set to e.City if your Event has a City property
             status = e.Status.ToString(),
             cost = e.Cost,

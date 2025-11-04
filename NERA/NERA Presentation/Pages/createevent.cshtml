@@ -5,7 +5,7 @@
 }
 @{
     // Decide what the <sl-select> should show.
-    var loc = Model.Event?.Location;
+    var loc = Model.Event?.CGI;
     var isKnown = loc == "Amsterdam" || loc == "Eindhoven" || loc == "Online";
     var selectValue = string.IsNullOrEmpty(loc) ? "" : (isKnown ? loc : "other");
 }
@@ -22,7 +22,7 @@
                 <input asp-for="Event.Description" type="hidden" id="hiddenDescription" />
                 <input asp-for="Event.StartDate" type="hidden" id="hiddenStartDate" />
                 <input asp-for="Event.EndDate" type="hidden" id="hiddenEndDate" />
-                <input asp-for="Event.Location" type="hidden" id="hiddenLocation" />
+                <input asp-for="Event.CGI" type="hidden" id="hiddenLocation" />
                 <input asp-for="Event.Cost" type="hidden" id="hiddenCost" />
                 <input asp-for="Event.Capacity" type="hidden" id="hiddenCapacity" />
                 <input asp-for="Event.Status" type="hidden" id="hiddenStatus" value="0" />
@@ -49,7 +49,7 @@
                     <sl-input id="endTime" name="Event.EndTime" label="End Time" type="time" required class="half" value="@(Model.Event.EndDate == default ? "" : Model.Event.EndDate.ToString("HH:mm"))"></sl-input>
                 </div>
 
-                <sl-input id="locationText" label="Adress" placeholder="e.g. Convention Center" class="full" style="display:@(string.IsNullOrEmpty(Model.Event.Location) || Model.Event.Location == "Amsterdam" || Model.Event.Location == "Eindhoven" || Model.Event.Location == "Online" ? "none" : "");" value="@(Model.Event.Location)"></sl-input>
+                <sl-input id="locationText" label="Adress" placeholder="e.g. Convention Center" class="full" style="display:@(string.IsNullOrEmpty(Model.Event.CGI) || Model.Event.CGI == "Amsterdam" || Model.Event.CGI == "Eindhoven" || Model.Event.CGI == "Online" ? "none" : "");" value="@(Model.Event.CGI)"></sl-input>
 
                 <div class="form-row">
                     <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "0" : Model.Event.Capacity.ToString())" class="half"></sl-input>

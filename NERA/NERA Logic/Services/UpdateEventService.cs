@@ -29,7 +29,8 @@ namespace Logic.Services
                     Description = ev.Description,
                     Cost = ev.Cost,
                     Capacity = ev.Capacity,
-                    Location = ev.Location,
+                    CGI = ev.CGI,
+                    Adress = ev.Adress,
                     Status = ev.Status
                 };
                 await _repo.UpdateEventAsync(evenement);
