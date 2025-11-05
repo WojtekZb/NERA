@@ -96,6 +96,8 @@
                     id: e.id,
                     title,
                     date: start ? new Date(start).toLocaleDateString() : '',
+                    startTime: start ? new Date(start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+                    endTime: end ? new Date(end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
                     cgi,
                     city: city,
                     adress,
@@ -245,8 +247,12 @@
                         <div class="event-info">
                             <div class="info-row">
                                 <strong>Date:</strong> ${event.date}
-                                <strong>Start Time:</strong> ${event.start}
-                                <strong>End Time: </strong> ${event.end}
+                            </div>
+                            <div class="info-row">
+                                <strong>Start Time:</strong> ${event.startTime || 'N/A'}
+                            </div>
+                            <div class="info-row">
+                                <strong>End Time:</strong> ${event.endTime || 'N/A'}
                             </div>
                             <div class="info-row">
                                 <strong>cgi office:</strong> ${event.cgi || ''}
@@ -413,7 +419,11 @@
     }
 
     sl-select {
-        width: 180px;
+        width: 250px;
+    }
+
+    sl-input {
+        width: 300px;
     }
 
     /* Event cards */
