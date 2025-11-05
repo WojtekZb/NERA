@@ -150,51 +150,84 @@
     </script>
 
     <style>
-    /* Center the form and increase its size */
-    .large-centered-form {
-        max-width: 600px !important;
-        min-width: 350px;
-        margin: 48px auto !important;
-        padding: 40px 36px !important;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    :root {
+    --sl-z-index-dropdown: 50000;
     }
+
+    /* DROPDOWN MENU */
+    sl-select::part(menu__base),
+    sl-select::part(listbox) {
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    z-index: var(--sl-z-index-dropdown);
+    }
+
+    /* SHOELACE DROPDOWN */
+    sl-option::part(base) {
+    background-color: transparent;
+    color: #374151;
+    padding: 0.5rem 0.75rem;
+    }
+    sl-option:hover::part(base) {
+    background-color: #f3f4f6;
+    color: #1f2937;
+    }
+    sl-option[selected]::part(base),
+    sl-option[checked]::part(base) {
+    background-color: #3b82f6;
+    color: #fff;
+    }
+
+    /* FORM */
     .form-grid sl-input,
     .form-grid sl-textarea,
     .form-grid sl-select {
-        font-size: 1.15rem;
-    }
-    .form-row {
-        display: flex;
-        gap: 24px;
-        margin-bottom: 0;
-    }
-    .form-row .half {
-        flex: 1 1 0;
-    }
-    .form-grid .full {
-        grid-column: 1 / -1;
-    }
-    .form-actions {
-        justify-content: center;
-    }
-    .larger-bg {
-        max-width: 900px !important;
-        min-width: 400px;
-        min-height: 520px;
-        margin: 48px auto !important;
-        padding: 56px 48px !important;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    font-size: 1.15rem;
     }
 
-        :root {
-            --sl-z-index-dropdown: 50000; /* ou o valor que precisar */
-        }
+    .form-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 0;
+    }
+
+    .form-row .half {
+    flex: 1 1 0;
+    }
+
+    .form-grid .full {
+    grid-column: 1 / -1;
+    }
+
+    .form-actions {
+    justify-content: center;
+    }
+
+    /* Layout */
+    .large-centered-form {
+    max-width: 600px !important;
+    min-width: 350px;
+    margin: 48px auto !important;
+    padding: 40px 36px !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    }
+
+    .larger-bg {
+    max-width: 900px !important;
+    min-width: 400px;
+    min-height: 520px;
+    margin: 48px auto !important;
+    padding: 56px 48px !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    }
 
     </style>
 </div>
