@@ -13,8 +13,15 @@ namespace Logic.Services
         }
         public async Task<Event?> GetByIdAsync(int id)
         {
-            // retrieve event by ID from repository
-            return await _repo.GetByIdAsync(id);
+            try
+            {
+                return await _repo.GetByIdAsync(id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("⚠️ Database not reachable: " + ex.Message);
+                return null;
+            }
         }
         public async Task<bool> UpdateEventAsync(Event ev)
         {

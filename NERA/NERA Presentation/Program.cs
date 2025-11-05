@@ -1,5 +1,6 @@
 using Data;
 using Data.Repositories;
+using Domain.Entities;
 using Domain.Interfaces;
 using Logic.Services;
 using Microsoft.EntityFrameworkCore;
@@ -38,5 +39,29 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    try
+    {
+        // Try connecting to DB
+        if (!db.Database.CanConnect())
+        {
+            Console.WriteLine("?? Database not reachable. Running in limited mode.");
+        }
+        else
+        {
+            // Optional: run migrations or seed data if connected
+            // db.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("?? Could not connect to the database: " + ex.Message);
+        DbStatus.DbAvailable = false;
+    }
+}
 
 app.Run();

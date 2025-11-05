@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\NERA Data\Data.csproj" />
     <ProjectReference Include="..\NERA Logic\Logic.csproj" />
   </ItemGroup>

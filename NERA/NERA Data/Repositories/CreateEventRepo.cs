@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories
@@ -17,7 +18,6 @@ namespace Data.Repositories
         {
             _context.Events.Add(evenement);
             await _context.SaveChangesAsync();
-            Console.WriteLine("Saving event to DB: " + evenement.Title);
             return evenement;
         }
         public async Task UpdateEventAsync(Event evenement)
@@ -41,13 +41,13 @@ namespace Data.Repositories
 
             //save changes
             await _context.SaveChangesAsync();
-            Console.WriteLine("Updating event in DB: " + existing.Title);
         }
         public async Task<Event?> GetByIdAsync(int id)
         {
+
             return await _context.Events
-                .AsNoTracking()
-                .FirstOrDefaultAsync(e=> e.Id == id);
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task<Event> SaveChangeAsync(Event evenement)
