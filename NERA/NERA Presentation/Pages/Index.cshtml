@@ -13,9 +13,9 @@
             <!-- Free-text search over the event title -->
             <sl-input id="search" placeholder="Search events…" clearable></sl-input>
             <!-- Status filter: All/Open/Closed -->
-            <sl-select id="statusFilter" placeholder="Status">
-                <sl-option value="open" >Open for Registration</sl-option>
+            <sl-select id="statusFilter" placeholder="Status" value="open">
                 <sl-option value="all" >All</sl-option>
+                <sl-option value="open" >Open for Registration</sl-option>
                 <sl-option value="closed">Closed</sl-option>
             </sl-select>
             <!-- City filter (client-side only) -->
@@ -49,7 +49,7 @@
             cost = e.Cost,
             capacity = e.Capacity,
             description = e.Description
-        }),
+        }), 
  
            new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }));
            // keep then same mapping shape then rest of your client code expects
@@ -101,6 +101,13 @@
             }
         }
     </script>
+
+    <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('statusFilter').value = 'open';
+  });
+</script>
+
 
 <!-- Calendar Modal -->
 <sl-dialog id="calendarModal" label="My Calendar" class="calendar-modal">
