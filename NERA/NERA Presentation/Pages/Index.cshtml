@@ -13,16 +13,20 @@
             <!-- Free-text search over the event title -->
             <sl-input id="search" placeholder="Search events…" clearable></sl-input>
             <!-- Status filter: All/Open/Closed -->
-            <sl-select id="statusFilter" placeholder="Status" value="open">
+            <sl-select id="statusFilter" placeholder="Status" value="open" hoist>
                 <sl-option value="all" >All</sl-option>
                 <sl-option value="open" >Open for Registration</sl-option>
                 <sl-option value="closed">Closed</sl-option>
             </sl-select>
             <!-- City filter (client-side only) -->
-            <sl-select id="cityFilter" placeholder="City">
+            <sl-select id="cityFilter" placeholder="City" hoist>
                 <sl-option value="all" >All Cities</sl-option>
-                <sl-option value="Amsterdam">Amsterdam</sl-option>
-                <sl-option value="Eindhoven">Eindhoven</sl-option>
+                <sl-option value="Amsterdam">Amsterdam Office</sl-option>
+                <sl-option value="Eindhoven">Eindhoven Office</sl-option>
+                <sl-option value="Arnhem">Arnhem Office</sl-option>
+                <sl-option value="Groningen">Groningen Office</sl-option>
+                <sl-option value="Rotterdam">Rotterdam Office</sl-option>
+                <sl-option value="Maastricht">Maastricht Office</sl-option>
                 <sl-option value="Other Location">Other Location</sl-option>
             </sl-select>
             <sl-button id="myCalendarBtn" variant="primary" class="btn-calendar">
@@ -43,7 +47,7 @@
             title = e.Title,
             startDate = e.StartDate,
             endDate = e.EndDate,
-            location = e.CGI,
+            cgi = e.CGI,
             adress = e.Adress,
             status = e.Status.ToString(),
             cost = e.Cost,
@@ -60,7 +64,7 @@
                     const title = e.title ?? e.Title ?? '';
                     const start = e.startDate ?? e.StartDate;
                     const end = e.endDate ?? e.EndDate;
-                    const CGI = e.CGI ?? e.CGI ?? '';
+                    const cgi = e.cgi ?? e.cgi ?? '';
                     const adress = e.adress ?? e.adress ?? '';
                     const cost = e.cost ?? e.Cost;
                     const capacity = e.capacity ?? e.Capacity;
@@ -74,11 +78,11 @@
                         // Assuming EventStatus enum: 0 = Open, 1 = Closed
                         statusText = rawStatus === 0 ? 'Open for Registration' : 'Closed';
                     }
-                    // Map location to city for filtering
+                    // Map location to city for filtering (see if we need this)
                     let city = '';
-                    if (CGI === 'Amsterdam' || CGI === 'Eindhoven' || CGI === 'Online') {
-                        city = CGI;
-                    } else if (CGI && CGI.trim() !== '') {
+                    if (cgi === 'Amsterdam' || cgi === 'Eindhoven' || cgi === 'Arnhem' || cgi === 'Groningen' ||cgi === 'Rotterdam' || cgi === 'Maastricht' || cgi === 'Online') {
+                        city = cgi;
+                    } else if (cgi && cgi.trim() !== '') {
                         city = 'Other Location';
                     }
                     
@@ -86,7 +90,7 @@
                         id: e.id,
                         title,
                         date: start ? new Date(start).toLocaleDateString() : '',
-                        CGI,
+                        cgi,
                         city: city,
                         adress,
                         status: statusText,
@@ -160,8 +164,8 @@
               <h2>${ev.title}</h2>
               <div class="event-meta">
                 <div><strong>Date:</strong> ${ev.date}</div>
-                <div><strong>CGI office:</strong> ${ev.CGI}</div>
-                <div><strong>Adress:</strong> ${ev.adress}</div>
+                <div><strong>CGI office:</strong> ${ev.cgi}</div>
+                <div><strong>Address:</strong> ${ev.adress}</div>
                 <div><strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}</div>
               </div>
               <div class="event-actions">
@@ -169,9 +173,6 @@
                 <sl-icon name="pencil" class="pencil-icon" data-event-id="${ev.id}"></sl-icon>  
               </div>
             `;
-
-    /* <!-- trash name needed to be change --> */ 
-    /* <a href="/createevent?id=ev.Id" title="Edit event"><sl-button pill class="btn-edit">Edit</sl-button></a> */
                    
 
             // Add click handlers to the buttons
@@ -241,7 +242,7 @@
                             <strong>End Time: </strong> ${event.end}
                         </div>
                         <div class="info-row">
-                            <strong>CGI office:</strong> ${event.CGI || ''}
+                            <strong>cgi office:</strong> ${event.cgi || ''}
                         </div>
                         <div class="info-row">
                             <strong>Adress:</strong> ${event.adress || ''}
@@ -498,7 +499,6 @@
         }
 
         sl-option {
-            background-color: white;
             color: #374151;
             padding: 0.5rem 0.75rem;
         }

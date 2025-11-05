@@ -38,8 +38,12 @@
                     <sl-input id="date" name="Event.Date" label="Date" type="date" required class="half" value="@(Model.Event.StartDate == default ? "" : Model.Event.StartDate.ToString("yyyy-MM-dd"))"></sl-input>
                     <sl-select id="CGIRef" name="Event.CGI" label="Closest CGI office (list)" placeholder="Select a venue" hoist class="half" value="@selectValue">
                         <sl-option value="">— Select —</sl-option>
-                        <sl-option value="Amsterdam">Amsterdam</sl-option>
-                        <sl-option value="Eindhoven">Eindhoven</sl-option>
+                        <sl-option value="Amsterdam">Amsterdam Office</sl-option>
+                        <sl-option value="Eindhoven">Eindhoven Office</sl-option>
+                        <sl-option value="Arnhem">Arnhem Office</sl-option>
+                        <sl-option value="Groningen">Groningen Office</sl-option>
+                        <sl-option value="Rotterdam">Rotterdam Office</sl-option>
+                        <sl-option value="Maastricht">Maastricht Office</sl-option>
                         <sl-option value="Online">Online</sl-option>
                     </sl-select>
                 </div>
@@ -49,7 +53,7 @@
                     <sl-input id="endTime" name="Event.EndTime" label="End Time" type="time" required class="half" value="@(Model.Event.EndDate == default ? "" : Model.Event.EndDate.ToString("HH:mm"))"></sl-input>
                 </div>
 
-                <sl-input id="AdressText" name="Event.Adress" label="Adress" placeholder="e.g. Convention Center" class="full" value="@(Model.Event.Adress)"></sl-input>
+                <sl-input id="AdressText" name="Event.Adress" label="Address" placeholder="e.g. Convention Center" class="full" value="@(Model.Event.Adress)"></sl-input>
                 <div class="form-row">
                     <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "0" : Model.Event.Capacity.ToString())" class="half"></sl-input>
                     <sl-input id="cost" label="Cost (€)" type="number" min="0" step="0.01" value="@(Model.Event.Cost == 0 ? "0" : Model.Event.Cost.ToString("F2"))" class="half"></sl-input>
@@ -187,6 +191,11 @@
         flex-direction: column;
         align-items: center;
     }
+
+        :root {
+            --sl-z-index-dropdown: 50000; /* ou o valor que precisar */
+        }
+
     </style>
 </div>
 
