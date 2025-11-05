@@ -38,8 +38,12 @@
                     <sl-input id="date" name="Event.Date" label="Date" type="date" required class="half" value="@(Model.Event.StartDate == default ? "" : Model.Event.StartDate.ToString("yyyy-MM-dd"))"></sl-input>
                     <sl-select id="CGIRef" name="Event.CGI" label="Closest CGI office (list)" placeholder="Select a venue" hoist class="half" value="@selectValue">
                         <sl-option value="">— Select —</sl-option>
-                        <sl-option value="Amsterdam">Amsterdam</sl-option>
-                        <sl-option value="Eindhoven">Eindhoven</sl-option>
+                        <sl-option value="Amsterdam">Amsterdam Office</sl-option>
+                        <sl-option value="Eindhoven">Eindhoven Office</sl-option>
+                        <sl-option value="Arnhem">Arnhem Office</sl-option>
+                        <sl-option value="Groningen">Groningen Office</sl-option>
+                        <sl-option value="Rotterdam">Rotterdam Office</sl-option>
+                        <sl-option value="Maastricht">Maastricht Office</sl-option>
                         <sl-option value="Online">Online</sl-option>
                     </sl-select>
                 </div>
@@ -49,7 +53,7 @@
                     <sl-input id="endTime" name="Event.EndTime" label="End Time" type="time" required class="half" value="@(Model.Event.EndDate == default ? "" : Model.Event.EndDate.ToString("HH:mm"))"></sl-input>
                 </div>
 
-                <sl-input id="AdressText" name="Event.Adress" label="Adress" placeholder="e.g. Convention Center" class="full" value="@(Model.Event.Adress)"></sl-input>
+                <sl-input id="AdressText" name="Event.Adress" label="Address" placeholder="e.g. Convention Center" class="full" value="@(Model.Event.Adress)"></sl-input>
                 <div class="form-row">
                     <sl-input id="capacity" label="Max Registrations (Capacity)" type="number" min="0" value="@(Model.Event.Capacity == 0 ? "0" : Model.Event.Capacity.ToString())" class="half"></sl-input>
                     <sl-input id="cost" label="Cost (€)" type="number" min="0" step="0.01" value="@(Model.Event.Cost == 0 ? "0" : Model.Event.Cost.ToString("F2"))" class="half"></sl-input>
@@ -146,47 +150,85 @@
     </script>
 
     <style>
-    /* Center the form and increase its size */
-    .large-centered-form {
-        max-width: 600px !important;
-        min-width: 350px;
-        margin: 48px auto !important;
-        padding: 40px 36px !important;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    :root {
+    --sl-z-index-dropdown: 50000;
     }
+
+    /* DROPDOWN MENU */
+    sl-select::part(menu__base),
+    sl-select::part(listbox) {
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    z-index: var(--sl-z-index-dropdown);
+    }
+
+    /* SHOELACE DROPDOWN */
+    sl-option::part(base) {
+    background-color: transparent;
+    color: #374151;
+    padding: 0.5rem 0.75rem;
+    }
+    sl-option:hover::part(base) {
+    background-color: #f3f4f6;
+    color: #1f2937;
+    }
+    sl-option[selected]::part(base),
+    sl-option[checked]::part(base) {
+    background-color: #3b82f6;
+    color: #fff;
+    }
+
+    /* FORM */
     .form-grid sl-input,
     .form-grid sl-textarea,
     .form-grid sl-select {
-        font-size: 1.15rem;
+    font-size: 1.15rem;
     }
+
     .form-row {
-        display: flex;
-        gap: 24px;
-        margin-bottom: 0;
+    display: flex;
+    gap: 24px;
+    margin-bottom: 0;
     }
+
     .form-row .half {
-        flex: 1 1 0;
+    flex: 1 1 0;
     }
+
     .form-grid .full {
-        grid-column: 1 / -1;
+    grid-column: 1 / -1;
     }
+
     .form-actions {
-        justify-content: center;
+    justify-content: center;
     }
+
+    /* Layout */
+    .large-centered-form {
+    max-width: 600px !important;
+    min-width: 350px;
+    margin: 48px auto !important;
+    padding: 40px 36px !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    }
+
     .larger-bg {
-        max-width: 900px !important;
-        min-width: 400px;
-        min-height: 520px;
-        margin: 48px auto !important;
-        padding: 56px 48px !important;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    max-width: 900px !important;
+    min-width: 400px;
+    min-height: 520px;
+    margin: 48px auto !important;
+    padding: 56px 48px !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     }
+
     </style>
 </div>
 
