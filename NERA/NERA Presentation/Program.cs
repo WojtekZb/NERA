@@ -2,19 +2,31 @@ using Data;
 using Data.Repositories;
 using Domain.Entities;
 using Domain.Interfaces;
+using Domain.Configuration;
 using Logic.Services;
+using Logic.SimpleMailTransferProtocol;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages(); 
+builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
 
 // Register DbContext
 builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("Email"));
+
+builder.Services.AddScoped<IEmailSender>(sp =>
+{
+    var options = sp.GetRequiredService<IOptions<SmtpSettings>>().Value;
+    return new SmtpEmailSender(options);
+});
 // Register Repositories and Services
 builder.Services.AddScoped<ICreateEventRepo, CreateEventRepo>();
 builder.Services.AddScoped<CreateEventService>();

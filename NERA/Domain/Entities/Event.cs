@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Domain.Enums;
+﻿using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
@@ -25,6 +25,8 @@ namespace Domain.Entities
         public string Description { get; set; } = string.Empty;
         [Required]
         public EventStatus Status { get; set; }
+        public string OrganizerEmail { get; set; } = default;
+        public string OrganizerName { get; set; } = default;
 
         public ICollection<Registration> Registration { get; set; } = new List<Registration>();
     }
