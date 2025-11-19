@@ -12,29 +12,26 @@ public class RegisterUserToEventRepo : IRegisterUserToEventRepo
         _context = context;
     }
 
-    public async Task RegisterUserAsync(int userId, int eventId)
+    public async Task RegisterUserAsync(string userId, int eventId)
     {
-        var user = await _context.Users.FindAsync(userId);
-        var evnt = await _context.Events.FindAsync(eventId);
+        var evnt = await _context.Event.FindAsync(eventId);
 
-        if (user == null || evnt == null)
-            throw new InvalidOperationException("User or Event not found.");
+        if (evnt == null)
+            throw new InvalidOperationException("Event not found.");
 
-        var alreadyRegistered = await _context.Registrations
-            .AnyAsync(r => r.UserId == userId && r.EventId == eventId);
+        var alreadyRegistered = await _context.EventRegistration
+            .AnyAsync(r => r.UserSub == userId && r.EventId == eventId);
 
         if (alreadyRegistered)
             throw new InvalidOperationException("User already registered for this event.");
 
-        var registration = new Registration
+        var registration = new EventRegistration
         {
-            UserId = userId,
+            UserSub = userId,
             EventId = eventId,
-            Status = "Delete Status",
-            Time = DateTime.UtcNow
         };
 
-        _context.Registrations.Add(registration);
+        _context.EventRegistration.Add(registration);
         await _context.SaveChangesAsync();
     }
 

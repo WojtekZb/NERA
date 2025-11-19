@@ -43,14 +43,5 @@ public class RegistrationConfig : IEntityTypeConfiguration<EventRegistration>
         entity.Property(e => e.UserSub)
               .IsRequired()
               .HasMaxLength(100);
-
-        entity.Property(e => e.RegisteredAtUtc)
-            .HasColumnType("datetime2(0)")
-            .IsRequired();
-
-        entity.HasOne(e => e.Event)
-              .WithMany(ev => ev.EventRegistration)   
-              .HasForeignKey(e => e.EventId)
-              .OnDelete(DeleteBehavior.Cascade);
     }
 }

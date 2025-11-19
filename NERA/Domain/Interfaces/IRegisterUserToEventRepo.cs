@@ -8,6 +8,6 @@ namespace Domain.Interfaces
 {
     public interface IRegisterUserToEventRepo
     {
-        Task RegisterUserAsync(int userId, int eventId);
+        Task RegisterUserAsync(string userId, int eventId);
     }
 }
