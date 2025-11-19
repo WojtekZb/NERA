@@ -26,6 +26,6 @@ namespace Domain.Entities
         [Required]
         public EventStatus Status { get; set; }
 
-        public ICollection<Registration> Registration { get; set; } = new List<Registration>();
+        public ICollection<EventRegistration> EventRegistration { get; set; } = new List<EventRegistration>();
     }
 }

@@ -8,9 +8,8 @@ namespace Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         // Define DbSet properties for your entities
-        public DbSet<Event> Events { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Registration> Registrations { get; set; }
+        public DbSet<Event> Event { get; set; }
+        public DbSet<EventRegistration> EventRegistration { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

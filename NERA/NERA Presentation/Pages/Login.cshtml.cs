@@ -1,32 +1,21 @@
+using Auth0.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace NERA_Presentation.Pages
 {
+    [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        [BindProperty]
-        public string Email { get; set; } = string.Empty;
-
-        [BindProperty]
-        public string Password { get; set; } = string.Empty;
-
-        public IActionResult OnGet()
+        public IActionResult OnGet(string? returnUrl = "/")
         {
-            return Page();
-        }
-
-        public IActionResult OnPost()
-        {
-            if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password))
+            var props = new Microsoft.AspNetCore.Authentication.AuthenticationProperties
             {
-                ModelState.AddModelError(string.Empty, "Please enter both email and password.");
-                return Page();
-            }
-
-            // TODO: Implement authentication logic
-            // For now, just redirect to Index page
-            return RedirectToPage("Index");
+                RedirectUri = returnUrl ?? "/"
+            };
+            return Challenge(props, Auth0Constants.AuthenticationScheme);
         }
     }
 }

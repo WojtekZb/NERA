@@ -30,7 +30,7 @@ namespace NERA_Presentation.Pages
 
             try
             {
-                Events = await _context.Events
+                Events = await _context.Event
                     .AsNoTracking()
                     .OrderBy(e => e.StartDate)
                     .ToListAsync();
@@ -46,11 +46,11 @@ namespace NERA_Presentation.Pages
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            var eventToDelete = await _context.Events.FindAsync(id);
+            var eventToDelete = await _context.Event.FindAsync(id);
 
             if (eventToDelete != null)
             {
-                _context.Events.Remove(eventToDelete);
+                _context.Event.Remove(eventToDelete);
                 await _context.SaveChangesAsync();
             }
             return RedirectToPage();
