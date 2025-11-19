@@ -12,9 +12,9 @@ namespace Logic.Services
             _repo = repo;
         }
 
-        public void RegisterForEvent(EventRegistration er)
+        public async Task RegisterForEvent(string UserSub, int EventId)
         {
-            _repo.RegisterUserAsync(er.UserSub, er.EventId);
+            await _repo.RegisterUserAsync(UserSub, EventId);
         }
     }
 }

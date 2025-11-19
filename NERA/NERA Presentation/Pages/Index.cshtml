@@ -291,10 +291,33 @@
     }
 
     // Register button handler
-    registerBtn.addEventListener('click', () => {
-        if (currentEvent) {
-            alert(`Registration for "${currentEvent.title}" is not yet implemented. This would redirect to a registration form.`);
+    registerBtn.addEventListener('click', async () => {
+        if (!currentEvent) return;
+
+        try {
+            const response = await fetch(`?handler=Register`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ EventId: currentEvent.id })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(`You're registered for "${currentEvent.title}" 🎉`);
+            } else {
+                alert("Something went wrong registering.");
+            }
+
             eventModal.hide();
+
+        } catch (err) {
+            console.error(err);
+            alert("Error while registering.");
         }
     });
 

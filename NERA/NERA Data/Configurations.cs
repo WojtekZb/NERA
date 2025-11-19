@@ -43,5 +43,8 @@ public class RegistrationConfig : IEntityTypeConfiguration<EventRegistration>
         entity.Property(e => e.UserSub)
               .IsRequired()
               .HasMaxLength(100);
+
+        entity.Property(e => e.EventId)
+            .IsRequired();
     }
 }

@@ -6,6 +6,7 @@ using Domain.Interfaces;
 using Logic.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +41,8 @@ builder.Services.AddDbContext<AppDbContext>(opts =>
 builder.Services.AddScoped<ICreateEventRepo, CreateEventRepo>();
 builder.Services.AddScoped<CreateEventService>();
 builder.Services.AddScoped<UpdateEventService>();
+builder.Services.AddScoped<IRegisterUserToEventRepo, RegisterUserToEventRepo>();
+builder.Services.AddScoped<RegisterUserToEventService>();
 
 var app = builder.Build();
 

@@ -1,17 +1,23 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Data;
+using Logic.Services;
+using Microsoft.AspNetCore.Identity.Data;
+using System.Text.Json.Serialization;
+using System.Security.Claims;
 namespace NERA_Presentation.Pages
 {
     public class IndexModel : PageModel
     {
         private readonly AppDbContext _context;
+        private readonly RegisterUserToEventService _registerService;
 
-        public IndexModel(AppDbContext context)
+        public IndexModel(AppDbContext context, RegisterUserToEventService registerService)
         {
             _context = context;
+            _registerService = registerService;
         }
         public IList<Event> Events { get; private set; } = new List<Event>();
         public bool DbAvailable { get; private set; }
@@ -22,8 +28,8 @@ namespace NERA_Presentation.Pages
 
             if (!DbAvailable)
             {
-                // DB not reachable — skip querying and show limited page
-                Console.WriteLine("?? Database unavailable — loading homepage in limited mode.");
+                // DB not reachable â€” skip querying and show limited page
+                Console.WriteLine("?? Database unavailable â€” loading homepage in limited mode.");
                 Events = new List<Event>();
                 return;
             }
@@ -54,6 +60,23 @@ namespace NERA_Presentation.Pages
                 await _context.SaveChangesAsync();
             }
             return RedirectToPage();
+        }
+
+        public class RegisterRequest
+        {
+            [JsonPropertyName("EventId")]
+            public int EventId { get; set; }
+        }
+
+        public async Task<IActionResult> OnPostRegisterAsync([FromBody] RegisterRequest data)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+                return Unauthorized();
+
+            await _registerService.RegisterForEvent(userId, data.EventId);
+
+            return new JsonResult(new { success = true });
         }
     }
 }
