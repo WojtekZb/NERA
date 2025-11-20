@@ -64,11 +64,11 @@ namespace Data.Repositories
             var registration = new EventRegistration
             {
                 EventId = eventId,
-                UserId = userId,
-                RegisteredAtUtc = DateTime.UtcNow
+                UserSub = userId,
+                //RegisteredAtUtc = DateTime.UtcNow
             };
 
-            _context.EventRegistrations.Add(registration);
+            _context.EventRegistration.Add(registration);
             await _context.SaveChangesAsync();
         }
     }
