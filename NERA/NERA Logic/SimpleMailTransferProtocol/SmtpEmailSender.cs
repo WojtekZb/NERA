@@ -37,9 +37,9 @@ namespace Logic.SimpleMailTransferProtocol
                 ContentTransferEncoding = ContentEncoding.Base64,
                 FileName = "event.ics"
             };
-
-            icsPart.ContentType.Parameters.Add("method", "REQUEST");
-            icsPart.ContentType.Parameters.Add("name", "event.ics");
+            // Safe: overwrites if the parameter already exists
+            icsPart.ContentType.Parameters["method"] = "REQUEST";
+            icsPart.ContentType.Parameters["name"] = "event.ics";
 
             var multipart = new Multipart("mixed") { bodyBuilder.ToMessageBody(), icsPart };
             message.Body = multipart;
