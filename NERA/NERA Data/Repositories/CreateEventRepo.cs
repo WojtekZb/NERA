@@ -58,18 +58,5 @@ namespace Data.Repositories
             await _context.SaveChangesAsync();
             return evenement;
         }
-
-        public async Task RegisterUserToEventAsync(string userId, int eventId)
-        {
-            var registration = new EventRegistration
-            {
-                EventId = eventId,
-                UserId = userId,
-                RegisteredAtUtc = DateTime.UtcNow
-            };
-
-            _context.EventRegistrations.Add(registration);
-            await _context.SaveChangesAsync();
-        }
     }
 }

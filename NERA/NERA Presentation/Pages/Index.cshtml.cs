@@ -4,7 +4,6 @@ using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Data;
 using Logic.Services;
-using Microsoft.AspNetCore.Identity.Data;
 using System.Text.Json.Serialization;
 using System.Security.Claims;
 namespace NERA_Presentation.Pages
@@ -71,10 +70,12 @@ namespace NERA_Presentation.Pages
         public async Task<IActionResult> OnPostRegisterAsync([FromBody] RegisterRequest data)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userEmail = User.FindFirst(ClaimTypes.Email).Value;
+            var userName = User.FindFirst(ClaimTypes.Name).Value;
             if (userId == null)
                 return Unauthorized();
 
-            await _registerService.RegisterForEvent(userId, data.EventId);
+            await _registerService.RegisterForEvent(userId, userEmail, userName, data.EventId);
 
             return new JsonResult(new { success = true });
         }
