@@ -28,6 +28,6 @@ namespace Domain.Entities
         public string OrganizerEmail { get; set; } = default;
         public string OrganizerName { get; set; } = default;
 
-        public ICollection<Registration> Registration { get; set; } = new List<Registration>();
+        public ICollection<EventRegistration> EventRegistration { get; set; } = new List<EventRegistration>();
     }
 }

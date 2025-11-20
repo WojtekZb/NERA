@@ -16,14 +16,14 @@ namespace Data.Repositories
 
         public async Task<Event> SaveAsync(Event evenement)
         {
-            _context.Events.Add(evenement);
+            _context.Event.Add(evenement);
             await _context.SaveChangesAsync();
             return evenement;
         }
         public async Task UpdateEventAsync(Event evenement)
         {
             //Load the trackes entity
-            var existing = await _context.Events.FindAsync(evenement.Id);
+            var existing = await _context.Event.FindAsync(evenement.Id);
             if(existing == null)
             {
                 throw new KeyNotFoundException($"Event with Id{evenement.Id} not found");
@@ -45,7 +45,7 @@ namespace Data.Repositories
         public async Task<Event?> GetByIdAsync(int id)
         {
 
-            return await _context.Events
+            return await _context.Event
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == id);
         }

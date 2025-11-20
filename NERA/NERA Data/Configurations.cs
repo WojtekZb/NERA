@@ -6,49 +6,45 @@ namespace Data.Configurations;
 
 public class EventConfig : IEntityTypeConfiguration<Event>
 {
-    public void Configure(EntityTypeBuilder<Event> e)
+    public void Configure(EntityTypeBuilder<Event> entity)
     {
-        e.Property(x => x.Title).IsRequired().HasMaxLength(200);
-        e.Property(x => x.StartDate).IsRequired();
-        e.Property(x => x.EndDate).IsRequired();
-        e.Property(x => x.CGI).HasMaxLength(200);
-        e.Property(x => x.Adress).HasMaxLength(200);
-        e.Property(x => x.Cost).HasDefaultValue(0.00);
-        e.Property(x => x.Capacity).HasDefaultValue(0).IsRequired(false);
-        e.Property(x => x.Description).HasMaxLength(2000);
-        e.Property(x => x.Status).IsRequired();
-        e.HasIndex(x => x.StartDate);
-        e.HasIndex(x => x.Status);
-    }
-}
-public class UserConfig : IEntityTypeConfiguration<User>
-{
-   
-    public void Configure(EntityTypeBuilder<User> e)
-    {
-        e.HasKey(x => x.Id);
-        e.Property(x => x.Name).IsRequired().HasMaxLength(50);
-        e.HasIndex(x => x.Email).IsUnique();
-        e.Property(x => x.Password).IsRequired().HasMaxLength(50);
-        e.Property(x => x.Photo).HasMaxLength(100);
-        e.Property(x => x.Type).IsRequired().HasMaxLength(20);
+        entity.Property(e => e.Title)
+            .HasMaxLength(200)
+            .IsRequired();
+        entity.Property(e => e.StartDate)
+            .HasColumnType("datetime2(0)")
+            .IsRequired();
+        entity.Property(e => e.EndDate)
+            .HasColumnType("datetime2(0)")
+            .IsRequired();
+        entity.Property(e => e.CGI).HasMaxLength(200);
+        entity.Property(e => e.Adress).HasMaxLength(200);
+        entity.Property(e => e.Cost).HasDefaultValue(0.00);
+        entity.Property(e => e.Capacity)
+            .HasDefaultValue(0)
+            .IsRequired();
+        entity.Property(e => e.Description)
+            .HasMaxLength(2000);
+        entity.Property(e => e.Status)
+            .IsRequired();
+
+        // Indexes
+        entity.HasIndex(e => e.StartDate);
+        entity.HasIndex(e => e.Status);
     }
 }
 
-public class RegistrationConfig : IEntityTypeConfiguration<Registration>
+public class RegistrationConfig : IEntityTypeConfiguration<EventRegistration>
 {
-    public void Configure(EntityTypeBuilder<Registration> e)
+    public void Configure(EntityTypeBuilder<EventRegistration> entity)
     {
-        e.HasKey(x => x.RegistrationId);
-        e.Property(x => x.UserId).IsRequired();
-        e.HasOne(x => x.User)
-            .WithMany(u => u.Registration)
-            .HasForeignKey(x => x.UserId);
-        e.Property(x => x.EventId).IsRequired();
-        e.HasOne(x => x.Event)
-            .WithMany(ev => ev.Registration)
-            .HasForeignKey(x => x.EventId);
-        e.Property(x => x.Status).IsRequired().HasMaxLength(20);
-        e.Property(x => x.Time).IsRequired();
+        entity.HasKey(e => e.Id);
+
+        entity.Property(e => e.UserSub)
+              .IsRequired()
+              .HasMaxLength(100);
+
+        entity.Property(e => e.EventId)
+            .IsRequired();
     }
 }

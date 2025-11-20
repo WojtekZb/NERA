@@ -1,3 +1,4 @@
+using Auth0.AspNetCore.Authentication;
 using Data;
 using Data.Repositories;
 using Domain.Entities;
@@ -5,8 +6,11 @@ using Domain.Interfaces;
 using Domain.Configuration;
 using Logic.Services;
 using Logic.SimpleMailTransferProtocol;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.IdentityModel.Tokens.Jwt;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +18,25 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
+// Get Auth0 settings from launch settings.
+var auth0Section = builder.Configuration.GetSection("Auth0");
 
-// Register DbContext
+// add authentication service
+builder.Services
+    .AddAuth0WebAppAuthentication(options =>
+    {
+    options.Domain = auth0Section["Domain"];
+    options.ClientId = auth0Section["ClientId"];
+    options.ClientSecret = auth0Section["ClientSecret"];
+    options.Scope = "openid profile email";
+    });
+
+builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.SlidingExpiration = true;
+});
+
+// Database connection
 builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
 
@@ -27,11 +48,13 @@ builder.Services.AddScoped<IEmailSender>(sp =>
     var options = sp.GetRequiredService<IOptions<SmtpSettings>>().Value;
     return new SmtpEmailSender(options);
 });
+
 // Register Repositories and Services
 builder.Services.AddScoped<ICreateEventRepo, CreateEventRepo>();
 builder.Services.AddScoped<CreateEventService>();
 builder.Services.AddScoped<UpdateEventService>();
-builder.Services.AddRazorPages();
+builder.Services.AddScoped<IRegisterUserToEventRepo, RegisterUserToEventRepo>();
+builder.Services.AddScoped<RegisterUserToEventService>();
 
 var app = builder.Build();
 
@@ -47,6 +70,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
