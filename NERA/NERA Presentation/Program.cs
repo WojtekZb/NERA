@@ -3,16 +3,19 @@ using Data;
 using Data.Repositories;
 using Domain.Entities;
 using Domain.Interfaces;
+using Domain.Configuration;
 using Logic.Services;
+using Logic.SimpleMailTransferProtocol;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages(); 
+builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
 // Get Auth0 settings from launch settings.
@@ -36,6 +39,15 @@ builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefa
 // Database connection
 builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("Email"));
+
+builder.Services.AddScoped<IEmailSender>(sp =>
+{
+    var options = sp.GetRequiredService<IOptions<SmtpSettings>>().Value;
+    return new SmtpEmailSender(options);
+});
 
 // Register Repositories and Services
 builder.Services.AddScoped<ICreateEventRepo, CreateEventRepo>();
