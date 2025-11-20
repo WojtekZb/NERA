@@ -71,11 +71,11 @@ namespace NERA_Presentation.Pages
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var userEmail = User.FindFirst(ClaimTypes.Email).Value;
-            var userName = User.FindFirst(ClaimTypes.Name).Value;
+            //var userName = User.FindFirst(ClaimTypes.Name).Value;
             if (userId == null)
                 return Unauthorized();
 
-            await _registerService.RegisterForEvent(userId, userEmail, userName, data.EventId);
+            await _registerService.RegisterForEvent(userId, userEmail, "Wojtek", data.EventId);
 
             return new JsonResult(new { success = true });
         }

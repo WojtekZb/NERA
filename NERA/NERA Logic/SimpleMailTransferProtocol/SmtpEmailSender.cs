@@ -38,6 +38,9 @@ namespace Logic.SimpleMailTransferProtocol
                 FileName = "event.ics"
             };
 
+            icsPart.ContentType.Parameters.Add("method", "REQUEST");
+            icsPart.ContentType.Parameters.Add("name", "event.ics");
+
             var multipart = new Multipart("mixed") { bodyBuilder.ToMessageBody(), icsPart };
             message.Body = multipart;
 

@@ -40,19 +40,35 @@ namespace Logic.Services
             sb.AppendLine("PRODID:-//YourApp//EN");
             sb.AppendLine("VERSION:2.0");
             sb.AppendLine("METHOD:REQUEST");
+
             sb.AppendLine("BEGIN:VEVENT");
-            sb.AppendLine($"UID:{Guid.NewGuid()}");
+
+            // Use the event's own UID so updates stay consistent
+            sb.AppendLine($"UID:{ev.Id}");
+
+            // Sequence = 0 for first request
+            sb.AppendLine("SEQUENCE:0");
+
             sb.AppendLine($"DTSTAMP:{FormatUtc(DateTime.UtcNow)}");
             sb.AppendLine($"DTSTART:{FormatUtc(ev.StartDate)}");
             sb.AppendLine($"DTEND:{FormatUtc(ev.EndDate)}");
+
             sb.AppendLine($"SUMMARY:{Escape(ev.Title)}");
+
             if (!string.IsNullOrWhiteSpace(ev.Description))
                 sb.AppendLine($"DESCRIPTION:{Escape(ev.Description!)}");
+
             if (!string.IsNullOrWhiteSpace(ev.Adress))
                 sb.AppendLine($"LOCATION:{Escape(ev.Adress!)}");
 
+            // Organizer is recommended for REQUESTs
             //sb.AppendLine($"ORGANIZER;CN=\"{Escape(ev.OrganizerName)}\":mailto:{ev.OrganizerEmail}");
+
+            // Add attendee
             sb.AppendLine($"ATTENDEE;CN=\"{Escape(attendeeName)}\";RSVP=TRUE:mailto:{attendeeEmail}");
+
+            // Helps some clients show it properly
+            sb.AppendLine("STATUS:CONFIRMED");
 
             sb.AppendLine("END:VEVENT");
             sb.AppendLine("END:VCALENDAR");
