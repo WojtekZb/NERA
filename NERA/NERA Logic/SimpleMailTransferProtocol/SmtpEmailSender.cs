@@ -1,8 +1,9 @@
-﻿using Domain.Entities;
+﻿using Domain.Configuration;
+using Domain.Entities;
 using Domain.Interfaces;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using MimeKit;
-using Domain.Configuration;
 
 
 namespace Logic.SimpleMailTransferProtocol
@@ -41,14 +42,27 @@ namespace Logic.SimpleMailTransferProtocol
             icsPart.ContentType.Parameters["method"] = "REQUEST";
             icsPart.ContentType.Parameters["name"] = "event.ics";
 
-            var multipart = new Multipart("mixed") { bodyBuilder.ToMessageBody(), icsPart };
+            var multipart = new Multipart("mixed")
+            { bodyBuilder.ToMessageBody(), icsPart };
             message.Body = multipart;
 
             using var client = new SmtpClient();
-            await client.ConnectAsync(_settings.Host, _settings.Port, _settings.UseSsl);
-            await client.AuthenticateAsync(_settings.UserName, _settings.Password);
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
+            try
+            {
+                const string host = "smtp.gmail.com";
+                const int port = 587;
+
+                await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync("", "");
+                await client.SendAsync(message);
+            }
+            finally
+            {
+                await client.DisconnectAsync(true);
+            }
+
+
+
         }
     }
 
