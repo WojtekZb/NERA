@@ -4,44 +4,261 @@
     ViewData["Title"] = "Profile";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>Profile</title>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.10.0/dist/shoelace.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.10.0/dist/themes/light.css" />
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 2rem;
-            max-width: 700px;
-            margin: auto;
-        }
-        .profile-header {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-    </style>
-</head>
-<body>
+@if (!User.Identity?.IsAuthenticated ?? false)
+{
+    <main class="container">
+        <sl-card class="panel section">
+            <h2 class="accent">Please login to view your profile</h2>
+            <p class="muted">You need to be authenticated to access this page.</p>
+            <a asp-page="/Login" asp-route-returnUrl="/Profile">
+                <sl-button variant="primary" class="btn-gradient">Login</sl-button>
+            </a>
+        </sl-card>
+    </main>
+}
+else
+{
+    <main class="container profile-container">
+        <div class="profile-content">
+            <h1 class="page-title">My Profile</h1>
 
-    <div class="profile-header">
-        <sl-avatar image="@User.FindFirst("picture")?.Value" label="Profile Picture"></sl-avatar>
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <sl-avatar 
+                    image="@User.FindFirst("picture")?.Value" 
+                    label="Profile Picture"
+                    style="--size: 120px;">
+                </sl-avatar>
+                <div class="profile-info">
+                    <h2 class="profile-name">@(User.FindFirst("name")?.Value ?? "User")</h2>
+                    <p class="profile-email">@(User.FindFirst("nickname")?.Value)@@gmail.com</p>
+                </div>
+            </div>
 
-        <div>
-            <h2>@User.FindFirst("name")?.Value</h2>
-            <p>@User.FindFirst("email")?.Value</p>
+            <!-- Profile Details -->
+            <div class="profile-details">
+                <div class="profile-field">
+                    <div class="field-label">
+                        <sl-icon name="person-circle" class="field-icon"></sl-icon>
+                        <strong>Full Name</strong>
+                    </div>
+                    <p class="field-value">@(User.FindFirst("name")?.Value ?? "Not available")</p>
+                </div>
+
+                <div class="profile-field">
+                    <div class="field-label">
+                        <sl-icon name="envelope" class="field-icon"></sl-icon>
+                        <strong>Email Address</strong>
+                    </div>
+                    <p class="field-value">@(User.FindFirst("nickname")?.Value)@@gmail.com</p>
+                </div>
+
+                <div class="profile-field">
+                    <div class="field-label">
+                        <sl-icon name="key" class="field-icon"></sl-icon>
+                        <strong>User ID</strong>
+                    </div>
+                    <p class="field-value field-value-small">@(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "Not available")</p>
+                </div>
+
+                @if (!string.IsNullOrEmpty(User.FindFirst("email_verified")?.Value))
+                {
+                    <div class="profile-field">
+                        <div class="field-label">
+                            <sl-icon name="check-circle" class="field-icon"></sl-icon>
+                            <strong>Email Verified</strong>
+                        </div>
+                        <p class="field-value">
+                            @if (User.FindFirst("email_verified")?.Value == "true")
+                            {
+                                <sl-badge class="gradient">Verified</sl-badge>
+                            }
+                            else
+                            {
+                                <sl-badge variant="warning">Not Verified</sl-badge>
+                            }
+                        </p>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(User.FindFirst("created_at")?.Value))
+                {
+                    <div class="profile-field">
+                        <div class="field-label">
+                            <sl-icon name="calendar" class="field-icon"></sl-icon>
+                            <strong>Account Created</strong>
+                        </div>
+                        <p class="field-value">@User.FindFirst("created_at")?.Value</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Account Actions -->
+            <div class="profile-actions">
+                <a asp-page="/Index" style="text-decoration: none;">
+                    <sl-button variant="default" class="btn-ghost">
+                        Back to Events
+                    </sl-button>
+                </a>
+                <a asp-page="/Logout" style="text-decoration: none;">
+                    <sl-button variant="primary" class="btn-gradient">
+                        Logout
+                    </sl-button>
+                </a>
+            </div>
         </div>
-    </div>
+    </main>
+}
 
-    <sl-card>
-        <strong>Bio</strong>
-        <p>@User.FindFirst("nickname")?.Value@@gmail.com</p>
-    </sl-card>
+<style>
+    /* Profile Container - Centralized */
+    .profile-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 200px);
+    }
 
-</body>
-</html>
+    .profile-content {
+        max-width: 700px;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Profile Header */
+    .profile-header {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: center;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .profile-info {
+        width: 100%;
+    }
+
+    .profile-name {
+        margin: 0 0 0.5rem 0;
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: var(--text);
+    }
+
+    .profile-email {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+    }
+
+    sl-avatar[style*="--size: 120px"]::part(base) {
+        width: 120px;
+        height: 120px;
+        border: 3px solid;
+        border-image: var(--gradient) 1;
+        box-shadow: var(--shadow);
+    }
+
+    /* Profile Details */
+    .profile-details {
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+
+    .profile-field {
+        margin-bottom: 2rem;
+    }
+
+    .profile-field:last-child {
+        margin-bottom: 0;
+    }
+
+    .field-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--brand-2);
+        font-size: 15px;
+    }
+
+    .field-icon {
+        font-size: 20px;
+        color: var(--brand-1);
+    }
+
+    .field-value {
+        margin: 0;
+        color: var(--text);
+        font-size: 16px;
+        word-break: break-word;
+    }
+
+    .field-value-small {
+        font-size: 14px;
+        color: var(--muted);
+        font-family: monospace;
+    }
+
+    /* Profile Actions */
+    .profile-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .profile-actions sl-button {
+        min-width: 160px;
+    }
+
+    /* Page Title */
+    .profile-content .page-title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 600px) {
+        .profile-header {
+            gap: 1.5rem;
+        }
+
+        .profile-name {
+            font-size: 28px;
+        }
+
+        .profile-email {
+            font-size: 16px;
+        }
+
+        sl-avatar[style*="--size: 120px"]::part(base) {
+            width: 100px;
+            height: 100px;
+        }
+
+        .field-label {
+            font-size: 14px;
+        }
+
+        .field-icon {
+            font-size: 18px;
+        }
+
+        .field-value {
+            font-size: 16px;
+        }
+
+        .profile-actions {
+            flex-direction: column;
+        }
+
+        .profile-actions sl-button {
+            width: 100%;
+        }
+    }
+</style>
     
