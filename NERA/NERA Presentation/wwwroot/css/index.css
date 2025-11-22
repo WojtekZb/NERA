@@ -166,17 +166,67 @@ sl-dialog::part(panel) {
 
 .calendar-day {
     background-color: white;
-    padding: 0.75rem;
-    min-height: 3rem;
+    padding: 0.5rem;
+    min-height: 4rem;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
     cursor: pointer;
+    position: relative;
 }
 
-    .calendar-day:hover {
+.calendar-day.empty {
+    background-color: #f9fafb;
+    cursor: default;
+}
+
+    .calendar-day:hover:not(.empty) {
         background-color: #f9fafb;
     }
+
+.calendar-day .day-number {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.calendar-day.has-events {
+    background-color: #faf5ff;
+}
+
+.calendar-day.has-events:hover {
+    background-color: #f3e8ff;
+}
+
+.calendar-events {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+.calendar-event {
+    background: linear-gradient(135deg, #5236ab 0%, #e41937 100%);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    box-shadow: 0 2px 6px rgba(82,54,171,.2);
+}
+
+.calendar-event:hover {
+    opacity: 0.9;
+}
 
 /* My Calendar button */
 sl-button.btn-calendar::part(base) {

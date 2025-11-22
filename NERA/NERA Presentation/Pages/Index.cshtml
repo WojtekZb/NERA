@@ -344,7 +344,37 @@
 
     // Generate calendar
     async function showCalendar() {
-        const events = await getEvents();
+        // Fetch user's registered events
+        let userEvents = [];
+        try {
+            const response = await fetch('?handler=UserEvents', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            const result = await response.json();
+            if (result && result.events) {
+                userEvents = result.events;
+            }
+        } catch (err) {
+            console.error('Error fetching user events:', err);
+        }
+
+        // Map user events to a format we can use in the calendar
+        const eventsByDate = {};
+        userEvents.forEach(e => {
+            const eventDate = new Date(e.startDate);
+            // Use format YYYY-MM-DD for consistent date matching
+            const dateKey = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, '0')}-${String(eventDate.getDate()).padStart(2, '0')}`;
+            if (!eventsByDate[dateKey]) {
+                eventsByDate[dateKey] = [];
+            }
+            eventsByDate[dateKey].push({
+                id: e.id,
+                title: e.title,
+                startDate: e.startDate
+            });
+        });
+
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth();
         const currentYear = currentDate.getFullYear();
@@ -376,11 +406,27 @@
             calendarHTML += '<div class="calendar-day empty"></div>';
         }
 
-        // Add days of the month
+        // Add days of the month with events
         for (let day = 1; day <= daysInMonth; day++) {
+            // Format date key to match event date format (YYYY-MM-DD)
+            const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const dayEvents = eventsByDate[dateKey] || [];
+            const hasEvents = dayEvents.length > 0;
+
+            let dayContent = `<span class="day-number">${day}</span>`;
+            
+            if (hasEvents) {
+                dayContent += '<div class="calendar-events">';
+                dayEvents.forEach(event => {
+                    const eventTitle = event.title.length > 15 ? event.title.substring(0, 15) + '...' : event.title;
+                    dayContent += `<div class="calendar-event" title="${event.title}">${eventTitle}</div>`;
+                });
+                dayContent += '</div>';
+            }
+
             calendarHTML += `
-                        <div class="calendar-day">
-                            <span class="day-number">${day}</span>
+                        <div class="calendar-day ${hasEvents ? 'has-events' : ''}">
+                            ${dayContent}
                         </div>
                     `;
         }

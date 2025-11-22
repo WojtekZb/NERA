@@ -78,5 +78,49 @@ namespace NERA_Presentation.Pages
 
             return new JsonResult(new { success = true });
         }
+
+        public async Task<IActionResult> OnGetUserEventsAsync()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+                return new JsonResult(new { events = new List<object>() });
+
+            if (!DbStatus.DbAvailable)
+            {
+                return new JsonResult(new { events = new List<object>() });
+            }
+
+            try
+            {
+                var userEvents = await _context.EventRegistration
+                    .Where(er => er.UserSub == userId)
+                    .Join(_context.Event,
+                        registration => registration.EventId,
+                        evt => evt.Id,
+                        (registration, evt) => evt)
+                    .AsNoTracking()
+                    .Select(e => new
+                    {
+                        id = e.Id,
+                        title = e.Title,
+                        startDate = e.StartDate,
+                        endDate = e.EndDate,
+                        cgi = e.CGI,
+                        adress = e.Adress,
+                        status = e.Status.ToString(),
+                        cost = e.Cost,
+                        capacity = e.Capacity,
+                        description = e.Description
+                    })
+                    .ToListAsync();
+
+                return new JsonResult(new { events = userEvents });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading user events: {ex.Message}");
+                return new JsonResult(new { events = new List<object>() });
+            }
+        }
     }
 }
