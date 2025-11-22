@@ -39,8 +39,17 @@
                 </a>
                 <a asp-page="/createevent" style="text-decoration:none">
                     <sl-button size="small" pill class="btn-gradient">Create Event</sl-button>
-                </a>
-                <sl-avatar size="small" label="Profile"></sl-avatar>
+                </a>    
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <a asp-page="/Profile" style="text-decoration:none; cursor:pointer;">
+                        <sl-avatar size="small" label="Profile"></sl-avatar>
+                    </a>
+                }
+                else
+                {
+                    <a>             </a> //TRYING TO HAVE THE SAME SPACE HAS THE ICON
+                }
             </div>
         </div>
     </header>

@@ -1,0 +1,47 @@
+﻿@page
+@model NERA_Presentation.Pages.ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Profile</title>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.10.0/dist/shoelace.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.10.0/dist/themes/light.css" />
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 2rem;
+            max-width: 700px;
+            margin: auto;
+        }
+        .profile-header {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="profile-header">
+        <sl-avatar image="@User.FindFirst("picture")?.Value" label="Profile Picture"></sl-avatar>
+
+        <div>
+            <h2>@User.FindFirst("name")?.Value</h2>
+            <p>@User.FindFirst("email")?.Value</p>
+        </div>
+    </div>
+
+    <sl-card>
+        <strong>Bio</strong>
+        <p>@User.FindFirst("nickname")?.Value@@gmail.com</p>
+    </sl-card>
+
+</body>
+</html>
+    
