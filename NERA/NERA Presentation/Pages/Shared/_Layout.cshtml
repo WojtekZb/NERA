@@ -21,14 +21,21 @@
                 <img class="logo" src="~/logo_transparent.png" alt="NERA" />
             </a>
             <div class="header-actions">
-                <a href="/Login" style="text-decoration:none">
-                    <sl-button size="small" pill class="btn-ghost">Login</sl-button>
-                </a>
-                @* <a href="/Register" style="text-decoration:none">
-                    <sl-button size="small" pill class="btn-ghost">Register</sl-button>
-                </a> *@
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {   
+                    <span>Hello, @User.Identity?.Name</span>
+                    <a asp-page="/Logout">
+                        <sl-button size="small" pill class="btn-gradient">Logout</sl-button>
+                    </a>
+                }
+                else
+                {
+                    <a asp-page="/Login" asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString">
+                        <sl-button size="small" pill class="btn-gradient">Login</sl-button>
+                    </a>
+                }
                 <a asp-page="/Index">
-                <sl-button size="/small" pill class="btn-ghost">Event Registration</sl-button>
+                    <sl-button size="/small" pill class="btn-ghost">Event Registration</sl-button>
                 </a>
                 <a asp-page="/createevent" style="text-decoration:none">
                     <sl-button size="small" pill class="btn-gradient">Create Event</sl-button>
