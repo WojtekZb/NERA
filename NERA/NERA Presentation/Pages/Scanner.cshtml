@@ -1,0 +1,90 @@
+@page
+@model ScannerModel
+@{
+    ViewData["Title"] = "Scanner";
+}
+
+<main class="container scanner-container">
+    <h1 class="page-title">Scanner</h1>
+    
+    <sl-card class="scanner-card">
+        <div id="reader"></div>
+        
+        <div class="scanner-controls">
+            <sl-button id="start-btn" variant="primary" class="btn-gradient">
+                Start Scanner
+            </sl-button>
+            <sl-button id="stop-btn" variant="default" style="display: none;">
+                Stop Scanner
+            </sl-button>
+        </div>
+        
+        <div id="result" class="result-container" style="display: none;"></div>
+    </sl-card>
+</main>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<script>
+    let html5QrCode = null;
+    let isScanning = false;
+
+    const startBtn = document.getElementById('start-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const reader = document.getElementById('reader');
+    const resultDiv = document.getElementById('result');
+
+    html5QrCode = new Html5Qrcode("reader");
+
+    startBtn.addEventListener('click', async () => {
+        if (isScanning) return;
+
+        try {
+            await html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    resultDiv.innerHTML = `<sl-alert variant="success" open>
+                        <strong>Scanned:</strong> ${decodedText}
+                    </sl-alert>`;
+                    resultDiv.style.display = 'block';
+                    if (navigator.vibrate) navigator.vibrate(200);
+                },
+                () => {}
+            );
+
+            isScanning = true;
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
+            resultDiv.style.display = 'none';
+        } catch (err) {
+            resultDiv.innerHTML = `<sl-alert variant="danger" open>
+                <strong>Error:</strong> Could not start scanner. Please check camera permissions.
+            </sl-alert>`;
+            resultDiv.style.display = 'block';
+        }
+    });
+
+    stopBtn.addEventListener('click', async () => {
+        if (!isScanning) return;
+        try {
+            await html5QrCode.stop();
+            html5QrCode.clear();
+            isScanning = false;
+            startBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+        } catch (err) {
+            console.error('Error stopping scanner:', err);
+        }
+    });
+
+    window.addEventListener('beforeunload', async () => {
+        if (isScanning && html5QrCode) {
+            try {
+                await html5QrCode.stop();
+            } catch (err) {}
+        }
+    });
+</script>
+
+<link rel="stylesheet" href="~/css/scanner.css" asp-append-version="true" />
