@@ -23,7 +23,7 @@ namespace Logic.Services
            var qr = _qrCodeGen.GenerateQrCode(UserSub, EventId);
             
             //add qr as parameter
-            await _repo.RegisterUserAsync(UserSub, EventId);
+            await _repo.RegisterUserAsync(UserSub, EventId, qr, false);
 
             var ev = await _createEventRepo.GetByIdAsync(EventId)
          ?? throw new InvalidOperationException("Event not found");

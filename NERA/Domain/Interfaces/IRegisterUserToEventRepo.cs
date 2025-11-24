@@ -9,6 +9,6 @@ namespace Domain.Interfaces
     public interface IRegisterUserToEventRepo
     {
         //add qr as parameter
-        Task RegisterUserAsync(string userId, int eventId);
+        Task RegisterUserAsync(string userId, int eventId, byte[] qr, bool attandance);
     }
 }
