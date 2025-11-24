@@ -28,7 +28,10 @@ public class RegisterUserToEventRepo : IRegisterUserToEventRepo
         var registration = new EventRegistration
         {
             UserSub = userId,
-            EventId = eventId,
+            EventId = eventId
+            //add qr as parameter
+            //Qr = qr
+            //Attandance = attandance (add it as a parameter)
         };
 
         _context.EventRegistration.Add(registration);
