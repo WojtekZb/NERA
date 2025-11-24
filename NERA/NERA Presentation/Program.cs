@@ -1,3 +1,4 @@
+
 using Auth0.AspNetCore.Authentication;
 using Data;
 using Data.Repositories;
@@ -11,24 +12,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
-// Get Auth0 settings from launch settings.
+// Get Auth0 settings from configuration
 var auth0Section = builder.Configuration.GetSection("Auth0");
 
-// add authentication service
+// Configure Auth0 authentication
 builder.Services
     .AddAuth0WebAppAuthentication(options =>
     {
-    options.Domain = auth0Section["Domain"];
-    options.ClientId = auth0Section["ClientId"];
-    options.ClientSecret = auth0Section["ClientSecret"];
-    options.Scope = "openid profile email";
+        options.Domain = auth0Section["Domain"];
+        options.ClientId = auth0Section["ClientId"];
+        options.ClientSecret = auth0Section["ClientSecret"];
+        options.Scope = "openid profile email"; // ensures email claim is available
     });
 
 builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -40,9 +40,11 @@ builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefa
 builder.Services.AddDbContext<AppDbContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
 
+// Configure SMTP settings from appsettings.json
 builder.Services.Configure<SmtpSettings>(
     builder.Configuration.GetSection("Email"));
 
+// Register Email Sender (DI)
 builder.Services.AddScoped<IEmailSender>(sp =>
 {
     var options = sp.GetRequiredService<IOptions<SmtpSettings>>().Value;
@@ -76,13 +78,13 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 
+// Optional: Check DB connectivity
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     try
     {
-        // Try connecting to DB
         if (!db.Database.CanConnect())
         {
             Console.WriteLine("?? Database not reachable. Running in limited mode.");
