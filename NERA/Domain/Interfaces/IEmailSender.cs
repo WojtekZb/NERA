@@ -8,6 +8,7 @@ namespace Domain.Interfaces
         string toEmail,
         string toName,
         Event ev,
-        byte[] icsAttachment);
+        byte[] icsAttachment,
+        byte[] qrCode);
     }
 }

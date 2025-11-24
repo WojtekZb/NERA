@@ -8,16 +8,21 @@ namespace Logic.Services
         private readonly IRegisterUserToEventRepo _repo;
         private readonly IEmailSender _emailSender;
         private readonly ICreateEventRepo _createEventRepo;
+        private readonly QrCodeGeneratorService _qrCodeGen;
 
-        public RegisterUserToEventService(IRegisterUserToEventRepo repo, IEmailSender emailSender, ICreateEventRepo createEventRepo)
+        public RegisterUserToEventService(IRegisterUserToEventRepo repo, IEmailSender emailSender, ICreateEventRepo createEventRepo, QrCodeGeneratorService qrCodeGeneratorService)
         {
             _repo = repo;
             _emailSender = emailSender;
             _createEventRepo = createEventRepo;
+            _qrCodeGen = qrCodeGeneratorService;
         }
 
         public async Task RegisterForEvent(string UserSub, string userEmail, string userName, int EventId)
         {
+           var qr = _qrCodeGen.GenerateQrCode(UserSub, EventId);
+            
+            //add qr as parameter
             await _repo.RegisterUserAsync(UserSub, EventId);
 
             var ev = await _createEventRepo.GetByIdAsync(EventId)
@@ -26,8 +31,8 @@ namespace Logic.Services
             // 3. Build .ics bytes
             var icsBytes = BuildIcs(ev, userEmail, userName);
 
-            // 4. Send email with attachment
-            await _emailSender.SendEventRegistrationEmailAsync(userEmail, userName, ev, icsBytes);
+            // 5. Send email with attachment
+            await _emailSender.SendEventRegistrationEmailAsync(userEmail, userName, ev, icsBytes, qr);
         }
 
         private byte[] BuildIcs(Event ev, string attendeeEmail, string attendeeName)

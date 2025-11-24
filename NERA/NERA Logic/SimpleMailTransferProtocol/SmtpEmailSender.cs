@@ -1,9 +1,11 @@
 ﻿using Domain.Configuration;
 using Domain.Entities;
 using Domain.Interfaces;
+using Logic.Services;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
+using MimeKit.Utils;
 
 
 namespace Logic.SimpleMailTransferProtocol
@@ -11,11 +13,12 @@ namespace Logic.SimpleMailTransferProtocol
     public class SmtpEmailSender : IEmailSender
     {
         private readonly SmtpSettings _settings;
+        private readonly QrCodeGeneratorService _qrCodeGen;
         public SmtpEmailSender(SmtpSettings settings)
         {
             _settings = settings;
         }
-        public async Task SendEventRegistrationEmailAsync(string toEmail, string toName, Event ev, byte[] icsAttachment)
+        public async Task SendEventRegistrationEmailAsync(string toEmail, string toName, Event ev, byte[] icsAttachment, byte[] qrCode)
         {
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(_settings.FromName, _settings.FromEmail));
@@ -26,9 +29,23 @@ namespace Logic.SimpleMailTransferProtocol
             {
                 TextBody = $"Hi {toName},\n\nYou are registered for {ev.Title}.\n" +
                            $"When: {ev.StartDate:u} - {ev.EndDate:u} (UTC)\n\n" +
-                           "The event is attached as a calendar file."
+                           "The event is attached as a calendar file.\n\n" +
+                           "Your QR code for check-in is included below."
             };
 
+            // Add inline QR code
+            var qrImage = bodyBuilder.LinkedResources.Add("event_qr.png", new MemoryStream(qrCode));
+            qrImage.ContentId = MimeUtils.GenerateMessageId();
+
+            bodyBuilder.HtmlBody =
+                $"<p>Hi {toName},</p>" +
+                $"<p>You are registered for <b>{ev.Title}</b>.</p>" +
+                $"<p>When: {ev.StartDate:u} - {ev.EndDate:u} (UTC)</p>" +
+                "<p>The event is attached as a calendar file.</p>" +
+                "<p>Your QR code for check-in:</p>" +
+                $"<p><img src=\"cid:{qrImage.ContentId}\" alt=\"Event QR Code\" /></p>";
+
+            // Attach ICS file
             var icsPart = new MimePart("text", "calendar")
             {
                 Content = new MimeContent(new MemoryStream(icsAttachment)),
@@ -39,7 +56,12 @@ namespace Logic.SimpleMailTransferProtocol
             icsPart.ContentType.Parameters["method"] = "REQUEST";
             icsPart.ContentType.Parameters["name"] = "event.ics";
 
-            var multipart = new Multipart("mixed") { bodyBuilder.ToMessageBody(), icsPart };
+            // Combine body + ICS
+            var multipart = new Multipart("mixed")
+        {
+            bodyBuilder.ToMessageBody(),
+            icsPart
+        };
             message.Body = multipart;
 
             using var client = new SmtpClient();
@@ -49,10 +71,7 @@ namespace Logic.SimpleMailTransferProtocol
                 const int port = 587;
 
                 await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
-
-                // Use full Gmail address + App Password
                 await client.AuthenticateAsync(_settings.UserName, _settings.Password);
-
                 await client.SendAsync(message);
             }
             finally
@@ -60,6 +79,7 @@ namespace Logic.SimpleMailTransferProtocol
                 await client.DisconnectAsync(true);
             }
         }
+
     }
 
 }
