@@ -9,6 +9,5 @@ namespace Domain.Interfaces
         Task UpdateEventAsync(Event evenement);
         Task<Event?> GetByIdAsync(int id);
         Task<Event> SaveChangeAsync(Event evenement);
-
     }
 }
