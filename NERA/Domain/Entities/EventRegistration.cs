@@ -12,8 +12,8 @@ namespace Domain.Entities
 
         public string UserSub { get; set; } = default!;
 
-        //public byte[] Qr {  get; set; }
+        public byte[] Qr {  get; set; }
 
-        //public bool Attandance { get; set; }
+        public bool Attandance { get; set; }
     }
 }

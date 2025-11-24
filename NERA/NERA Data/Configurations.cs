@@ -47,10 +47,10 @@ public class RegistrationConfig : IEntityTypeConfiguration<EventRegistration>
         entity.Property(e => e.EventId)
             .IsRequired();
 
-        //entity.Property(e => e.Qr)
-        //    .IsRequired();
+        entity.Property(e => e.Qr)
+            .IsRequired();
         
-        //entity.Property(e => e.Attandance)
-        //    .IsRequired();
+        entity.Property(e => e.Attandance)
+            .IsRequired();
     }
 }
