@@ -18,7 +18,6 @@ namespace Logic.SimpleMailTransferProtocol
         public async Task SendEventRegistrationEmailAsync(string toEmail, string toName, Event ev, byte[] icsAttachment)
         {
             var message = new MimeMessage();
-
             message.From.Add(new MailboxAddress(_settings.FromName, _settings.FromEmail));
             message.To.Add(new MailboxAddress(toName, toEmail));
             message.Subject = $"Registration confirmed: {ev.Title}";
@@ -30,7 +29,6 @@ namespace Logic.SimpleMailTransferProtocol
                            "The event is attached as a calendar file."
             };
 
-            // .ics as attachment
             var icsPart = new MimePart("text", "calendar")
             {
                 Content = new MimeContent(new MemoryStream(icsAttachment)),
@@ -38,12 +36,10 @@ namespace Logic.SimpleMailTransferProtocol
                 ContentTransferEncoding = ContentEncoding.Base64,
                 FileName = "event.ics"
             };
-            // Safe: overwrites if the parameter already exists
             icsPart.ContentType.Parameters["method"] = "REQUEST";
             icsPart.ContentType.Parameters["name"] = "event.ics";
 
-            var multipart = new Multipart("mixed")
-            { bodyBuilder.ToMessageBody(), icsPart };
+            var multipart = new Multipart("mixed") { bodyBuilder.ToMessageBody(), icsPart };
             message.Body = multipart;
 
             using var client = new SmtpClient();
@@ -53,16 +49,16 @@ namespace Logic.SimpleMailTransferProtocol
                 const int port = 587;
 
                 await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
-                await client.AuthenticateAsync("", "");
+
+                // Use full Gmail address + App Password
+                await client.AuthenticateAsync(_settings.UserName, _settings.Password);
+
                 await client.SendAsync(message);
             }
             finally
             {
                 await client.DisconnectAsync(true);
             }
-
-
-
         }
     }
 
