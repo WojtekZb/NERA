@@ -49,6 +49,48 @@
     border-radius: 8px;
 }
 
+/* Hide paused/status messages from html5-qrcode */
+#reader span[style*="paused"],
+#reader span[style*="Paused"],
+#reader div[style*="paused"],
+#reader div[style*="Paused"],
+#reader > span,
+#reader #qr-reader__status_span,
+#reader #html5-qrcode-anchor-scan-type-change,
+#reader__dashboard,
+#reader__dashboard_section_swaplink,
+#reader span[id*="status"],
+#reader div[id*="status"],
+#reader span:empty,
+#reader div[id*="paused"],
+#reader span[id*="paused"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* Hide any status text elements */
+#reader span:not([class]):not([id]) {
+    display: none !important;
+}
+
+/* Hide text nodes with "paused" or similar status text */
+#reader * {
+    position: relative;
+}
+
+/* More specific selectors for html5-qrcode status elements */
+#reader [id*="qr-reader"],
+#reader [class*="qr-reader"] span,
+#reader [class*="qr-reader"] div:not([class*="video"]):not([class*="canvas"]) {
+    position: relative;
+}
+
+#reader [id*="qr-reader"] > span,
+#reader [class*="qr-reader"] > span:not([class]) {
+    display: none !important;
+}
+
 .scanner-controls {
     display: flex;
     gap: 1rem;
