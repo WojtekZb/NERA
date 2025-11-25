@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Data;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-using Data;
+using Domain.Interfaces;
 using Logic.Services;
 using Microsoft.AspNetCore.Identity.Data;
-using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 namespace NERA_Presentation.Pages
 {
     public class IndexModel : PageModel
@@ -52,14 +53,9 @@ namespace NERA_Presentation.Pages
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            Event eventToDelete = await _context.Event.FindAsync(id);
+            public var rep = ICreateEventRepo.DeleteEventAsync(id);
 
-            if (eventToDelete != null)
-            {
-                _context.Event.Remove(eventToDelete);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToPage();
+
         }
 
         public class RegisterRequest

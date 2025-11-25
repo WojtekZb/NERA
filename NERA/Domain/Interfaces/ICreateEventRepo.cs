@@ -10,6 +10,7 @@ namespace Domain.Interfaces
         Task<Event?> GetByIdAsync(int id);
         Task<Event> SaveChangeAsync(Event evenement);
         Task RegisterUserToEventAsync(string userId, int eventId);
+        Task DeleteEventAsync(int id);
 
 
     }

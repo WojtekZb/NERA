@@ -32,10 +32,10 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> EditEvent(Guid id, [FromBody] EditEventDto dto)
+        public async Task<IActionResult> EditEvent(int id, [FromBody] EditEventDto dto)
         {
             // 1) Fetch existing event
-            var existing = await _eventRepo.GetByIdAsync(id);
+            Event existing = await _eventRepo.GetByIdAsync(id);
             if (existing is null)
             {
                 _logger.LogWarning("EditEvent: Event {EventId} not found.", id);
@@ -45,7 +45,7 @@ namespace Presentation.Controllers
             // 2) Apply changes via your domain service (keeps business rules centralized)
             existing.Title = dto.Title;
             existing.Description = dto.Description;
-            existing.Location = dto.Location;
+            existing.Adress = dto.Location;
             existing.StartDate = dto.StartDate;
             existing.EndDate = dto.EndDate;
             existing.Status = dto.Status;
@@ -85,7 +85,7 @@ namespace Presentation.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteEvent(Guid id)
+        public async Task<IActionResult> DeleteEvent(int id)
         {
             // 1) Fetch the event to preserve its name for the email (because after delete it's gone)
             var existing = await _eventRepo.GetByIdAsync(id);
@@ -131,13 +131,26 @@ namespace Presentation.Controllers
         }
     }
 
+    public sealed class EditEventMapper
+    {
+        public static EditEventDto ToDto(Event ev) => new EditEventDto
+        {
+            Title = ev.Title,
+            Description = ev.Description,
+            Location = ev.Adress,
+            StartDate = ev.StartDate,
+            EndDate = ev.EndDate,
+            Status = ev.Status
+        };
+    }
+
     public sealed class EditEventDto
     {
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public string? Location { get; set; }
-        public DateTimeOffset StartDate { get; set; }
-        public DateTimeOffset EndDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public EventStatus Status { get; set; } 
     }
 }

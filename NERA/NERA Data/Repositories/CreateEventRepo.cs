@@ -64,12 +64,21 @@ namespace Data.Repositories
             var registration = new EventRegistration
             {
                 EventId = eventId,
-                UserId = userId,
+                UserSub = userId,
                 RegisteredAtUtc = DateTime.UtcNow
             };
 
-            _context.EventRegistrations.Add(registration);
+            _context.EventRegistration.Add(registration);
             await _context.SaveChangesAsync();
+        }
+        public async Task DeleteEventAsync(int id)
+        {
+            Event eventToDelete = await _context.Event.FindAsync(id);
+            if (eventToDelete != null)
+            {
+                _context.Event.Remove(eventToDelete);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
