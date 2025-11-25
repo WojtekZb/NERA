@@ -28,6 +28,8 @@
 <script>
     let html5QrCode = null;
     let isScanning = false;
+    let lastScannedCode = null;
+    let scanTimeout = null;
 
     const startBtn = document.getElementById('start-btn');
     const stopBtn = document.getElementById('stop-btn');
@@ -36,28 +38,55 @@
 
     html5QrCode = new Html5Qrcode("reader");
 
+    async function handleScanSuccess(decodedText) {
+        // Prevent duplicate scans
+        if (lastScannedCode === decodedText) {
+            return;
+        }
+        
+        // Clear any existing timeout
+        if (scanTimeout) {
+            clearTimeout(scanTimeout);
+        }
+        
+        lastScannedCode = decodedText;
+        
+        // Show result
+        resultDiv.innerHTML = `<sl-alert variant="success" open>
+            <strong>Scanned:</strong> ${decodedText}
+        </sl-alert>`;
+        resultDiv.style.display = 'block';
+        
+        // Vibrate if supported
+        if (navigator.vibrate) {
+            navigator.vibrate(200);
+        }
+        
+        // Prevent duplicate scans for 2 seconds
+        scanTimeout = setTimeout(() => {
+            lastScannedCode = null;
+        }, 2000);
+    }
+
     startBtn.addEventListener('click', async () => {
         if (isScanning) return;
 
         try {
+            resultDiv.style.display = 'none';
+            lastScannedCode = null;
+            
             await html5QrCode.start(
                 { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 250 } },
-                (decodedText) => {
-                    resultDiv.innerHTML = `<sl-alert variant="success" open>
-                        <strong>Scanned:</strong> ${decodedText}
-                    </sl-alert>`;
-                    resultDiv.style.display = 'block';
-                    if (navigator.vibrate) navigator.vibrate(200);
-                },
+                handleScanSuccess,
                 () => {}
             );
 
             isScanning = true;
             startBtn.style.display = 'none';
             stopBtn.style.display = 'inline-block';
-            resultDiv.style.display = 'none';
         } catch (err) {
+            console.error('Error starting scanner:', err);
             resultDiv.innerHTML = `<sl-alert variant="danger" open>
                 <strong>Error:</strong> Could not start scanner.
             </sl-alert>`;
@@ -67,10 +96,19 @@
 
     stopBtn.addEventListener('click', async () => {
         if (!isScanning) return;
+        
         try {
             await html5QrCode.stop();
             html5QrCode.clear();
+            
             isScanning = false;
+            lastScannedCode = null;
+            
+            if (scanTimeout) {
+                clearTimeout(scanTimeout);
+                scanTimeout = null;
+            }
+            
             startBtn.style.display = 'inline-block';
             stopBtn.style.display = 'none';
         } catch (err) {
