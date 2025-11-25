@@ -1,26 +1,51 @@
 .scanner-container {
-    max-width: 600px;
+    max-width: 900px;
     margin: 2rem auto;
     padding: 0 1rem;
-    /* background-color: black;    I addded this so that I can know where can I fix the size of it */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
- 
-/* button to start scanning */
 
 .scanner-card {
     margin-top: 2rem;
+    width: 100%;
 }
 
 #reader {
     width: 100%;
-    min-height: 400px;
+    min-height: 600px;
     margin-bottom: 1.5rem;
     background: #f8f9fa;
     border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
 }
 
 #reader video {
     width: 100%;
+    height: auto;
+    max-height: 600px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+#reader canvas {
+    display: none;
+}
+
+#reader > div {
+    width: 100% !important;
+    min-height: 600px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#reader #qr-shaded-region {
     border-radius: 8px;
 }
 
@@ -36,8 +61,21 @@
 }
 
 @media (max-width: 768px) {
+    .scanner-container {
+        max-width: 100%;
+        padding: 0 0.5rem;
+    }
+    
     #reader {
-        min-height: 300px;
+        min-height: 450px;
+    }
+    
+    #reader > div {
+        min-height: 450px !important;
+    }
+    
+    #reader video {
+        max-height: 450px;
     }
 }
 
