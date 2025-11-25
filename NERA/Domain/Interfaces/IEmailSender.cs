@@ -6,11 +6,7 @@ public interface IEmailSender
         string toEmail,
         string toName,
         Event ev,
-        byte[] icsAttachment);
-
-    Task SendEventNotificationEmailAsync(
-        string toEmail,
-        string toName,
-        string eventName,
-        string action);
+        byte[] icsAttachment,
+        byte[] qrCode);
+    }
 }

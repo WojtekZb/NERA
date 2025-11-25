@@ -12,7 +12,7 @@ public class RegisterUserToEventRepo : IRegisterUserToEventRepo
         _context = context;
     }
 
-    public async Task RegisterUserAsync(string userId, int eventId)
+    public async Task RegisterUserAsync(string userId, int eventId, byte[] qr, bool attandance)
     {
         var evnt = await _context.Event.FindAsync(eventId);
 
@@ -29,6 +29,8 @@ public class RegisterUserToEventRepo : IRegisterUserToEventRepo
         {
             UserSub = userId,
             EventId = eventId,
+            Qr = qr,
+            Attandance = attandance
         };
 
         _context.EventRegistration.Add(registration);

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace NERA_Presentation.Pages
+namespace NERA_Presentation.Pages.Account
 {
     [AllowAnonymous]
     public class LoginModel : PageModel

@@ -57,6 +57,7 @@ builder.Services.AddScoped<CreateEventService>();
 builder.Services.AddScoped<UpdateEventService>();
 builder.Services.AddScoped<IRegisterUserToEventRepo, RegisterUserToEventRepo>();
 builder.Services.AddScoped<RegisterUserToEventService>();
+builder.Services.AddScoped<QrCodeGeneratorService>();
 
 var app = builder.Build();
 
