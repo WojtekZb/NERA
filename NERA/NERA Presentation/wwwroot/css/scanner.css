@@ -2,7 +2,10 @@
     max-width: 600px;
     margin: 2rem auto;
     padding: 0 1rem;
+    background-color: black;   /* I addded this so that I can know where can I fix the size of it */
 }
+ 
+/* button to start scanning */
 
 .scanner-card {
     margin-top: 2rem;
