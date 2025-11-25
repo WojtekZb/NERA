@@ -10,5 +10,6 @@ namespace Domain.Interfaces
     {
         //add qr as parameter
         Task RegisterUserAsync(string userId, int eventId, byte[] qr, bool attandance);
+        Task ChangeAttandance(string userId, int attandance);
     }
 }

@@ -1,21 +1,31 @@
+using Domain.Interfaces;
+using Logic.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace NERA_Presentation.Pages
 {
-    [Authorize]
+    [IgnoreAntiforgeryToken]
     public class ScannerModel : PageModel
     {
-        private readonly ILogger<ScannerModel> _logger;
+        private readonly RegisterUserToEventService _service;
 
-        public ScannerModel(ILogger<ScannerModel> logger)
+        public ScannerModel(RegisterUserToEventService service)
         {
-            _logger = logger;
+            _service = service;
         }
 
-        public void OnGet()
+        // This handler will be called from JS
+        public async Task<IActionResult> OnPostChangeAttendance([FromBody] QrPayloadDto dto)
         {
+            await _service.ChangeAttandance(dto.Qr);
+            return new JsonResult(new { success = true });
         }
+
     }
+
+    public record QrPayloadDto(string Qr);
+
 }
 

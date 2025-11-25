@@ -35,6 +35,12 @@ namespace Logic.Services
             await _emailSender.SendEventRegistrationEmailAsync(userEmail, userName, ev, icsBytes, qr);
         }
 
+        public async Task ChangeAttandance(string qr)
+        {
+            var ( userId, eventId) = _qrCodeGen.ExtractIds(qr);
+            await _repo.ChangeAttandance(userId, eventId);
+        }
+
         private byte[] BuildIcs(Event ev, string attendeeEmail, string attendeeName)
         {
             // ICS requires UTC in this format: yyyyMMdd'T'HHmmss'Z'

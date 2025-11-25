@@ -29,5 +29,30 @@ namespace Logic.Services
                 }
             }
         }
+
+        public (string userId, int eventId) ExtractIds(string qrPayload)
+        {
+            var parts = qrPayload.Split(';');
+
+            string userId = null;
+            int eventId = 0;
+
+            foreach (var part in parts)
+            {
+                var kv = part.Split(':', 2); // only split into 2 parts
+                if (kv.Length == 2)
+                {
+                    var key = kv[0].Trim().ToLower();
+                    var value = kv[1].Trim();
+
+                    if (key == "user")
+                        userId = value;
+                    else if (key == "event")
+                        eventId = int.Parse(value);
+                }
+            }
+
+            return (userId, eventId);
+        }
     }
 }
