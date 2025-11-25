@@ -25,7 +25,7 @@
                 {   
                     <span>Hello, @User.Identity?.Name</span>
                     <a asp-page="/Logout">
-                        <sl-button size="small" pill class="btn-gradient">Logout</sl-button>
+                        <sl-button size="small" pill class="btn-gradient">➜]</sl-button> @*  ask group: work with the emoji ou only logout label  *@
                     </a>
                 }
                 else
@@ -36,6 +36,9 @@
                 }
                 <a asp-page="/Index">
                     <sl-button size="/small" pill class="btn-ghost">Event Registration</sl-button>
+                </a>
+                <a asp-page="/Scanner" style="text-decoration:none">
+                    <sl-button size="small" pill class="btn-ghost">⛶ Scanner</sl-button>
                 </a>
                 <a asp-page="/createevent" style="text-decoration:none">
                     <sl-button size="small" pill class="btn-gradient">Create Event</sl-button>
