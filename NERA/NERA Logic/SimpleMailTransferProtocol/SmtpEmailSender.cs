@@ -7,7 +7,6 @@ using MailKit.Security;
 using MimeKit;
 using MimeKit.Utils;
 
-
 namespace Logic.SimpleMailTransferProtocol
 {
     public class SmtpEmailSender : IEmailSender
@@ -64,6 +63,30 @@ namespace Logic.SimpleMailTransferProtocol
         };
             message.Body = multipart;
 
+            await SendAsync(message);
+        }
+        // Sends an email notification about an event action (updated or deleted)
+        public async Task SendEventNotificationEmailAsync(string toEmail, string toName, string eventName, string action)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_settings.FromName, _settings.FromEmail));
+            message.To.Add(new MailboxAddress(toName, toEmail));
+            message.Subject = $"Event {action}: {eventName}";
+
+            var bodyBuilder = new BodyBuilder
+            {
+                TextBody = $"Hi {toName},\n\nThe event '{eventName}' has been {action}.\n" +
+                           $"Date and time of action: {DateTime.UtcNow:u} (UTC)\n\n" +
+                           "If you have any questions, please contact support."
+            };
+
+            message.Body = bodyBuilder.ToMessageBody();
+
+            await SendAsync(message);
+        }
+
+        private async Task SendAsync(MimeMessage message)
+        {
             using var client = new SmtpClient();
             try
             {
@@ -81,5 +104,4 @@ namespace Logic.SimpleMailTransferProtocol
         }
 
     }
-
 }

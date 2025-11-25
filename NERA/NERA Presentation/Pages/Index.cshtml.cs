@@ -55,7 +55,7 @@ namespace NERA_Presentation.Pages
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            var eventToDelete = await _context.Event.FindAsync(id);
+            Event eventToDelete = await _context.Event.FindAsync(id);
 
             if (eventToDelete != null)
             {
