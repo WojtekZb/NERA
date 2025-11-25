@@ -1,23 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Data;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-using Data;
 using Logic.Services;
-using Microsoft.AspNetCore.Identity.Data;
-using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 namespace NERA_Presentation.Pages
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly AppDbContext _context;
         private readonly RegisterUserToEventService _registerService;
+        private readonly ILogger<IndexModel> _logger;
 
-        public IndexModel(AppDbContext context, RegisterUserToEventService registerService)
+        public IndexModel(AppDbContext context, RegisterUserToEventService registerService, ILogger<IndexModel> logger)
         {
             _context = context;
             _registerService = registerService;
+            _logger = logger;
         }
         public IList<Event> Events { get; private set; } = new List<Event>();
         public bool DbAvailable { get; private set; }
@@ -70,13 +73,100 @@ namespace NERA_Presentation.Pages
 
         public async Task<IActionResult> OnPostRegisterAsync([FromBody] RegisterRequest data)
         {
+            // Auth0-style claims
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return new JsonResult(new { success = false, error = "not_authenticated" })
+                {
+                    StatusCode = StatusCodes.Status401Unauthorized
+                };
+            }
+
+            // Auth0 claims – adjust if you changed mapping
+            var userId =
+                User.FindFirstValue("sub") ??
+                User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userEmail =
+                User.FindFirstValue("email") ??
+                User.FindFirstValue(ClaimTypes.Email);
+
+            var userName =
+                User.FindFirstValue("name") ??
+                User.FindFirstValue(ClaimTypes.Name) ??
+                userEmail;
+
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userEmail))
+            {
+                _logger.LogWarning("Missing claims for registration. sub={Sub}, email={Email}",
+                    userId, userEmail);
+
+                return new JsonResult(new { success = false, error = "missing_claims" })
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+
+            try
+            {
+                await _registerService.RegisterForEvent(userId, userEmail, userName!, data.EventId);
+
+                return new JsonResult(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error while registering user {UserId} for event {EventId}", userId, data.EventId);
+
+                return new JsonResult(new { success = false, error = "server_error" })
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError
+                };
+            }
+        }
+
+        public async Task<IActionResult> OnGetUserEventsAsync()
+        {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null)
-                return Unauthorized();
+                return new JsonResult(new { events = new List<object>() });
 
-            await _registerService.RegisterForEvent(userId, data.EventId);
+            if (!DbStatus.DbAvailable)
+            {
+                return new JsonResult(new { events = new List<object>() });
+            }
 
-            return new JsonResult(new { success = true });
+            try
+            {
+                var userEvents = await _context.EventRegistration
+                    .Where(er => er.UserSub == userId)
+                    .Join(_context.Event,
+                        registration => registration.EventId,
+                        evt => evt.Id,
+                        (registration, evt) => evt)
+                    .AsNoTracking()
+                    .Select(e => new
+                    {
+                        id = e.Id,
+                        title = e.Title,
+                        startDate = e.StartDate,
+                        endDate = e.EndDate,
+                        cgi = e.CGI,
+                        adress = e.Adress,
+                        status = e.Status.ToString(),
+                        cost = e.Cost,
+                        capacity = e.Capacity,
+                        description = e.Description
+                    })
+                    .ToListAsync();
+
+                return new JsonResult(new { events = userEvents });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading user events: {ex.Message}");
+                return new JsonResult(new { events = new List<object>() });
+            }
         }
     }
 }

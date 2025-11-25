@@ -25,8 +25,8 @@ namespace Domain.Entities
         public string Description { get; set; } = string.Empty;
         [Required]
         public EventStatus Status { get; set; }
-        public string OrganizerEmail { get; set; } = default;
-        public string OrganizerName { get; set; } = default;
+        //public string OrganizerEmail { get; set; } = default;
+        //public string OrganizerName { get; set; } = default;
 
         public ICollection<EventRegistration> EventRegistration { get; set; } = new List<EventRegistration>();
     }

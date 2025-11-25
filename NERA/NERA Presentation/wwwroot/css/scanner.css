@@ -1,0 +1,43 @@
+.scanner-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    /* background-color: black;    I addded this so that I can know where can I fix the size of it */
+}
+ 
+/* button to start scanning */
+
+.scanner-card {
+    margin-top: 2rem;
+}
+
+#reader {
+    width: 100%;
+    min-height: 400px;
+    margin-bottom: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+#reader video {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.scanner-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.result-container {
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    #reader {
+        min-height: 300px;
+    }
+}
+

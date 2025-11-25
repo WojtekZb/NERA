@@ -1,0 +1,114 @@
+﻿@page
+@model NERA_Presentation.Pages.ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+@if (!User.Identity?.IsAuthenticated ?? false)
+{
+    <main class="container">
+        <sl-card class="panel section">
+            <h2 class="accent">Please login to view your profile</h2>
+            <p class="muted">You need to be authenticated to access this page.</p>
+            <a asp-page="/Login" asp-route-returnUrl="/Profile">
+                <sl-button variant="primary" class="btn-gradient">Login</sl-button>
+            </a>
+        </sl-card>
+    </main>
+}
+else
+{
+    <main class="container profile-container">
+        <div class="profile-content">
+            <h1 class="page-title">My Profile</h1>
+
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <sl-avatar 
+                    image="@User.FindFirst("picture")?.Value" 
+                    label="Profile Picture"
+                    style="--size: 120px;">
+                </sl-avatar>
+                <div class="profile-info">
+                    <h2 class="profile-name">@(User.FindFirst("name")?.Value ?? "User")</h2>
+                    <p class="profile-email">@(User.FindFirst("nickname")?.Value)@@gmail.com</p>
+                </div>
+            </div>
+
+            <!-- Profile Details -->
+            <div class="profile-details">
+                <div class="profile-field">
+                    <div class="field-label">
+                        <sl-icon name="person-circle" class="field-icon"></sl-icon>
+                        <strong>Full Name</strong>
+                    </div>
+                    <p class="field-value">@(User.FindFirst("name")?.Value ?? "Not available")</p>
+                </div>
+
+                <div class="profile-field">
+                    <div class="field-label">
+                        <sl-icon name="envelope" class="field-icon"></sl-icon>
+                        <strong>Email Address</strong>
+                    </div>
+                    <p class="field-value">@(User.FindFirst("nickname")?.Value)@@gmail.com</p> 
+                </div>
+
+                <div class="profile-field">
+                    <div class="field-label">
+                        <sl-icon name="key" class="field-icon"></sl-icon>
+                        <strong>User ID</strong>
+                    </div>
+                    <p class="field-value field-value-small">@(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "Not available")</p>
+                </div>
+
+                @if (!string.IsNullOrEmpty(User.FindFirst("email_verified")?.Value))
+                {
+                    <div class="profile-field">
+                        <div class="field-label">
+                            <sl-icon name="check-circle" class="field-icon"></sl-icon>
+                            <strong>Email Verified</strong>
+                        </div>
+                        <p class="field-value">
+                            @if (User.FindFirst("email_verified")?.Value == "true")
+                            {
+                                <sl-badge class="gradient">Verified</sl-badge>
+                            }
+                            else
+                            {
+                                <sl-badge variant="warning">Not Verified</sl-badge>
+                            }
+                        </p>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(User.FindFirst("created_at")?.Value))
+                {
+                    <div class="profile-field">
+                        <div class="field-label">
+                            <sl-icon name="calendar" class="field-icon"></sl-icon>
+                            <strong>Account Created</strong>
+                        </div>
+                        <p class="field-value">@User.FindFirst("created_at")?.Value</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Account Actions -->
+            <div class="profile-actions">
+                <a asp-page="/Index" style="text-decoration: none;">
+                    <sl-button variant="default" class="btn-ghost">
+                        Back to Events
+                    </sl-button>
+                </a>
+                <a asp-page="/Logout" style="text-decoration: none;">
+                    <sl-button variant="primary" class="btn-gradient">
+                        Logout
+                    </sl-button>
+                </a>
+            </div>
+        </div>
+    </main>
+}
+
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+    
