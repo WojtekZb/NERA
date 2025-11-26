@@ -65,7 +65,6 @@ namespace Data.Repositories
             {
                 EventId = eventId,
                 UserSub = userId,
-                RegisteredAtUtc = DateTime.UtcNow
             };
 
             _context.EventRegistration.Add(registration);

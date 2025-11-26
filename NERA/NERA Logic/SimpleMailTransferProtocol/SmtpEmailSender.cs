@@ -85,6 +85,76 @@ namespace Logic.SimpleMailTransferProtocol
             await SendAsync(message);
         }
 
+        public async Task SendEventDeletedEmailAsync(string toEmail, string toName, Event ev)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_settings.FromName, _settings.FromEmail));
+            message.To.Add(new MailboxAddress(toName, toEmail));
+            message.Subject = $"Event Deleted: {ev.Title}";
+
+            var bodyBuilder = new BodyBuilder
+            {
+                TextBody = $"Hi {toName},\n\n" +
+                           $"The event '{ev.Title}' has been deleted.\n" +
+                           $"Date of deletion: {DateTime.UtcNow:u} (UTC)\n\n" +
+                           "If this was unexpected, please contact support."
+            };
+
+            message.Body = bodyBuilder.ToMessageBody();
+            await SendAsync(message);
+        }
+
+        public async Task SendEventEditedEmailAsync(string toEmail, string toName, Event oldEvent, Event newEvent)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_settings.FromName, _settings.FromEmail));
+            message.To.Add(new MailboxAddress(toName, toEmail));
+            message.Subject = $"Event Edited: {newEvent.Title}";
+
+            var changes = new List<string>();
+
+            if (oldEvent.Title != newEvent.Title)
+                changes.Add($"Title changed from '{oldEvent.Title}' to '{newEvent.Title}'");
+
+            if (oldEvent.StartDate != newEvent.StartDate)
+                changes.Add($"StartDate changed from {oldEvent.StartDate:u} to {newEvent.StartDate:u}");
+
+            if (oldEvent.EndDate != newEvent.EndDate)
+                changes.Add($"EndDate changed from {oldEvent.EndDate:u} to {newEvent.EndDate:u}");
+
+            if (oldEvent.CGI != newEvent.CGI)
+                changes.Add($"CGI changed from '{oldEvent.CGI}' to '{newEvent.CGI}'");
+
+            if (oldEvent.Adress != newEvent.Adress)
+                changes.Add($"Address changed from '{oldEvent.Adress}' to '{newEvent.Adress}'");
+
+            if (oldEvent.Cost != newEvent.Cost)
+                changes.Add($"Cost changed from {oldEvent.Cost} to {newEvent.Cost}");
+
+            if (oldEvent.Capacity != newEvent.Capacity)
+                changes.Add($"Capacity changed from {oldEvent.Capacity} to {newEvent.Capacity}");
+
+            if (oldEvent.Description != newEvent.Description)
+                changes.Add($"Description changed from '{oldEvent.Description}' to '{newEvent.Description}'");
+
+            if (oldEvent.Status != newEvent.Status)
+                changes.Add($"Status changed from '{oldEvent.Status}' to '{newEvent.Status}'");
+
+            var bodyBuilder = new BodyBuilder
+            {
+                TextBody = $"Hi {toName},\n\n" +
+                           $"The event '{oldEvent.Title}' has been edited.\n\n" +
+                           (changes.Count > 0
+                               ? "Here are the changes:\n- " + string.Join("\n- ", changes)
+                               : "No changes detected.") +
+                           $"\n\nDate of edit: {DateTime.UtcNow:u} (UTC)\n\n" +
+                           "If you have any questions, please contact support."
+            };
+
+            message.Body = bodyBuilder.ToMessageBody();
+            await SendAsync(message);
+        }
+
         private async Task SendAsync(MimeMessage message)
         {
             using var client = new SmtpClient();
@@ -102,6 +172,5 @@ namespace Logic.SimpleMailTransferProtocol
                 await client.DisconnectAsync(true);
             }
         }
-
     }
 }

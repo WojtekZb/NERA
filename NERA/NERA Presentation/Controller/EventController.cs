@@ -31,7 +31,7 @@ namespace Presentation.Controllers
             _logger = logger;
         }
 
-        [HttpPut("{id:guid}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> EditEvent(int id, [FromBody] EditEventDto dto)
         {
             // 1) Fetch existing event
@@ -42,10 +42,25 @@ namespace Presentation.Controllers
                 return NotFound(new { message = "Event not found." });
             }
 
-            // 2) Apply changes via your domain service (keeps business rules centralized)
+            // Keep a copy of the old event for comparison
+            var oldEvent = new Event
+            {
+                Id = existing.Id,
+                Title = existing.Title,
+                Description = existing.Description,
+                Adress = existing.Adress,
+                StartDate = existing.StartDate,
+                EndDate = existing.EndDate,
+                CGI = existing.CGI,
+                Cost = existing.Cost,
+                Capacity = existing.Capacity,
+                Status = existing.Status
+            };
+
+            // 2) Apply changes via domain service
             existing.Title = dto.Title;
-            existing.Description = dto.Description;
-            existing.Adress = dto.Location;
+            existing.Description = dto.Description ?? existing.Description;
+            existing.Adress = dto.Location ?? existing.Adress;
             existing.StartDate = dto.StartDate;
             existing.EndDate = dto.EndDate;
             existing.Status = dto.Status;
@@ -55,25 +70,23 @@ namespace Presentation.Controllers
             // 3) Compose notification (Edited)
             var userEmail = User.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
             var userName = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "User";
-            var timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm zzz", CultureInfo.InvariantCulture);
 
             if (!string.IsNullOrWhiteSpace(userEmail))
             {
                 try
                 {
-                    await _emailSender.SendEventNotificationEmailAsync(
+                    await _emailSender.SendEventEditedEmailAsync(
                         toEmail: userEmail,
                         toName: userName,
-                        eventName: existing.Title,
-                        action: "Edited");
+                        oldEvent: oldEvent,
+                        newEvent: existing);
 
-                    _logger.LogInformation("EditEvent: Notification sent to {Email} for event '{EventTitle}'.",
+                    _logger.LogInformation("EditEvent: Edited notification sent to {Email} for event '{EventTitle}'.",
                         userEmail, existing.Title);
                 }
                 catch (Exception ex)
                 {
-                    // Graceful handling: do not fail the request if email fails
-                    _logger.LogError(ex, "EditEvent: Failed to send notification to {Email}.", userEmail);
+                    _logger.LogError(ex, "EditEvent: Failed to send edited notification to {Email}.", userEmail);
                 }
             }
             else
@@ -84,10 +97,10 @@ namespace Presentation.Controllers
             return Ok(existing);
         }
 
-        [HttpDelete("{id:guid}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
-            // 1) Fetch the event to preserve its name for the email (because after delete it's gone)
+            // 1) Fetch the event to preserve its details for the email
             var existing = await _eventRepo.GetByIdAsync(id);
             if (existing is null)
             {
@@ -101,25 +114,22 @@ namespace Presentation.Controllers
             // 3) Compose notification (Deleted)
             var userEmail = User.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
             var userName = User.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "User";
-            var timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm zzz", CultureInfo.InvariantCulture);
 
             if (!string.IsNullOrWhiteSpace(userEmail))
             {
                 try
                 {
-                    await _emailSender.SendEventNotificationEmailAsync(
+                    await _emailSender.SendEventDeletedEmailAsync(
                         toEmail: userEmail,
                         toName: userName,
-                        eventName: existing.Title,
-                        action: "Deleted");
+                        ev: existing);
 
-                    _logger.LogInformation("DeleteEvent: Notification sent to {Email} for event '{EventTitle}'.",
+                    _logger.LogInformation("DeleteEvent: Deleted notification sent to {Email} for event '{EventTitle}'.",
                         userEmail, existing.Title);
                 }
                 catch (Exception ex)
                 {
-                    // Graceful handling: do not fail the request if email fails
-                    _logger.LogError(ex, "DeleteEvent: Failed to send notification to {Email}.", userEmail);
+                    _logger.LogError(ex, "DeleteEvent: Failed to send deleted notification to {Email}.", userEmail);
                 }
             }
             else
@@ -151,6 +161,6 @@ namespace Presentation.Controllers
         public string? Location { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public EventStatus Status { get; set; } 
+        public EventStatus Status { get; set; }
     }
 }

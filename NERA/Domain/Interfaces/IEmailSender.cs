@@ -8,5 +8,12 @@ public interface IEmailSender
         Event ev,
         byte[] icsAttachment,
         byte[] qrCode);
-    }
+    Task SendEventDeletedEmailAsync(
+        string toEmail, 
+        string toName, 
+        Event ev);
+    Task SendEventEditedEmailAsync(string toEmail,
+        string toName,
+        Event oldEvent,
+        Event newEvent);
 }

@@ -1,12 +1,16 @@
 ﻿using Data;
 using Domain.Entities;
+using Domain.Interfaces;
 using Logic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Text;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
+
 namespace NERA_Presentation.Pages
 {
     [Authorize]
@@ -15,12 +19,16 @@ namespace NERA_Presentation.Pages
         private readonly AppDbContext _context;
         private readonly RegisterUserToEventService _registerService;
         private readonly ILogger<IndexModel> _logger;
+        private readonly ICreateEventRepo _repo;
+        private readonly IEmailSender _emailSender;
 
-        public IndexModel(AppDbContext context, RegisterUserToEventService registerService, ILogger<IndexModel> logger)
+        public IndexModel(AppDbContext context, RegisterUserToEventService registerService, ILogger<IndexModel> logger, ICreateEventRepo repo, IEmailSender emailSender)
         {
             _context = context;
             _registerService = registerService;
             _logger = logger;
+            _repo = repo;
+            _emailSender = emailSender;
         }
         public IList<Event> Events { get; private set; } = new List<Event>();
         public bool DbAvailable { get; private set; }
@@ -55,16 +63,64 @@ namespace NERA_Presentation.Pages
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            public var rep = ICreateEventRepo.DeleteEventAsync(id);
+            try
+            {
+                var existing = await _repo.GetByIdAsync(id);
+                if (existing == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Event not found.");
+                    return Page();
+                }
 
+                // Delete the event
+                await _repo.DeleteEventAsync(id);
 
+                try
+                {
+                    // Get all users registered for this event
+                    var registeredUsers = await _context.EventRegistration
+                        .Where(er => er.EventId == id)
+                        .ToListAsync();
+
+                    foreach (var reg in registeredUsers)
+                    {
+                        // You stored UserSub (Auth0 user ID) in EventRegistration
+                        // Now fetch their email/name from claims or your DB
+                        var userEmail = reg.UserEmail;   // assuming you saved it
+                        var userName = reg.UserName;     // assuming you saved it
+
+                        await _emailSender.SendEventDeletedEmailAsync(
+                            toEmail: userEmail,
+                            toName: userName ?? userEmail,
+                            ev: existing
+                        );
+                    }
+                }
+                catch (Exception emailEx)
+                {
+                    ModelState.AddModelError(string.Empty,
+                        "Event deleted but failed to send email: " + emailEx.Message);
+                }
+
+                return RedirectToPage("/Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Unable to delete event: " + ex.Message);
+                return Page();
+            }
         }
+
+
+
 
         public class RegisterRequest
         {
             [JsonPropertyName("EventId")]
             public int EventId { get; set; }
+        
         }
+
 
         public async Task<IActionResult> OnPostRegisterAsync([FromBody] RegisterRequest data)
         {
