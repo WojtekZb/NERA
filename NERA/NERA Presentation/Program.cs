@@ -9,7 +9,6 @@ using Logic.SimpleMailTransferProtocol;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System.IdentityModel.Tokens.Jwt;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +54,7 @@ builder.Services.AddScoped<CreateEventService>();
 builder.Services.AddScoped<UpdateEventService>();
 builder.Services.AddScoped<IRegisterUserToEventRepo, RegisterUserToEventRepo>();
 builder.Services.AddScoped<RegisterUserToEventService>();
+builder.Services.AddScoped<QrCodeGeneratorService>();
 
 var app = builder.Build();
 

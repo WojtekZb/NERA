@@ -1,4 +1,5 @@
-@page
+﻿@page
+@Html.AntiForgeryToken()
 @model ScannerModel
 @{
     ViewData["Title"] = "Scanner";
@@ -40,33 +41,47 @@
     html5QrCode = new Html5Qrcode("reader");
 
     async function handleScanSuccess(decodedText) {
-        // Prevent duplicate scans
-        if (lastScannedCode === decodedText) {
-            return;
-        }
-        
-        // Clear any timeout
-        if (scanTimeout) {
-            clearTimeout(scanTimeout);
-        }
-        
+        if (lastScannedCode === decodedText) return;
+        if (scanTimeout) clearTimeout(scanTimeout);
+
         lastScannedCode = decodedText;
-        
-        // Show result
+
+        // Show result immediately
         resultDiv.innerHTML = `<sl-alert variant="success" open>
             <strong>Scanned:</strong> ${decodedText}
         </sl-alert>`;
         resultDiv.style.display = 'block';
-        
-        // Vibrate if supported
-        if (navigator.vibrate) {
-            navigator.vibrate(200);
+
+        if (navigator.vibrate) navigator.vibrate(200);
+
+        // 🔗 Call Razor Page handler
+        try {
+            const response = await fetch('/Scanner?handler=ChangeAttendance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ qr: decodedText })
+
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                resultDiv.innerHTML = `<sl-alert variant="success" open>
+                    <strong>Attendance updated:</strong> ${decodedText}
+                </sl-alert>`;
+            } else {
+                resultDiv.innerHTML = `<sl-alert variant="danger" open>
+                    <strong>Error:</strong> Failed to update attendance.
+                </sl-alert>`;
+            }
+        } catch (err) {
+            console.error("Error calling backend:", err);
+            resultDiv.innerHTML = `<sl-alert variant="danger" open>
+                <strong>Error:</strong> Could not contact server.
+            </sl-alert>`;
         }
-        
+
         // Prevent duplicate scans for 2 seconds
-        scanTimeout = setTimeout(() => {
-            lastScannedCode = null;
-        }, 2000);
+        scanTimeout = setTimeout(() => { lastScannedCode = null; }, 2000);
     }
 
     startBtn.addEventListener('click', async () => {
@@ -148,14 +163,14 @@
 
     stopBtn.addEventListener('click', async () => {
         if (!isScanning) return;
-        
+
         try {
             await html5QrCode.stop();
             html5QrCode.clear();
-            
+
             isScanning = false;
             lastScannedCode = null;
-            
+
             if (scanTimeout) {
                 clearTimeout(scanTimeout);
                 scanTimeout = null;
@@ -175,9 +190,7 @@
 
     window.addEventListener('beforeunload', async () => {
         if (isScanning && html5QrCode) {
-            try {
-                await html5QrCode.stop();
-            } catch (err) {}
+            try { await html5QrCode.stop(); } catch (err) {}
         }
     });
 </script>

@@ -2,6 +2,7 @@
 using Domain.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 public class RegisterUserToEventRepo : IRegisterUserToEventRepo
 {
@@ -12,7 +13,7 @@ public class RegisterUserToEventRepo : IRegisterUserToEventRepo
         _context = context;
     }
 
-    public async Task RegisterUserAsync(string userId, int eventId)
+    public async Task RegisterUserAsync(string userId, int eventId, byte[] qr, bool attandance)
     {
         var evnt = await _context.Event.FindAsync(eventId);
 
@@ -29,11 +30,39 @@ public class RegisterUserToEventRepo : IRegisterUserToEventRepo
         {
             UserSub = userId,
             EventId = eventId,
+            Qr = qr,
+            Attandance = attandance
         };
 
         _context.EventRegistration.Add(registration);
         await _context.SaveChangesAsync();
     }
+
+    public async Task ChangeAttandance(string userId, int eventId)
+    {
+        try
+        {
+            Console.WriteLine($"Querying user={userId}, event={eventId}");
+
+            var registration = await _context.EventRegistration.FirstOrDefaultAsync(er => er.UserSub == userId && er.EventId == eventId);
+
+            Console.WriteLine(registration == null ? "No record found" : "Record found");
+
+            if (registration != null)
+            {
+                registration.Attandance = true;
+                await _context.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("🔥 EXCEPTION 🔥");
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.StackTrace);
+            throw;
+        }
+    }
+
 
 
 }

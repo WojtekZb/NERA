@@ -11,5 +11,9 @@ namespace Domain.Entities
         public int EventId { get; set; }
 
         public string UserSub { get; set; } = default!;
+
+        public byte[] Qr {  get; set; }
+
+        public bool Attandance { get; set; }
     }
 }
