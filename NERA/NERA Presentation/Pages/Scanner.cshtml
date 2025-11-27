@@ -31,6 +31,7 @@
     let isScanning = false;
     let lastScannedCode = null;
     let scanTimeout = null;
+    let hideStatusInterval = null;
 
     const startBtn = document.getElementById('start-btn');
     const stopBtn = document.getElementById('stop-btn');
@@ -89,19 +90,70 @@
         try {
             resultDiv.style.display = 'none';
             lastScannedCode = null;
-
+            
+            // Clear any previous state
+            html5QrCode.clear();
+            
             await html5QrCode.start(
                 { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 250 } },
+                { 
+                    fps: 10, 
+                    qrbox: { width: 300, height: 300 },
+                    disableFlip: false,
+                    rememberLastUsedCamera: true
+                },
                 handleScanSuccess,
-                () => {}
+                (errorMessage) => {
+                    // Ignore scanning errors (they happen frequently during scanning)
+                }
             );
-
+            
             isScanning = true;
             startBtn.style.display = 'none';
             stopBtn.style.display = 'inline-block';
+            
+            // Hide any status/paused messages that might appear
+            setTimeout(() => {
+                const allElements = reader.querySelectorAll('*');
+                allElements.forEach(el => {
+                    const text = el.textContent || el.innerText || '';
+                    if (text && (text.toLowerCase().includes('paused') || 
+                                 text.toLowerCase().includes('pause') ||
+                                 text.toLowerCase().includes('scan paused'))) {
+                        el.style.display = 'none';
+                        el.style.visibility = 'hidden';
+                        el.style.opacity = '0';
+                        el.style.height = '0';
+                        el.style.width = '0';
+                    }
+                });
+            }, 200);
+            
+            // Continue hiding status messages periodically
+            if (hideStatusInterval) {
+                clearInterval(hideStatusInterval);
+            }
+            hideStatusInterval = setInterval(() => {
+                if (!isScanning) {
+                    clearInterval(hideStatusInterval);
+                    hideStatusInterval = null;
+                    return;
+                }
+                const allElements = reader.querySelectorAll('span, div');
+                allElements.forEach(el => {
+                    const text = (el.textContent || el.innerText || '').trim();
+                    if (text && (text.toLowerCase().includes('paused') || 
+                                 text.toLowerCase().includes('pause'))) {
+                        el.style.display = 'none';
+                        el.style.visibility = 'hidden';
+                        el.remove();
+                    }
+                });
+            }, 500);
+
         } catch (err) {
             console.error('Error starting scanner:', err);
+            isScanning = false;
             resultDiv.innerHTML = `<sl-alert variant="danger" open>
                 <strong>Error:</strong> Could not start scanner.
             </sl-alert>`;
@@ -123,7 +175,12 @@
                 clearTimeout(scanTimeout);
                 scanTimeout = null;
             }
-
+            
+            if (hideStatusInterval) {
+                clearInterval(hideStatusInterval);
+                hideStatusInterval = null;
+            }
+            
             startBtn.style.display = 'inline-block';
             stopBtn.style.display = 'none';
         } catch (err) {
