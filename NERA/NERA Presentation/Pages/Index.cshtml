@@ -131,6 +131,16 @@
     </div>
 </sl-dialog>
 
+<!-- QR Code Modal -->
+<sl-dialog id="qrCodeModal" label="Event QR Code" class="qr-code-modal">
+    <div id="qrCodeContent">
+        <!-- QR code will be populated dynamically -->
+    </div>
+    <div slot="footer" class="modal-footer">
+        <sl-button id="closeQrCodeModal" variant="default">Close</sl-button>
+    </div>
+</sl-dialog>
+
 <!-- Event Details Modal -->
 <sl-dialog id="eventModal" label="Event Details" class="event-details-modal">
     <div id="modalContent">
@@ -419,7 +429,7 @@
                 dayContent += '<div class="calendar-events">';
                 dayEvents.forEach(event => {
                     const eventTitle = event.title.length > 15 ? event.title.substring(0, 15) + '...' : event.title;
-                    dayContent += `<div class="calendar-event" title="${event.title}">${eventTitle}</div>`;
+                    dayContent += `<div class="calendar-event" data-event-id="${event.id}" data-event-title="${event.title.replace(/"/g, '&quot;')}" title="${event.title}">${eventTitle}</div>`;
                 });
                 dayContent += '</div>';
             }
@@ -435,6 +445,73 @@
 
         calendarContent.innerHTML = calendarHTML;
         calendarModal.show();
+
+        // Add click handlers to calendar events
+        const calendarEventElements = calendarContent.querySelectorAll('.calendar-event');
+        calendarEventElements.forEach(eventElement => {
+            eventElement.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const eventId = parseInt(eventElement.getAttribute('data-event-id'));
+                const eventTitle = eventElement.getAttribute('data-event-title');
+                await showEventQrCode(eventId, eventTitle);
+            });
+        });
+    }
+
+    // QR Code Modal functionality
+    const qrCodeModal = document.getElementById('qrCodeModal');
+    const qrCodeContent = document.getElementById('qrCodeContent');
+    const closeQrCodeModal = document.getElementById('closeQrCodeModal');
+
+    // Close QR code modal
+    closeQrCodeModal.addEventListener('click', () => {
+        qrCodeModal.hide();
+    });
+
+    // Show QR code for event
+    async function showEventQrCode(eventId, eventTitle) {
+        try {
+            // Show loading state
+            qrCodeContent.innerHTML = '<div style="text-align: center; padding: 2rem;"><p>Loading QR code...</p></div>';
+            qrCodeModal.show();
+
+            // Fetch QR code image
+            const response = await fetch(`?handler=EventQrCode&eventId=${eventId}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const imageUrl = URL.createObjectURL(blob);
+                
+                qrCodeContent.innerHTML = `
+                    <div class="qr-code-container">
+                        <h3 style="text-align: center; margin-bottom: 1rem; color: #1f2937;">${eventTitle || 'Event QR Code'}</h3>
+                        <div class="qr-code-image-wrapper">
+                            <img src="${imageUrl}" alt="Event QR Code" class="qr-code-image" />
+                        </div>
+                        <p style="text-align: center; margin-top: 1rem; color: #6b7280; font-size: 0.875rem;">Scan this QR code to check in at the event</p>
+                    </div>
+                `;
+            } else if (response.status === 404) {
+                qrCodeContent.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <p style="color: #ef4444;">QR code not found for this event.</p>
+                        <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">You may not be registered for this event.</p>
+                    </div>
+                `;
+            } else {
+                throw new Error('Failed to load QR code');
+            }
+        } catch (err) {
+            console.error('Error loading QR code:', err);
+            qrCodeContent.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <p style="color: #ef4444;">Error loading QR code. Please try again later.</p>
+                </div>
+            `;
+        }
     }
 
 

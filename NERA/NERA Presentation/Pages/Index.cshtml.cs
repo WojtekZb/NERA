@@ -1,5 +1,6 @@
 ﻿using Data;
 using Domain.Entities;
+using Domain.Interfaces;
 using Logic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +15,14 @@ namespace NERA_Presentation.Pages
     {
         private readonly AppDbContext _context;
         private readonly RegisterUserToEventService _registerService;
+        private readonly IRegisterUserToEventRepo _registerRepo;
         private readonly ILogger<IndexModel> _logger;
 
-        public IndexModel(AppDbContext context, RegisterUserToEventService registerService, ILogger<IndexModel> logger)
+        public IndexModel(AppDbContext context, RegisterUserToEventService registerService, IRegisterUserToEventRepo registerRepo, ILogger<IndexModel> logger)
         {
             _context = context;
             _registerService = registerService;
+            _registerRepo = registerRepo;
             _logger = logger;
         }
         public IList<Event> Events { get; private set; } = new List<Event>();
@@ -127,7 +130,8 @@ namespace NERA_Presentation.Pages
 
         public async Task<IActionResult> OnGetUserEventsAsync()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // Auth0-style claims - same pattern as OnPostRegisterAsync
+            var userId = User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return new JsonResult(new { events = new List<object>() });
 
@@ -166,6 +170,44 @@ namespace NERA_Presentation.Pages
             {
                 Console.WriteLine($"Error loading user events: {ex.Message}");
                 return new JsonResult(new { events = new List<object>() });
+            }
+        }
+
+        public async Task<IActionResult> OnGetEventQrCodeAsync(int eventId)
+        {
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return new StatusCodeResult(StatusCodes.Status401Unauthorized);
+            }
+
+            // Get user ID from claims (Auth0)
+            var userId = User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (string.IsNullOrEmpty(userId))
+            {
+                return new StatusCodeResult(StatusCodes.Status401Unauthorized);
+            }
+
+            if (!DbStatus.DbAvailable)
+            {
+                return new StatusCodeResult(StatusCodes.Status503ServiceUnavailable);
+            }
+
+            try
+            {
+                var qrCode = await _registerRepo.GetQrCodeAsync(userId, eventId);
+                
+                if (qrCode == null || qrCode.Length == 0)
+                {
+                    return new NotFoundResult();
+                }
+
+                return new FileContentResult(qrCode, "image/png");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving QR code for user {UserId} and event {EventId}", userId, eventId);
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
     }
