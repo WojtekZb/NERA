@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace NERA_Presentation.Pages
 {
     [IgnoreAntiforgeryToken]
+    [Authorize(Roles = "Admin")]
     public class ScannerModel : PageModel
     {
         private readonly RegisterUserToEventService _service;
