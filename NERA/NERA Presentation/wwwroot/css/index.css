@@ -74,17 +74,42 @@ sl-input {
     cursor: pointer;
 }
 
+.trash-button {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    display: flex; /* evita bordas estranhas em elementos inline */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+    .trash-button:focus,
+    .trash-button:focus-visible,
+    .trash-button:active {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+.trash-icon {
+    font-size: 20px; /* ajuste como quiser */
+}
+
+
     .pencil-icon:hover,
     .trash-icon:hover {
         color: red;
         opacity: 1;
     }
 
-/* Dialogs (modals) */
-sl-dialog::part(overlay) {
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-}
+    /* Dialogs (modals) */
+    sl-dialog:: part(overlay) {
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+    }
 
 sl-dialog::part(panel) {
     background-color: white;
