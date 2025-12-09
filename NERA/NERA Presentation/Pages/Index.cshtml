@@ -126,9 +126,9 @@
     <div id="calendarContent">
         <!-- Calendar will be fit dynamically -->
     </div>
-    <div slot="footer" class="modal-footer">
+@*     <div slot="footer" class="modal-footer">
         <sl-button id="closeCalendar" variant="default">Close</sl-button>
-    </div>
+    </div> *@
 </sl-dialog>
 
 <!-- QR Code Modal -->
@@ -136,9 +136,9 @@
     <div id="qrCodeContent">
         <!-- QR code will be fit dynamically -->
     </div>
-    <div slot="footer" class="modal-footer">
+@*     <div slot="footer" class="modal-footer">
         <sl-button id="closeQrCodeModal" variant="default">Close</sl-button>
-    </div>
+    </div> *@
 </sl-dialog>
 
 <!-- Event Details Modal -->
@@ -157,7 +157,7 @@
         </form>
 
         <sl-button id="registerBtn" variant="primary" class="btn-gradient">Register</sl-button>
-        <sl-button id="closeModal" variant="default">Close</sl-button>
+        @* <sl-button id="closeModal" variant="default">Close</sl-button> *@
     </div>
 </sl-dialog>
 
@@ -242,7 +242,7 @@
     const eventModal = document.getElementById('eventModal');
     const modalContent = document.getElementById('modalContent');
     const registerBtn = document.getElementById('registerBtn');
-    const closeModal = document.getElementById('closeModal');
+    // const closeModal = document.getElementById('closeModal');
     const deleteIdInput = document.getElementById('deleteId');
     let currentEvent = null;
 
@@ -332,25 +332,25 @@
     });
 
     // Close modal handler
-    closeModal.addEventListener('click', () => {
-        eventModal.hide();
-    });
+    // closeModal.addEventListener('click', () => {
+    //     eventModal.hide();
+    // });
 
     // Calendar functionality
     const calendarModal = document.getElementById('calendarModal');
     const calendarContent = document.getElementById('calendarContent');
     const myCalendarBtn = document.getElementById('myCalendarBtn');
-    const closeCalendar = document.getElementById('closeCalendar');
+    // const closeCalendar = document.getElementById('closeCalendar');
 
     // Show calendar modal
     myCalendarBtn.addEventListener('click', () => {
         showCalendar();
     });
 
-    // Close calendar modal
-    closeCalendar.addEventListener('click', () => {
-        calendarModal.hide();
-    });
+    // // Close calendar modal
+    // closeCalendar.addEventListener('click', () => {
+    //     calendarModal.hide();
+    // });
 
     // Generate calendar
     async function showCalendar() {
@@ -461,12 +461,12 @@
     // QR Code Modal functionality
     const qrCodeModal = document.getElementById('qrCodeModal');
     const qrCodeContent = document.getElementById('qrCodeContent');
-    const closeQrCodeModal = document.getElementById('closeQrCodeModal');
+    // const closeQrCodeModal = document.getElementById('closeQrCodeModal');
 
-    // Close QR code modal
-    closeQrCodeModal.addEventListener('click', () => {
-        qrCodeModal.hide();
-    });
+    // // Close QR code modal
+    // closeQrCodeModal.addEventListener('click', () => {
+    //     qrCodeModal.hide();
+    // });
 
     // Show QR code for event
     async function showEventQrCode(eventId, eventTitle) {
