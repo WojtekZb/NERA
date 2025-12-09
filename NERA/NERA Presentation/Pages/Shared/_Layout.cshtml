@@ -22,10 +22,12 @@
             </a>
             <div class="header-actions">
                 @if (User.Identity?.IsAuthenticated ?? false)
-                {   
-                    <span>Hello, @User.Identity?.Name</span>
+                {
+                    <strong>
+                        <span>Hello, @User.Identity?.Name </span>
+                    </strong>
                     <a asp-page="/Logout">
-                        <sl-button size="small" pill class="btn-gradient">➜]</sl-button> @*  ask group: work with the emoji ou only logout label  *@
+                        <sl-button size="small" pill class="btn-gradient">➜]</sl-button> 
                     </a>
                 }
                 else

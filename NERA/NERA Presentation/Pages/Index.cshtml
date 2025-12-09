@@ -124,7 +124,7 @@
 <!-- Calendar Modal -->
 <sl-dialog id="calendarModal" label="My Calendar" class="calendar-modal">
     <div id="calendarContent">
-        <!-- Calendar will be populated dynamically -->
+        <!-- Calendar will be fit dynamically -->
     </div>
     <div slot="footer" class="modal-footer">
         <sl-button id="closeCalendar" variant="default">Close</sl-button>
@@ -134,7 +134,7 @@
 <!-- QR Code Modal -->
 <sl-dialog id="qrCodeModal" label="Event QR Code" class="qr-code-modal">
     <div id="qrCodeContent">
-        <!-- QR code will be populated dynamically -->
+        <!-- QR code will be fit dynamically -->
     </div>
     <div slot="footer" class="modal-footer">
         <sl-button id="closeQrCodeModal" variant="default">Close</sl-button>
@@ -144,7 +144,7 @@
 <!-- Event Details Modal -->
 <sl-dialog id="eventModal" label="Event Details" class="event-details-modal">
     <div id="modalContent">
-        <!-- Content will be populated dynamically -->
+        <!-- Content will be fit dynamically -->
     </div>
     <div slot="footer" class="modal-footer">
         <!-- Trash Icon (form posts to the page handler). Hidden input 'id' set from JS when modal opens -->
@@ -491,14 +491,7 @@
                         <div class="qr-code-image-wrapper">
                             <img src="${imageUrl}" alt="Event QR Code" class="qr-code-image" />
                         </div>
-                        <p style="text-align: center; margin-top: 1rem; color: #6b7280; font-size: 0.875rem;">Scan this QR code to check in at the event</p>
-                    </div>
-                `;
-            } else if (response.status === 404) {
-                qrCodeContent.innerHTML = `
-                    <div style="text-align: center; padding: 2rem;">
-                        <p style="color: #ef4444;">QR code not found for this event.</p>
-                        <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">You may not be registered for this event.</p>
+                        <p style="text-align: center; margin-top: 1rem; color: #6b7280; font-size: 0.875rem;">Show this QR code to check in at the event</p>
                     </div>
                 `;
             } else {
