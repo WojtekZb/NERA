@@ -100,11 +100,14 @@ else
                         Back to Events
                     </sl-button>
                 </a>
-                <a asp-page="/Logout" style="text-decoration: none;">
-                    <sl-button variant="primary" class="btn-gradient">
-                        Logout
-                    </sl-button>
-                </a>
+                @if (Model.IsAdmin)
+                {
+                    <a asp-page="/Report" style="text-decoration: none;">
+                        <sl-button variant="primary" class="btn-gradient">
+                            Events Report
+                        </sl-button>
+                    </a>
+                }
             </div>
         </div>
     </main>

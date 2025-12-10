@@ -47,6 +47,7 @@
 <script>
     // use pagemodel data instead of fetching /api/events
     // serialized with camelCase to match existing clinet mapping
+    const isAdmin = @Html.Raw(Json.Serialize(Model.IsAdmin));
     const __serverEvents = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Events.Select(e => new
         {
             id = e.Id,
@@ -147,14 +148,17 @@
         <!-- Content will be fit dynamically -->
     </div>
     <div slot="footer" class="modal-footer">
-        <!-- Trash Icon (form posts to the page handler). Hidden input 'id' set from JS when modal opens -->
-        <form id="deleteForm" method="post" asp-page-handler="Delete">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="id" id="deleteId" value="" />
-            <button type="submit" class=" trash-button" title="Delete event">
-                <sl-icon name="trash" class="trash-icon"></sl-icon>
-            </button>
-        </form>
+        <!-- Trash Icon (form posts to the page handler). Only visible for Admin users -->
+        @if (Model.IsAdmin)
+        {
+            <form id="deleteForm" method="post" asp-page-handler="Delete">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="deleteId" value="" />
+                <button type="submit" class=" trash-button" title="Delete event">
+                    <sl-icon name="trash" class="trash-icon"></sl-icon>
+                </button>
+            </form>
+        }
 
         <sl-button id="registerBtn" variant="primary" class="btn-gradient">Register</sl-button>
         @* <sl-button id="closeModal" variant="default">Close</sl-button> *@
@@ -186,9 +190,9 @@
                     <div><strong>Address:</strong> ${ev.adress}</div>
                     <div><strong>Status:</strong> ${isOpen ? '<sl-badge class="gradient">Open for Registration</sl-badge>' : '<sl-badge variant="neutral">Closed</sl-badge>'}</div>
                     </div>
-                    <div class="event-actions">
+                    <div class="event-actions ${isAdmin ? 'has-edit' : 'no-edit'}">
                     <sl-button pill ${isOpen ? 'class="btn-register pulse"' : 'class="btn-details"'} data-event-id="${ev.id}">${isOpen ? 'Register' : 'Details'}</sl-button>
-                    <sl-icon name="pencil" class="pencil-icon" data-event-id="${ev.id}"></sl-icon>
+                    ${isAdmin ? '<sl-icon name="pencil" class="pencil-icon" data-event-id="' + ev.id + '"></sl-icon>' : ''}
                     </div>
                 `;
 
@@ -199,12 +203,15 @@
             registerButton.addEventListener('click', () => showEventDetails(ev));
 
             // edit pencil click -> navigate to createevent page in edit mode with event id
+            // Only add listener if icon exists (admin only)
             const editIcon = card.querySelector('.pencil-icon');
-            editIcon.addEventListener('click', (e) => {
-                e.preventDefault();
-                // Reuse the Create Event page in edit mode by passing the id
-                window.location.href = `/createevent?id=${encodeURIComponent(ev.id)}`;
-            });
+            if (editIcon) {
+                editIcon.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Reuse the Create Event page in edit mode by passing the id
+                    window.location.href = `/createevent?id=${encodeURIComponent(ev.id)}`;
+                });
+            }
 
             eventsRoot.appendChild(card);
         });

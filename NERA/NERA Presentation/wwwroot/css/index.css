@@ -59,8 +59,18 @@ sl-input {
 .event-actions {
     display: flex;
     gap: 0.75rem;
-    justify-content: flex-end;
+    align-items: center;
     margin-top: 1rem;
+}
+
+/* Center button when no edit icon */
+.event-actions.no-edit {
+    justify-content: center;
+}
+
+/* Align to right when edit icon is present */
+.event-actions.has-edit {
+    justify-content: flex-end;
 }
 
 /* Icons */
@@ -105,11 +115,11 @@ sl-input {
         opacity: 1;
     }
 
-    /* Dialogs (modals) */
-    sl-dialog:: part(overlay) {
-        background-color: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
-    }
+/* Dialogs (modals) */
+sl-dialog::part(overlay) {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
 
 sl-dialog::part(panel) {
     background-color: white;

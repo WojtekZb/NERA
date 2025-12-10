@@ -27,9 +27,15 @@ namespace NERA_Presentation.Pages
         }
         public IList<Event> Events { get; private set; } = new List<Event>();
         public bool DbAvailable { get; private set; }
+        public bool IsAdmin { get; private set; }
 
         public async Task OnGetAsync()
         {
+            // Check if user has Admin role
+            IsAdmin = User.IsInRole("Admin") || 
+                     User.HasClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Admin") ||
+                     User.Claims.Any(c => (c.Type == "roles" || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") && c.Value == "Admin");
+
             DbAvailable = DbStatus.DbAvailable;
 
             if (!DbAvailable)
@@ -58,6 +64,16 @@ namespace NERA_Presentation.Pages
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
+            // Check if user has Admin role
+            var isAdmin = User.IsInRole("Admin") || 
+                         User.HasClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Admin") ||
+                         User.Claims.Any(c => (c.Type == "roles" || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") && c.Value == "Admin");
+
+            if (!isAdmin)
+            {
+                return new StatusCodeResult(StatusCodes.Status403Forbidden);
+            }
+
             var eventToDelete = await _context.Event.FindAsync(id);
 
             if (eventToDelete != null)

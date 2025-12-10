@@ -17,17 +17,117 @@
 .event-selector {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1.25rem;
+    padding: 1.5rem;
 }
 
 .selector-label {
-    font-weight: 600;
-    color: #374151;
-    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25rem;
 }
 
-sl-select {
+/* Enhanced Select Styling */
+#eventSelect {
     width: 100%;
+    font-size: 1rem;
+}
+
+#eventSelect::part(display-input) {
+    background: linear-gradient(to bottom, #ffffff, #fafafa);
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 56px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#eventSelect::part(display-input):hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    background: #ffffff;
+}
+
+#eventSelect::part(display-input):focus {
+    border-color: #5236ab;
+    box-shadow: 0 0 0 4px rgba(82, 54, 171, 0.12), 0 4px 12px rgba(0, 0, 0, 0.15);
+    outline: none;
+    background: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Placeholder styling */
+#eventSelect::part(display-input)::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+/* Dropdown Menu Styling */
+#eventSelect::part(menu__base),
+#eventSelect::part(listbox) {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem;
+    margin-top: 0.75rem;
+    z-index: 50000;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Scrollbar styling for dropdown */
+#eventSelect::part(listbox)::-webkit-scrollbar {
+    width: 8px;
+}
+
+#eventSelect::part(listbox)::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+#eventSelect::part(listbox)::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+#eventSelect::part(listbox)::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Option Styling */
+#eventSelect sl-option::part(base) {
+    background-color: transparent;
+    color: #374151;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin: 3px 0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+#eventSelect sl-option:hover::part(base) {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color: #1f2937;
+    transform: translateX(4px);
+}
+
+#eventSelect sl-option[checked]::part(base),
+#eventSelect sl-option[selected]::part(base) {
+    background: linear-gradient(135deg, #5236ab 0%, #e41937 100%);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(82, 54, 171, 0.3);
+    transform: translateX(4px);
 }
 
 /* Statistics Cards */
