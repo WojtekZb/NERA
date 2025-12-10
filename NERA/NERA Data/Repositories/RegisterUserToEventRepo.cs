@@ -63,6 +63,13 @@ public class RegisterUserToEventRepo : IRegisterUserToEventRepo
         }
     }
 
+    public async Task<byte[]?> GetQrCodeAsync(string userId, int eventId)
+    {
+        var registration = await _context.EventRegistration
+            .AsNoTracking()
+            .FirstOrDefaultAsync(er => er.UserSub == userId && er.EventId == eventId);
 
+        return registration?.Qr;
+    }
 
 }

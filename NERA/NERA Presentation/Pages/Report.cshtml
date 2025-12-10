@@ -1,0 +1,251 @@
+@page
+@model NERA_Presentation.Pages.ReportModel
+@{
+    ViewData["Title"] = "Event Report";
+}
+
+@if (!Model.DbAvailable)
+{
+    <div class="alert alert-warning">
+        Database is currently unreachable. Some features are disabled.
+    </div>
+}
+
+<main class="container report-container">
+    <h1 class="page-title">Event Report</h1>
+
+    <!-- Event Selector -->
+    <sl-card class="panel section">
+        <div class="event-selector">
+            <label for="eventSelect" class="selector-label">Select Event:</label>
+            <sl-select id="eventSelect" placeholder="Choose an event..." hoist>
+                <sl-option value="">-- Select an event --</sl-option>
+                @foreach (var evt in Model.Events)
+                {
+                    <sl-option value="@evt.Id">@evt.Title - @evt.StartDate.ToString("MM/dd/yyyy")</sl-option>
+                }
+            </sl-select>
+        </div>
+    </sl-card>
+
+    <!-- Statistics Cards -->
+    <div id="statisticsCards" class="statistics-cards" style="display: none;">
+        <sl-card class="stat-card">
+            <div class="stat-content">
+                <div class="stat-icon total">
+                    <sl-icon name="people"></sl-icon>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="totalRegistered">0</div>
+                    <div class="stat-label">Total Registered</div>
+                </div>
+            </div>
+        </sl-card>
+
+        <sl-card class="stat-card">
+            <div class="stat-content">
+                <div class="stat-icon attended">
+                    <sl-icon name="check-circle"></sl-icon>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="totalAttended">0</div>
+                    <div class="stat-label">Attended</div>
+                </div>
+            </div>
+        </sl-card>
+
+        <sl-card class="stat-card">
+            <div class="stat-content">
+                <div class="stat-icon not-attended">
+                    <sl-icon name="x-circle"></sl-icon>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="totalNotAttended">0</div>
+                    <div class="stat-label">Not Attended</div>
+                </div>
+            </div>
+        </sl-card>
+    </div>
+
+    <!-- Report Content -->
+    <div id="reportContent" style="display: none;">
+        <!-- Attended Section -->
+        <sl-card class="report-section">
+            <div slot="header" class="section-header">
+                <sl-icon name="check-circle" class="section-icon attended-icon"></sl-icon>
+                <h2>Attended (<span id="attendedCount">0</span>)</h2>
+            </div>
+            <div id="attendedList" class="registration-list">
+                <!-- Will be populated dynamically -->
+            </div>
+        </sl-card>
+
+        <!-- Not Attended Section -->
+        <sl-card class="report-section">
+            <div slot="header" class="section-header">
+                <sl-icon name="x-circle" class="section-icon not-attended-icon"></sl-icon>
+                <h2>Not Attended (<span id="notAttendedCount">0</span>)</h2>
+            </div>
+            <div id="notAttendedList" class="registration-list">
+                <!-- Will be populated dynamically -->
+            </div>
+        </sl-card>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state">
+        <sl-icon name="file-earmark-text" class="empty-icon"></sl-icon>
+        <h3>Select an event to view the report</h3>
+        <p>Choose an event from the dropdown above to see registration details and attendance information.</p>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="loading-state" style="display: none;">
+        <sl-spinner style="font-size: 3rem;"></sl-spinner>
+        <p>Loading report data...</p>
+    </div>
+</main>
+
+<script>
+    const eventSelect = document.getElementById('eventSelect');
+    const statisticsCards = document.getElementById('statisticsCards');
+    const reportContent = document.getElementById('reportContent');
+    const emptyState = document.getElementById('emptyState');
+    const loadingState = document.getElementById('loadingState');
+    const attendedList = document.getElementById('attendedList');
+    const notAttendedList = document.getElementById('notAttendedList');
+    const totalRegisteredEl = document.getElementById('totalRegistered');
+    const totalAttendedEl = document.getElementById('totalAttended');
+    const totalNotAttendedEl = document.getElementById('totalNotAttended');
+    const attendedCountEl = document.getElementById('attendedCount');
+    const notAttendedCountEl = document.getElementById('notAttendedCount');
+
+    // Mock data structure - replace with actual API call later
+    const mockRegistrations = {
+        // This will be replaced with actual data from backend
+    };
+
+    eventSelect.addEventListener('sl-change', async (e) => {
+        const eventId = e.target.value;
+        
+        if (!eventId) {
+            hideReport();
+            return;
+        }
+
+        await loadEventReport(eventId);
+    });
+
+    async function loadEventReport(eventId) {
+        showLoading();
+        
+        try {
+            // TODO: Replace with actual API call when backend is ready
+            // For now, using mock data for front-end demonstration
+            const response = await fetch(`?handler=EventRegistrations&eventId=${eventId}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            let registrations = [];
+            
+            if (response.ok) {
+                const data = await response.json();
+                registrations = data.registrations || [];
+            } else {
+                // Fallback to mock data for front-end only
+                console.log('Using mock data for demonstration');
+                registrations = getMockRegistrations(eventId);
+            }
+
+            displayReport(registrations);
+        } catch (error) {
+            console.error('Error loading report:', error);
+            // Use mock data for front-end demonstration
+            console.log('Using mock data due to error');
+            const mockData = getMockRegistrations(eventId);
+            displayReport(mockData);
+        } finally {
+            hideLoading();
+        }
+    }
+
+    function getMockRegistrations(eventId) {
+        // Mock data/template for sketch
+        return [
+            { id: 1, userSub: 'auth0|user1', userName: 'Diego Barreira', userEmail: 'diegobarreira@cgi.com', attended: true },
+            { id: 2, userSub: 'auth0|user2', userName: 'Robin', userEmail: 'robin@cgi.com', attended: false },
+        ];
+    }
+
+    function displayReport(registrations) {
+        const attended = registrations.filter(r => r.attended);
+        const notAttended = registrations.filter(r => !r.attended);
+        const total = registrations.length;
+
+        // Update statistics
+        totalRegisteredEl.textContent = total;
+        totalAttendedEl.textContent = attended.length;
+        totalNotAttendedEl.textContent = notAttended.length;
+        attendedCountEl.textContent = attended.length;
+        notAttendedCountEl.textContent = notAttended.length;
+
+        // Render attended list
+        if (attended.length > 0) {
+            attendedList.innerHTML = attended.map(reg => createRegistrationCard(reg, true)).join('');
+        } else {
+            attendedList.innerHTML = '<div class="empty-list">No attendees yet.</div>';
+        }
+
+        // Render not attended list
+        if (notAttended.length > 0) {
+            notAttendedList.innerHTML = notAttended.map(reg => createRegistrationCard(reg, false)).join('');
+        } else {
+            notAttendedList.innerHTML = '<div class="empty-list">All registered users have attended.</div>';
+        }
+
+        // Show report
+        statisticsCards.style.display = 'grid';
+        reportContent.style.display = 'block';
+        emptyState.style.display = 'none';
+    }
+
+    function createRegistrationCard(registration, isAttended) {
+        const statusBadge = isAttended 
+            ? '<sl-badge variant="success" pill>Attended</sl-badge>'
+            : '<sl-badge variant="neutral" pill>Not Attended</sl-badge>';
+        
+        return `
+            <div class="registration-card ${isAttended ? 'attended' : 'not-attended'}">
+                <div class="registration-info">
+                    <div class="registration-name">${registration.userName || 'Unknown User'}</div>
+                    <div class="registration-email">${registration.userEmail || registration.userSub}</div>
+                    <div class="registration-id">ID: ${registration.userSub}</div>
+                </div>
+                <div class="registration-status">
+                    ${statusBadge}
+                </div>
+            </div>
+        `;
+    }
+
+    function hideReport() {
+        statisticsCards.style.display = 'none';
+        reportContent.style.display = 'none';
+        emptyState.style.display = 'flex';
+    }
+
+    function showLoading() {
+        loadingState.style.display = 'flex';
+        statisticsCards.style.display = 'none';
+        reportContent.style.display = 'none';
+        emptyState.style.display = 'none';
+    }
+
+    function hideLoading() {
+        loadingState.style.display = 'none';
+    }
+</script>
+
+<link rel="stylesheet" href="~/css/report.css" asp-append-version="true" />
+
