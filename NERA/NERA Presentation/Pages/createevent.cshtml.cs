@@ -1,10 +1,12 @@
 using Domain.Entities;
 using Logic.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace NERA_Presentation.Pages
 {
+    [Authorize(Roles = "Admin")]
     public class CreateEventModel : PageModel
     {
         private readonly CreateEventService _service;
