@@ -323,3 +323,19 @@ sl-button.btn-calendar::part(base) {
     font-weight: 600;
     margin: 0 0 1rem 0;
 }
+#loadingSpinner {
+    display: none;
+    width: 28px;
+    height: 28px;
+    border: 3px solid #ccc;
+    border-top: 3px solid #4e8cff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}

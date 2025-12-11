@@ -164,6 +164,7 @@
         }
 
         <sl-button id="registerBtn" variant="primary" class="btn-gradient">Register</sl-button>
+        <sl-spinner id="loadingSpinner" style="display:none; margin-left: 10px;"></sl-spinner>
         @* <sl-button id="closeModal" variant="default">Close</sl-button> *@
     </div>
 </sl-dialog>
@@ -315,6 +316,10 @@
     registerBtn.addEventListener('click', async () => {
         if (!currentEvent) return;
 
+        const spinner = document.getElementById("loadingSpinner");
+        spinner.style.display = "inline-block";
+        registerBtn.disabled = true;
+
         try {
             const response = await fetch(`?handler=Register`, {
                 method: "POST",
@@ -339,8 +344,12 @@
         } catch (err) {
             console.error(err);
             alert("Error while registering.");
+        } finally {
+            spinner.style.display = "none";
+            registerBtn.disabled = false;
         }
     });
+
 
     // Close modal handler
     // closeModal.addEventListener('click', () => {
