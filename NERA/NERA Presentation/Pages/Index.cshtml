@@ -9,6 +9,9 @@
         Database is currently unreachable. Some features are disabled.
     </div>
 }
+<form id="antiForgeryForm" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
 <main class="container">
     <h1 class="page-title">Upcoming Events</h1>
 
@@ -170,6 +173,7 @@
     const search = document.getElementById('search');
     const statusFilter = document.getElementById('statusFilter');
     const cityFilter = document.getElementById('cityFilter');
+    const antiForgeryTokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]') || document.querySelector('input[name="__RequestVerificationToken"]');
     statusFilter.addEventListener('sl-after-hide', () => { });
     if (!statusFilter.value) statusFilter.value = 'all';
     if (!cityFilter.value) cityFilter.value = 'all';
@@ -317,7 +321,7 @@
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
-                    "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                    "RequestVerificationToken": antiForgeryTokenInput ? antiForgeryTokenInput.value : ""
                 },
                 body: JSON.stringify({ EventId: currentEvent.id })
             });
